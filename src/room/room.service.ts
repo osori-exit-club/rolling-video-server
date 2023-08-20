@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { CreateRoomDto } from './dto/create-room.dto';
-import { UpdateRoomDto } from './dto/update-room.dto';
+import { Injectable } from "@nestjs/common";
+import { CreateRoomDto } from "./dto/create-room.dto";
 
 @Injectable()
 export class RoomService {
   create(createRoomDto: CreateRoomDto) {
-    return 'This action adds a new room';
+    return "This action adds a new room";
   }
 
   findAll() {
@@ -14,10 +13,6 @@ export class RoomService {
 
   findOne(id: number) {
     return `This action returns a #${id} room`;
-  }
-
-  update(id: number, updateRoomDto: UpdateRoomDto) {
-    return `This action updates a #${id} room`;
   }
 
   remove(id: number) {
