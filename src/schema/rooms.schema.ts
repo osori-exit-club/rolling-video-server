@@ -5,9 +5,6 @@ export type RoomDocument = HydratedDocument<Room>;
 
 @Schema({ timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } })
 export class Room {
-  @Prop({ unique: true })
-  id: string;
-
   @Prop({ require: true })
   name: string;
 
