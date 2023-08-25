@@ -1,4 +1,4 @@
-export class Room {
+export class CreateRoomDto {
   id: string;
   name: string;
   password: string;
