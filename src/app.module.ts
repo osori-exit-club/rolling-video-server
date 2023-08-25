@@ -4,6 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { RoomModule } from "./room/room.module";
+import { ClipModule } from './clip/clip.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RoomModule } from "./room/room.module";
       inject: [ConfigService],
     }),
     RoomModule,
+    ClipModule,
   ],
   controllers: [AppController],
   providers: [AppService],
