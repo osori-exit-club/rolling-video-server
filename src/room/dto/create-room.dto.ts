@@ -1,5 +1,10 @@
 export class CreateRoomDto {
-  name: string;
-  password: string;
-  recipient: string;
+  readonly name: string;
+  readonly password: string | null;
+  readonly recipient: string;
+  constructor(name: string, password: string | null, recipient: string) {
+    this.name = name;
+    this.password = password;
+    this.recipient = recipient;
+  }
 }
