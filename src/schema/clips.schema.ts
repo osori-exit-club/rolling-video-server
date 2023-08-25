@@ -5,14 +5,17 @@ export type ClipDocument = HydratedDocument<Clip>;
 
 @Schema()
 export class Clip {
-  @Prop()
-  id: string;
+  @Prop({ require: true })
+  roomId: string;
 
   @Prop({ require: true })
   nickname: string;
 
-  @Prop()
-  video_url: string;
+  @Prop({ default: true })
+  isPublic: boolean;
+
+  @Prop({ require: true })
+  videoUrl: string;
 }
 
 export const ClipScheme = SchemaFactory.createForClass(Clip);

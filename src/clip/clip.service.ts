@@ -1,11 +1,14 @@
 import { Injectable } from "@nestjs/common";
+import { ClipRepository } from "./clip.repository";
 import { CreateClipDto } from "./dto/create-clip.dto";
 import { UpdateClipDto } from "./dto/update-clip.dto";
 
 @Injectable()
 export class ClipService {
+  constructor(private readonly clipRepository: ClipRepository) {}
+
   create(createClipDto: CreateClipDto) {
-    return "This action adds a new clip";
+    return this.clipRepository.create(createClipDto);
   }
 
   findAll() {

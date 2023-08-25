@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
+import { Clip, ClipScheme } from "./clips.schema";
 
 export type RoomDocument = HydratedDocument<Room>;
 
@@ -14,8 +15,8 @@ export class Room {
   @Prop({ require: true })
   recipient: string;
 
-  @Prop({ type: { nickname: { type: String }, video_utl: { type: String } } })
-  video_url: { nickname: string; video_url: string }[];
+  @Prop({ type: [ClipScheme], require: true })
+  clips: Clip[];
 }
 
 export const RoomScheme = SchemaFactory.createForClass(Room);
