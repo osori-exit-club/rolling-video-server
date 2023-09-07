@@ -12,11 +12,11 @@ export class ClipService {
   }
 
   findAll() {
-    return `This action returns all clip`;
+    return this.clipRepository.findAll();
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} clip`;
+    return this.clipRepository.findOne(id);
   }
 
   update(id: string, updateClipDto: UpdateClipDto) {
@@ -24,6 +24,6 @@ export class ClipService {
   }
 
   remove(id: string) {
-    return `This action removes a #${id} clip`;
+    return this.clipRepository.remove(id);
   }
 }

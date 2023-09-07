@@ -7,6 +7,7 @@ import { ClipService } from "./clip.service";
 
 describe("ClipService", () => {
   let service: ClipService;
+  let repository: ClipRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,9 +26,23 @@ describe("ClipService", () => {
     }).compile();
 
     service = module.get<ClipService>(ClipService);
+    repository = module.get<ClipRepository>(ClipRepository);
   });
 
   it("should be defined", () => {
     expect(service).toBeDefined();
+  });
+
+  describe("클립 정보 전체 조회", () => {
+    it("조회된 데이터는 array 타입 ", async () => {
+      // Arrange
+      jest.spyOn(repository, "findAll").mockResolvedValue(Promise.resolve([]));
+
+      // Act
+      const result = await service.findAll();
+
+      // Assert
+      expect(result).toBeInstanceOf(Array);
+    });
   });
 });
