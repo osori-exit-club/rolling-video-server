@@ -9,9 +9,9 @@ import { RoomRepository } from "./room.repository";
 describe("RoomRepository", () => {
   let repository: RoomRepository;
   const presetInputList: CreateRoomDto[] = [
-    new CreateRoomDto("roomName1", "1234", "target"),
-    new CreateRoomDto("roomName2", null, "target"),
-    new CreateRoomDto("roomName3", "", "target3"),
+    new CreateRoomDto("roomName1", "1234", "target", new Date()),
+    new CreateRoomDto("roomName2", null, "target", new Date()),
+    new CreateRoomDto("roomName3", "", "target3", new Date()),
   ];
   let presetDataList: any[];
 
@@ -70,7 +70,7 @@ describe("RoomRepository", () => {
   describe("방 생성 테스트", () => {
     it("[1] 방생성 (방이름 + 비밀번호 + 받는사람) ", async () => {
       // Arrange
-      const input = new CreateRoomDto("방이름", "1234", "받는사람");
+      const input = new CreateRoomDto("방이름", "1234", "받는사람", new Date());
 
       // Act
       const result = await repository.create(input);
@@ -83,7 +83,7 @@ describe("RoomRepository", () => {
 
     it("[2] 방생성 (방이름 + 받는사람) ", async () => {
       // Arrange
-      const input = new CreateRoomDto("방이름", null, "받는사람");
+      const input = new CreateRoomDto("방이름", null, "받는사람", new Date());
 
       // Act
       const result = await repository.create(input);
