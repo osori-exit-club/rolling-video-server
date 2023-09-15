@@ -6,18 +6,22 @@ import {
   Patch,
   Param,
   Delete,
+  UploadedFile,
+  UseInterceptors,
 } from "@nestjs/common";
 import { ClipService } from "./clip.service";
 import { CreateClipDto } from "./dto/create-clip.dto";
 import { UpdateClipDto } from "./dto/update-clip.dto";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("clip")
 export class ClipController {
   constructor(private readonly clipService: ClipService) {}
 
   @Post()
-  create(@Body() createClipDto: CreateClipDto) {
-    return this.clipService.create(createClipDto);
+  @UseInterceptors(FileInterceptor("file"))
+  create(@Body() createClipDto: CreateClipDto, @UploadedFile() file) {
+    return this.clipService.create(createClipDto, file);
   }
 
   @Get(":id")

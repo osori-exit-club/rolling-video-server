@@ -1,5 +1,7 @@
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
+import { S3Module } from "src/aws/s3/s3.module";
+import { S3Repository } from "src/aws/s3/s3.repository";
 import { Clip } from "src/schema/clips.schema";
 import { Room } from "src/schema/rooms.schema";
 import { ClipRepository } from "./clip.repository";
@@ -7,10 +9,12 @@ import { ClipService } from "./clip.service";
 
 describe("ClipService", () => {
   let service: ClipService;
-  let repository: ClipRepository;
+  let clipRepository: ClipRepository;
+  let s3Repository: S3Repository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [S3Module],
       providers: [
         ClipService,
         ClipRepository,
@@ -26,7 +30,8 @@ describe("ClipService", () => {
     }).compile();
 
     service = module.get<ClipService>(ClipService);
-    repository = module.get<ClipRepository>(ClipRepository);
+    clipRepository = module.get<ClipRepository>(ClipRepository);
+    s3Repository = module.get<S3Repository>(S3Repository);
   });
 
   it("should be defined", () => {
@@ -36,7 +41,9 @@ describe("ClipService", () => {
   describe("클립 정보 전체 조회", () => {
     it("조회된 데이터는 array 타입 ", async () => {
       // Arrange
-      jest.spyOn(repository, "findAll").mockResolvedValue(Promise.resolve([]));
+      jest
+        .spyOn(clipRepository, "findAll")
+        .mockResolvedValue(Promise.resolve([]));
 
       // Act
       const result = await service.findAll();

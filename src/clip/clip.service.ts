@@ -1,13 +1,19 @@
 import { Injectable } from "@nestjs/common";
+import { S3Repository } from "src/aws/s3/s3.repository";
 import { ClipRepository } from "./clip.repository";
 import { CreateClipDto } from "./dto/create-clip.dto";
 import { UpdateClipDto } from "./dto/update-clip.dto";
 
 @Injectable()
 export class ClipService {
-  constructor(private readonly clipRepository: ClipRepository) {}
+  constructor(
+    private readonly clipRepository: ClipRepository,
+    private readonly s3Respository: S3Repository
+  ) {}
 
-  create(createClipDto: CreateClipDto) {
+  async create(createClipDto: CreateClipDto, file) {
+    const video_url = await this.s3Respository.uploadFile(file);
+    createClipDto.videoUrl = video_url;
     return this.clipRepository.create(createClipDto);
   }
 

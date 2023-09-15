@@ -1,5 +1,6 @@
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
+import { S3Module } from "src/aws/s3/s3.module";
 import { Clip } from "src/schema/clips.schema";
 import { Room } from "src/schema/rooms.schema";
 import { ClipController } from "./clip.controller";
@@ -11,6 +12,7 @@ describe("ClipController", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [S3Module],
       controllers: [ClipController],
       providers: [
         ClipService,

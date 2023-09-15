@@ -5,6 +5,8 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { Room, RoomScheme } from "src/schema/rooms.schema";
 import { Clip, ClipScheme } from "src/schema/clips.schema";
 import { ClipRepository } from "./clip.repository";
+import { S3Module } from "src/aws/s3/s3.module";
+import { S3Repository } from "src/aws/s3/s3.repository";
 
 @Module({
   imports: [
@@ -22,8 +24,9 @@ import { ClipRepository } from "./clip.repository";
         },
       },
     ]),
+    S3Module,
   ],
   controllers: [ClipController],
-  providers: [ClipService, ClipRepository],
+  providers: [ClipService, ClipRepository, S3Repository],
 })
 export class ClipModule {}
