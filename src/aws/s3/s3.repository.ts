@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import * as AWS from "aws-sdk";
 import dayjs from "dayjs";
@@ -66,17 +71,15 @@ export class S3Repository {
    */
   async uploadFile({
     buffer,
-    path,
-    contentType,
+    key,
   }: {
     buffer: Buffer;
-    path: "meeting";
-    contentType: FileExtensionType;
+    key: string;
   }): Promise<string> {
     try {
       const params = {
         Bucket: this.configService.get("AWS_S3_BUCKET_NAME"),
-        Key: this.getRandomUrl(path, contentType),
+        Key: key,
         Body: buffer,
       };
       const data = await this.s3.upload(params).promise();
@@ -89,7 +92,6 @@ export class S3Repository {
 
   /**
    * 파일의 경로명을 랜덤으로 생성
-   * @author @rdd9223
    * @param path 구분 폴더 명
    * @param contentType 파일의 컨텐츠 타입
    * @returns 파일의 경로명

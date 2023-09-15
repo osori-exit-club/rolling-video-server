@@ -8,6 +8,8 @@ import {
   Delete,
   UploadedFile,
   UseInterceptors,
+  HttpException,
+  HttpStatus,
 } from "@nestjs/common";
 import { ClipService } from "./clip.service";
 import { CreateClipDto } from "./dto/create-clip.dto";
@@ -21,6 +23,12 @@ export class ClipController {
   @Post()
   @UseInterceptors(FileInterceptor("file"))
   create(@Body() createClipDto: CreateClipDto, @UploadedFile() file) {
+    const sizeMB = file.size / 1_000_000;
+    console.log(sizeMB);
+
+    if (sizeMB > 15) {
+      throw new HttpException("size is over than 15MB", HttpStatus.BAD_REQUEST);
+    }
     return this.clipService.create(createClipDto, file);
   }
 

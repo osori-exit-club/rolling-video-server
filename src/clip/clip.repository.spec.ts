@@ -58,9 +58,9 @@ describe("ClipRepository", () => {
     }).save();
     roomId = room.id;
     presetInputList = [
-      new CreateClipDto(room.id, "nickname1", true, "video_url1"),
-      new CreateClipDto(room.id, "nickname2", true, "video_url2"),
-      new CreateClipDto(room.id, "nickname3", false, "video_url3"),
+      new CreateClipDto(room.id, "nickname1", true),
+      new CreateClipDto(room.id, "nickname2", true),
+      new CreateClipDto(room.id, "nickname3", false),
     ];
     presetDataList = await Promise.all(
       presetInputList.map((it) => {
@@ -89,10 +89,10 @@ describe("ClipRepository", () => {
   describe("클립 생성 테스트", () => {
     it("[1] 클립 생성 (방번호 + 닉네팀 + 공개 + 이미지) ", async () => {
       // Arrange
-      const input = new CreateClipDto(roomId, "nickname", true, "video url");
+      const input = new CreateClipDto(roomId, "nickname", true);
 
       // Act
-      const result = await repository.create(input);
+      const result = await repository.create(input, "viedeo_url");
 
       // Assert
       Object.keys(input).forEach((key) => {
@@ -102,10 +102,10 @@ describe("ClipRepository", () => {
 
     it("[2] 클립 생성 (방번호 + 닉네팀 + 비공개 + 이미지) ", async () => {
       // Arrange
-      const input = new CreateClipDto(roomId, "nickname", false, "video url");
+      const input = new CreateClipDto(roomId, "nickname", false);
 
       // Act
-      const result = await repository.create(input);
+      const result = await repository.create(input, "video_url");
 
       // Assert
       Object.keys(input).forEach((key) => {

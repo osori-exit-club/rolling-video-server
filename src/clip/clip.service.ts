@@ -12,9 +12,16 @@ export class ClipService {
   ) {}
 
   async create(createClipDto: CreateClipDto, file) {
-    const video_url = await this.s3Respository.uploadFile(file);
-    createClipDto.videoUrl = video_url;
-    return this.clipRepository.create(createClipDto);
+    console.log(typeof file);
+    const key = `videos/${createClipDto.roomId}/${
+      Date.now() + file.originalname
+    }`;
+    const buffer = file.buffer;
+    const video_url = await this.s3Respository.uploadFile({
+      key,
+      buffer,
+    });
+    return this.clipRepository.create(createClipDto, video_url);
   }
 
   findAll() {
