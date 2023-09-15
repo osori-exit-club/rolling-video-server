@@ -1,11 +1,13 @@
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
+import { Document } from "mongoose";
 import { S3Module } from "src/aws/s3/s3.module";
 import { S3Repository } from "src/aws/s3/s3.repository";
-import { Clip } from "src/schema/clips.schema";
+import { Clip, ClipDocument, ClipScheme } from "src/schema/clips.schema";
 import { Room } from "src/schema/rooms.schema";
 import { ClipRepository } from "./clip.repository";
 import { ClipService } from "./clip.service";
+import { CreateClipDto } from "./dto/create-clip.dto";
 
 describe("ClipService", () => {
   let service: ClipService;
@@ -50,6 +52,29 @@ describe("ClipService", () => {
 
       // Assert
       expect(result).toBeInstanceOf(Array);
+    });
+  });
+
+  describe("클립 생성 테스트", () => {
+    it("[1] 클립 생성", async () => {
+      // Arrange
+      const roomId = "roomId";
+      const input = new CreateClipDto(roomId, "nickname", true);
+      // TODO clipRepository의 리턴 타입은 무엇이고 mock 객체 못만드나?
+      const mockClip: any = {};
+      mockClip.save = () => {};
+      jest
+        .spyOn(s3Repository, "uploadFile")
+        .mockResolvedValue(Promise.resolve("video_url"));
+      jest
+        .spyOn(clipRepository, "create")
+        .mockResolvedValue(Promise.resolve(mockClip));
+
+      // Act
+      const result = await service.create(input, {});
+
+      // Assert
+      expect(result.videoUrl).toEqual("video_url");
     });
   });
 });

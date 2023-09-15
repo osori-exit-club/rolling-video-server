@@ -12,10 +12,8 @@ export class ClipRepository {
     @InjectModel(Room.name) private roomModel: Model<RoomDocument>
   ) {}
 
-  async create(createClipDto: CreateClipDto, video_url: string) {
-    const createClip = new this.clipModel(
-      Object.assign({}, createClipDto, { video_url })
-    );
+  async create(createClipDto: CreateClipDto) {
+    const createClip = new this.clipModel(Object.assign(createClipDto));
     const room = await this.roomModel.findById(createClipDto.roomId);
     if (room == null) {
       throw `Room(${createClipDto.roomId}) is not existed`;
