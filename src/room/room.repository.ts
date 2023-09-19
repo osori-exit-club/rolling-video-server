@@ -13,6 +13,15 @@ export class RoomRepository {
     return createdRoom.save();
   }
 
+  async addClip(roomId: string, clip: any) {
+    const room = await this.roomModel.findById(roomId);
+    if (room == null) {
+      throw `Room(${roomId}) is not existed`;
+    }
+    room.clips.push(clip);
+    return await room.save();
+  }
+
   findAll() {
     return this.roomModel.find().exec();
   }

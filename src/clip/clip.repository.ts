@@ -18,9 +18,10 @@ export class ClipRepository {
     if (room == null) {
       throw `Room(${createClipDto.roomId}) is not existed`;
     }
-    room.clips.push(createClip);
     await room.save();
-    return createClip.save();
+    const created = await createClip.save();
+    room.clips.push(created);
+    return created;
   }
 
   findAll() {

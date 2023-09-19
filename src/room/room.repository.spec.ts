@@ -123,4 +123,17 @@ describe("RoomRepository", () => {
       expect(findResult.length).toEqual(0);
     });
   });
+
+  describe("클립 추가", () => {
+    it("클립 추가 ", async () => {
+      // Arrange
+      const roomId = presetDataList[0]._id;
+      const clip = { roomId, clip: "clip" };
+      // Act
+      const result = await repository.addClip(roomId, clip);
+      // Assert
+      const lastClip = result.clips[result.clips.length - 1];
+      expect(lastClip.roomId).toEqual(roomId.toString());
+    });
+  });
 });
