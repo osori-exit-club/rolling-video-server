@@ -131,3 +131,6 @@ dist
 
 # aws
 .aws
+
+# test output
+temp

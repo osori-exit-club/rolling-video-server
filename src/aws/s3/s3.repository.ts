@@ -133,7 +133,6 @@ export class S3Repository {
     const downloadInChunks = async ({ bucket, key }) => {
       const splitted = key.split("/");
       const fileName = splitted[splitted.length - 1];
-      console.log(fileName);
 
       if (!fs.existsSync(outDir)) {
         fs.mkdirSync(outDir, { recursive: true });

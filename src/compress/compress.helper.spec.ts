@@ -28,7 +28,10 @@ describe("ClipRepository", () => {
   describe("압축 테스트", () => {
     it("[1] compress normal", () => {
       // Arrange
-      const targetDir = "./temp/videos";
+      const targetDir = "./temp/video";
+      if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true });
+      }
       const outDir = "./temp/out/zip/test.zip";
       // Act
       compressHelper.compress(targetDir, outDir);
