@@ -1,14 +1,12 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  InternalServerErrorException,
-} from "@nestjs/common";
+import * as fs from "fs";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import * as AWS from "aws-sdk";
 import dayjs from "dayjs";
 import { v4 } from "uuid";
 import { S3GetPresignedUrlResponseDto } from "./dto/get-presigned-url/s3-get-presigned-url-response.dto";
+
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 export enum FileExtensionType {
   JPG = "jpg",
@@ -88,6 +86,88 @@ export class S3Repository {
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
+  }
+
+  /**
+   * S3로 부터 파일 다운로드
+   *
+   * @param key
+   */
+  async download(key: string, outDir: string) {
+    const BUCKET = "careerlego-salt-test";
+
+    const s3Client = new S3Client({
+      region: this.configService.get("AWS_REGION"),
+      credentials: {
+        accessKeyId: this.configService.get("AWS_ACCESS_KEY_ID"),
+        secretAccessKey: this.configService.get("AWS_SECRET_ACCESS_KEY"),
+      },
+    });
+    const oneMB = 1024 * 1024;
+
+    const getObjectRange = ({ bucket, key, start, end }) => {
+      const command = new GetObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Range: `bytes=${start}-${end}`,
+      });
+
+      return s3Client.send(command);
+    };
+
+    const getRangeAndLength = (contentRange) => {
+      const [range, length] = contentRange.split("/");
+      const [start, end] = range.split("-");
+      return {
+        start: parseInt(start),
+        end: parseInt(end),
+        length: parseInt(length),
+      };
+    };
+
+    const isComplete = ({ end, length }) => end === length - 1;
+
+    // When downloading a large file, you might want to break it down into
+    // smaller pieces. Amazon S3 accepts a Range header to specify the start
+    // and end of the byte range to be downloaded.
+    const downloadInChunks = async ({ bucket, key }) => {
+      const splitted = key.split("/");
+      const fileName = splitted[splitted.length - 1];
+      console.log(fileName);
+
+      if (!fs.existsSync(outDir)) {
+        fs.mkdirSync(outDir, { recursive: true });
+      }
+      const writeStream = fs
+        .createWriteStream(`${outDir}/${fileName}`)
+        .on("error", (err) => console.error(err));
+
+      let rangeAndLength = { start: -1, end: -1, length: -1 };
+
+      while (!isComplete(rangeAndLength)) {
+        const { end } = rangeAndLength;
+        const nextRange = { start: end + 1, end: end + oneMB };
+
+        console.log(`Downloading bytes ${nextRange.start} to ${nextRange.end}`);
+
+        const { ContentRange, Body } = await getObjectRange({
+          bucket,
+          key,
+          ...nextRange,
+        });
+
+        writeStream.write(await Body.transformToByteArray());
+        rangeAndLength = getRangeAndLength(ContentRange);
+      }
+      console.log(`Downloading Done ${key}`);
+    };
+    if (key[key.length - 1] == "/") {
+      return null;
+    }
+    return downloadInChunks({
+      bucket: BUCKET,
+      key: key,
+    });
   }
 
   /**
