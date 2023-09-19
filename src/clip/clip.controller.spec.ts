@@ -1,6 +1,7 @@
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import { S3Module } from "src/aws/s3/s3.module";
+import { RoomRepository } from "src/room/room.repository";
 import { Clip } from "src/schema/clips.schema";
 import { Room } from "src/schema/rooms.schema";
 import { ClipController } from "./clip.controller";
@@ -17,6 +18,7 @@ describe("ClipController", () => {
       providers: [
         ClipService,
         ClipRepository,
+        RoomRepository,
         {
           provide: getModelToken(Room.name),
           useFactory: () => {},

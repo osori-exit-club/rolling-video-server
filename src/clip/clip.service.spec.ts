@@ -3,6 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { Document } from "mongoose";
 import { S3Module } from "src/aws/s3/s3.module";
 import { S3Repository } from "src/aws/s3/s3.repository";
+import { RoomRepository } from "src/room/room.repository";
 import { Clip, ClipDocument, ClipScheme } from "src/schema/clips.schema";
 import { Room } from "src/schema/rooms.schema";
 import { ClipRepository } from "./clip.repository";
@@ -12,6 +13,7 @@ import { CreateClipDto } from "./dto/create-clip.dto";
 describe("ClipService", () => {
   let service: ClipService;
   let clipRepository: ClipRepository;
+  let roomRepository: RoomRepository;
   let s3Repository: S3Repository;
 
   beforeEach(async () => {
@@ -20,6 +22,7 @@ describe("ClipService", () => {
       providers: [
         ClipService,
         ClipRepository,
+        RoomRepository,
         {
           provide: getModelToken(Room.name),
           useFactory: () => {},
@@ -33,6 +36,7 @@ describe("ClipService", () => {
 
     service = module.get<ClipService>(ClipService);
     clipRepository = module.get<ClipRepository>(ClipRepository);
+    roomRepository = module.get<RoomRepository>(RoomRepository);
     s3Repository = module.get<S3Repository>(S3Repository);
   });
 
@@ -69,7 +73,9 @@ describe("ClipService", () => {
       jest
         .spyOn(clipRepository, "create")
         .mockResolvedValue(Promise.resolve(mockClip));
-
+      jest
+        .spyOn(roomRepository, "addClip")
+        .mockResolvedValue(Promise.resolve(mockClip));
       // Act
       const result = await service.create(input, {});
 

@@ -14,13 +14,7 @@ export class ClipRepository {
 
   async create(createClipDto: CreateClipDto) {
     const createClip = new this.clipModel(Object.assign(createClipDto));
-    const room = await this.roomModel.findById(createClipDto.roomId);
-    if (room == null) {
-      throw `Room(${createClipDto.roomId}) is not existed`;
-    }
-    await room.save();
     const created = await createClip.save();
-    room.clips.push(created);
     return created;
   }
 

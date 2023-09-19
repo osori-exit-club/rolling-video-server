@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { S3Repository } from "src/aws/s3/s3.repository";
+import { RoomRepository } from "src/room/room.repository";
 import { ClipRepository } from "./clip.repository";
 import { CreateClipDto } from "./dto/create-clip.dto";
 import { UpdateClipDto } from "./dto/update-clip.dto";
@@ -8,6 +9,7 @@ import { UpdateClipDto } from "./dto/update-clip.dto";
 export class ClipService {
   constructor(
     private readonly clipRepository: ClipRepository,
+    private readonly roomRepository: RoomRepository,
     private readonly s3Respository: S3Repository
   ) {}
 
@@ -21,6 +23,7 @@ export class ClipService {
     });
     clip.videoUrl = video_url;
     await clip.save();
+    this.roomRepository.addClip(createClipDto.roomId, clip);
     return clip;
   }
 

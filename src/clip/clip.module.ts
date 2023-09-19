@@ -7,6 +7,7 @@ import { Clip, ClipScheme } from "src/schema/clips.schema";
 import { ClipRepository } from "./clip.repository";
 import { S3Module } from "src/aws/s3/s3.module";
 import { S3Repository } from "src/aws/s3/s3.repository";
+import { RoomRepository } from "src/room/room.repository";
 
 @Module({
   imports: [
@@ -27,6 +28,6 @@ import { S3Repository } from "src/aws/s3/s3.repository";
     S3Module,
   ],
   controllers: [ClipController],
-  providers: [ClipService, ClipRepository, S3Repository],
+  providers: [ClipService, ClipRepository, RoomRepository, S3Repository],
 })
 export class ClipModule {}
