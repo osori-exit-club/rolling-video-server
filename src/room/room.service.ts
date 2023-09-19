@@ -6,8 +6,10 @@ import { RoomRepository } from "./room.repository";
 export class RoomService {
   constructor(private readonly roomRepository: RoomRepository) {}
 
-  create(createRoomDto: CreateRoomDto) {
-    return this.roomRepository.create(createRoomDto);
+  async create(createRoomDto: CreateRoomDto) {
+    const room = await this.roomRepository.create(createRoomDto);
+
+    return room;
   }
 
   findAll() {
