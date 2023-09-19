@@ -15,7 +15,9 @@ export class ClipService {
 
   async create(createClipDto: CreateClipDto, file: any) {
     const clip = await this.clipRepository.create(createClipDto);
-    const key = `videos/${createClipDto.roomId}/${clip.id}`;
+    const splitted = file.originalname.split(".");
+    const ext = splitted[splitted.length - 1];
+    const key = `videos/${createClipDto.roomId}/${clip.id}.${ext}`;
     const buffer = file.buffer;
     const video_url = await this.s3Respository.uploadFile({
       key,
