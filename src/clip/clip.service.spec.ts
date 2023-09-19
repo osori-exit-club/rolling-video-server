@@ -77,7 +77,9 @@ describe("ClipService", () => {
         .spyOn(roomRepository, "addClip")
         .mockResolvedValue(Promise.resolve(mockClip));
       // Act
-      const result = await service.create(input, {});
+      const result = await service.create(input, {
+        originalname: "test.mp4",
+      });
 
       // Assert
       expect(result.videoUrl).toEqual("video_url");
