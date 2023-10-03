@@ -1,7 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
 
 export class ClipDto {
-  @ApiProperty({ description: "room's id", required: true, nullable: false })
+  @ApiProperty({ description: "clip's id", required: true, nullable: false })
+  clipId: string;
+  @ApiProperty({
+    description: "clip이 속해 있는 Room의 id",
+    required: true,
+    nullable: false,
+  })
   roomId: string;
   @ApiProperty({
     description: "clip을 생성한 사람의 닉네임",

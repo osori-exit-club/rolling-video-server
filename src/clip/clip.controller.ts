@@ -21,6 +21,7 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiTags,
 } from "@nestjs/swagger";
 import { ClipDto } from "./dto/clip.dto";
@@ -33,9 +34,9 @@ export class ClipController {
   @Post()
   @UseInterceptors(FileInterceptor("file"))
   @ApiOperation({ summary: "클립 생성 API", description: "클립을 생성한다." })
-  @ApiCreatedResponse({ description: "클립", type: ClipDto })
   @ApiConsumes("multipart/form-data")
   @ApiOkResponse({
+    description: "생성된 클립 정보",
     schema: {
       type: "object",
       properties: {
@@ -118,6 +119,20 @@ export class ClipController {
   }
 
   @Get(":id")
+  @ApiOperation({
+    summary: "클립 조회 API",
+    description: "하나의 클립에 대한 정보를 조회 한다",
+  })
+  @ApiParam({
+    name: "id",
+    type: "string",
+    description: "clip id",
+    example: "651c105569ada488e158a346",
+  })
+  @ApiOkResponse({
+    description: "Clip 정보",
+    type: ClipDto,
+  })
   findOne(@Param("id") id: string) {
     return this.clipService.findOne(id);
   }
