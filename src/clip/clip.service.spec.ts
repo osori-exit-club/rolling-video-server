@@ -1,10 +1,9 @@
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Document } from "mongoose";
 import { S3Module } from "src/aws/s3/s3.module";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
-import { Clip, ClipDocument, ClipScheme } from "src/schema/clips.schema";
+import { Clip } from "src/schema/clips.schema";
 import { Room } from "src/schema/rooms.schema";
 import { ClipRepository } from "./clip.repository";
 import { ClipService } from "./clip.service";
@@ -65,7 +64,7 @@ describe("ClipService", () => {
       const roomId = "roomId";
       const input = new CreateClipDto(roomId, "nickname", true);
       // TODO clipRepository의 리턴 타입은 무엇이고 mock 객체 못만드나?
-      const mockClip: any = {};
+      const mockClip: any = { _id: "testId" };
       mockClip.save = () => {};
       jest
         .spyOn(s3Repository, "uploadFile")

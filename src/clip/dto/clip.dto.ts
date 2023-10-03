@@ -28,11 +28,13 @@ export class ClipDto {
   })
   videoUrl: string;
   constructor(
+    clipId: string,
     roomId: string,
     nickname: string,
     isPublic: boolean,
     videoUrl: string
   ) {
+    this.clipId = clipId;
     this.roomId = roomId;
     this.nickname = nickname;
     this.isPublic = isPublic;

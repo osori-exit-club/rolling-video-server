@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
 import { ClipRepository } from "./clip.repository";
+import { ClipDto } from "./dto/clip.dto";
 import { CreateClipDto } from "./dto/create-clip.dto";
 import { UpdateClipDto } from "./dto/update-clip.dto";
 
@@ -13,7 +14,7 @@ export class ClipService {
     private readonly s3Respository: S3Repository
   ) {}
 
-  async create(createClipDto: CreateClipDto, file: any) {
+  async create(createClipDto: CreateClipDto, file: any): Promise<ClipDto> {
     const clip = await this.clipRepository.create(createClipDto);
     const splitted = file.originalname.split(".");
     const ext = splitted[splitted.length - 1];
@@ -26,15 +27,37 @@ export class ClipService {
     clip.videoUrl = video_url;
     await clip.save();
     this.roomRepository.addClip(createClipDto.roomId, clip);
-    return clip;
+    return new ClipDto(
+      clip._id.toString(),
+      clip.roomId,
+      clip.nickname,
+      clip.isPublic,
+      clip.videoUrl
+    );
   }
 
-  findAll() {
-    return this.clipRepository.findAll();
+  async findAll(): Promise<ClipDto[]> {
+    const result = await this.clipRepository.findAll();
+    return result.map((clip) => {
+      return new ClipDto(
+        clip._id.toString(),
+        clip.roomId,
+        clip.nickname,
+        clip.isPublic,
+        clip.videoUrl
+      );
+    });
   }
 
-  findOne(id: string) {
-    return this.clipRepository.findOne(id);
+  async findOne(id: string): Promise<ClipDto> {
+    const clip = await this.clipRepository.findOne(id);
+    return new ClipDto(
+      clip._id.toString(),
+      clip.roomId,
+      clip.nickname,
+      clip.isPublic,
+      clip.videoUrl
+    );
   }
 
   update(id: string, updateClipDto: UpdateClipDto) {
