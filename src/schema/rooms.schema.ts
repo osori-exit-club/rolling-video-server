@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Date, HydratedDocument } from "mongoose";
-import { Clip, ClipScheme } from "./clips.schema";
+import { ClipDocument, ClipScheme } from "./clips.schema";
 
 export type RoomDocument = HydratedDocument<Room>;
 
@@ -19,7 +19,7 @@ export class Room {
   dueDate: Date;
 
   @Prop({ type: [ClipScheme], require: true })
-  clips: Clip[];
+  clips: ClipDocument[];
 }
 
 export const RoomScheme = SchemaFactory.createForClass(Room);

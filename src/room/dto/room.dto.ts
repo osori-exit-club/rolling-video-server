@@ -1,6 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Date } from "mongoose";
+import { ClipDto } from "src/clip/dto/clip.dto";
 
-export class CreateRoomDto {
+export class RoomDto {
   @ApiProperty({
     description: "방의 이름",
     required: true,
@@ -28,5 +30,20 @@ export class CreateRoomDto {
     description: "Clip 리스트",
     example: "[]",
   })
-  clipList: Record<string, string>[];
+  clipList: ClipDto[];
+  constructor(
+    id: string,
+    name: string,
+    password: string,
+    recipient: string,
+    dueDate: Date,
+    clipList: ClipDto[]
+  ) {
+    this.id = id;
+    this.name = name;
+    this.password = password;
+    this.recipient = recipient;
+    this.dueDate = dueDate;
+    this.clipList = clipList;
+  }
 }
