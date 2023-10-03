@@ -10,6 +10,7 @@ export class RoomController {
 
   @Post()
   @ApiOperation({
+    summary: "방 생성 API",
     description: "방 생성 API",
   })
   @ApiBody({
@@ -25,6 +26,14 @@ export class RoomController {
   }
 
   @Get()
+  @ApiOperation({
+    summary: "전체 방 조회 API",
+    description: "전체 방 조회 API",
+  })
+  @ApiOkResponse({
+    description: "방 전체 정보 리스트",
+    type: [RoomDto],
+  })
   findAll() {
     return this.roomService.findAll();
   }

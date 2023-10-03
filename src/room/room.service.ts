@@ -29,8 +29,26 @@ export class RoomService {
     );
   }
 
-  findAll() {
-    return this.roomRepository.findAll();
+  async findAll(): Promise<RoomDto[]> {
+    const result = await this.roomRepository.findAll();
+    return result.map((room) => {
+      return new RoomDto(
+        room._id.toString(),
+        room.name,
+        room.password,
+        room.recipient,
+        room.dueDate,
+        room.clips.map((clip) => {
+          return new ClipDto(
+            clip._id.toString(),
+            clip.roomId,
+            clip.nickname,
+            clip.isPublic,
+            clip.videoUrl
+          );
+        })
+      );
+    });
   }
 
   findOne(id: string) {
