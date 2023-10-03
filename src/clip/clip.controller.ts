@@ -37,48 +37,7 @@ export class ClipController {
   @ApiConsumes("multipart/form-data")
   @ApiOkResponse({
     description: "생성된 클립 정보",
-    schema: {
-      type: "object",
-      properties: {
-        roomId: {
-          type: "string",
-          description: "방 번호",
-          nullable: false,
-        },
-        nickname: {
-          type: "string",
-          description: "clip 생성자 이름",
-        },
-        isPublic: {
-          type: "boolean",
-          description: "클립 공개 여부",
-          default: false,
-          nullable: false,
-        },
-        file: {
-          type: "string",
-          format: "binary",
-          nullable: false,
-        },
-        _id: {
-          type: "string",
-          description: "clip id",
-        },
-        __v: {
-          type: "number",
-          description: "version of mongo db",
-        },
-      },
-      example: {
-        roomId: "65099d54d2ba36bb284678e2",
-        nickname: "nickname3",
-        isPublic: true,
-        _id: "6509a7ab8173da335d01c6bc",
-        __v: 0,
-        videoUrl:
-          "https://careerlego-salt-test.s3.amazonaws.com/videos/65099d54d2ba36bb284678e2/6509a7ab8173da335d01c6bc.mp4",
-      },
-    },
+    type: ClipDto,
   })
   @ApiBody({
     schema: {
