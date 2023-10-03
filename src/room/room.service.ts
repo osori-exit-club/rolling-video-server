@@ -51,8 +51,24 @@ export class RoomService {
     });
   }
 
-  findOne(id: string) {
-    return this.roomRepository.findOne(id);
+  async findOne(id: string): Promise<RoomDto> {
+    const room = await this.roomRepository.findOne(id);
+    return new RoomDto(
+      room._id.toString(),
+      room.name,
+      room.password,
+      room.recipient,
+      room.dueDate,
+      room.clips.map((clip) => {
+        return new ClipDto(
+          clip._id.toString(),
+          clip.roomId,
+          clip.nickname,
+          clip.isPublic,
+          clip.videoUrl
+        );
+      })
+    );
   }
 
   remove(id: string) {

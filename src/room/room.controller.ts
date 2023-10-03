@@ -1,7 +1,12 @@
 import { Controller, Get, Post, Body, Param, Delete } from "@nestjs/common";
 import { RoomService } from "./room.service";
 import { CreateRoomDto } from "./dto/create-room.dto";
-import { ApiBody, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+} from "@nestjs/swagger";
 import { RoomDto } from "./dto/room.dto";
 
 @Controller("room")
@@ -38,6 +43,21 @@ export class RoomController {
     return this.roomService.findAll();
   }
 
+  @Get()
+  @ApiOperation({
+    summary: "방 조회 API",
+    description: "방 조회 API",
+  })
+  @ApiParam({
+    name: "id",
+    type: "string",
+    description: "room id",
+    example: "65099d54d2ba36bb284678e2",
+  })
+  @ApiOkResponse({
+    description: "방 정보",
+    type: RoomDto,
+  })
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.roomService.findOne(id);
