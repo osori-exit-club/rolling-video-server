@@ -9,6 +9,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { RoomDto } from "./dto/room.dto";
+import { DeleteRoomDto } from "./dto/delete-room.dto";
 
 @Controller("room")
 @ApiTags("Room API")
@@ -66,6 +67,23 @@ export class RoomController {
   }
 
   @Delete(":id")
+  @ApiOperation({
+    summary: "방 삭제 API",
+    description: "방 삭제 API",
+  })
+  @ApiParam({
+    name: "id",
+    type: "string",
+    description: "room id",
+    example: "651c1bc85130dd8a0abf7727",
+  })
+  @ApiBody({
+    type: DeleteRoomDto,
+  })
+  @ApiOkResponse({
+    description: "방 정보",
+    type: RoomDto,
+  })
   remove(@Param("id") id: string) {
     return this.roomService.remove(id);
   }
