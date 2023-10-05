@@ -6,10 +6,12 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiTags,
 } from "@nestjs/swagger";
 import { RoomDto } from "./dto/room.dto";
 
 @Controller("room")
+@ApiTags("Room API")
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
