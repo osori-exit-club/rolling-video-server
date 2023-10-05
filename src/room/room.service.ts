@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ClipDto } from "src/clip/dto/clip.dto";
 import { CreateRoomDto } from "./dto/create-room.dto";
+import { DeleteRoomResponseDto } from "./dto/delete-room-response.dto";
 import { RoomDto } from "./dto/room.dto";
 import { RoomRepository } from "./room.repository";
 
@@ -71,7 +72,11 @@ export class RoomService {
     );
   }
 
-  remove(id: string) {
-    return this.roomRepository.remove(id);
+  async remove(id: string): Promise<DeleteRoomResponseDto> {
+    const removedId = await this.roomRepository.remove(id);
+    if (removedId != null) {
+      return new DeleteRoomResponseDto(true);
+    }
+    return new DeleteRoomResponseDto(false);
   }
 }

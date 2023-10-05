@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, MongooseError } from "mongoose";
 import { Room, RoomDocument } from "src/schema/rooms.schema";
 import { CreateRoomDto } from "./dto/create-room.dto";
+import { DeleteRoomResponseDto } from "./dto/delete-room-response.dto";
 
 @Injectable()
 export class RoomRepository {
@@ -30,7 +31,19 @@ export class RoomRepository {
     return this.roomModel.findById(id).exec();
   }
 
-  remove(id: string) {
-    return this.roomModel.findByIdAndRemove(id).exec();
+  /**
+   *
+   * @return objectId if room exists else null
+   */
+  async remove(id: string): Promise<string | null> {
+    try {
+      const result = await this.roomModel.findByIdAndRemove(id).exec();
+      return result._id.toString();
+    } catch (err) {
+      if (err.__proto__.toString() != "CastError") {
+        console.log(err);
+      }
+      return null;
+    }
   }
 }
