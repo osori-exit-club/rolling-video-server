@@ -46,7 +46,7 @@ export class RoomController {
     return this.roomService.findAll();
   }
 
-  @Get()
+  @Get(":id")
   @ApiOperation({
     summary: "방 조회 API",
     description: "방 조회 API",
