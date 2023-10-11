@@ -15,7 +15,7 @@ export function setupSwagger(app: INestApplication): void {
     .addTag("Room API")
     .addTag("Clip API")
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDpmocument(app, config);
   SwaggerModule.setup("api", app, document);
 }
 
@@ -24,6 +24,6 @@ async function bootstrap() {
 
   setupSwagger(app);
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
