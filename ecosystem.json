@@ -1,0 +1,15 @@
+{
+  "apps": [
+    {
+      "name": "dev",
+      "script": "dist/main.js",
+      "max_memory_restart": "300M",
+      "max_restarts": 100,
+      "env": {
+        "PORT": 8080
+      },
+      "instances": 0,
+      "exec_mode": "cluster"
+    }
+  ]
+}
