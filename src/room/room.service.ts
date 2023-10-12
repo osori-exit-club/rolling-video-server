@@ -87,6 +87,9 @@ export class RoomService {
     } catch (err) {
       return new DeleteRoomResponseDto(false, "존재하지 않는 id 입니다.");
     }
+    if (room == null) {
+      return new DeleteRoomResponseDto(false, "존재하지 않는 id 입니다.");
+    }
     const isMatched = await this.hashHelper.isMatch(
       deleteRoomDto.password,
       room.passwordHashed
