@@ -8,6 +8,7 @@ import { ClipRepository } from "./clip.repository";
 import { S3Module } from "src/aws/s3/s3.module";
 import { RoomRepository } from "src/room/room.repository";
 import { HashModule } from "src/utils/hash/hash.module";
+import { RoomModule } from "src/room/room.module";
 
 @Module({
   imports: [
