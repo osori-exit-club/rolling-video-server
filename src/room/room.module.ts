@@ -5,7 +5,6 @@ import { RoomController } from "./room.controller";
 import { RoomRepository } from "./room.repository";
 import { Room, RoomScheme } from "src/schema/rooms.schema";
 import { HashModule } from "src/utils/hash/hash.module";
-import { HashHelper } from "src/utils/hash/hash.helper";
 
 @Module({
   imports: [
@@ -20,6 +19,6 @@ import { HashHelper } from "src/utils/hash/hash.helper";
     HashModule,
   ],
   controllers: [RoomController],
-  providers: [RoomService, RoomRepository, HashHelper],
+  providers: [RoomService, RoomRepository],
 })
 export class RoomModule {}

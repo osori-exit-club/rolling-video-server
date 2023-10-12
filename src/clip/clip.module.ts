@@ -6,9 +6,7 @@ import { Room, RoomScheme } from "src/schema/rooms.schema";
 import { Clip, ClipScheme } from "src/schema/clips.schema";
 import { ClipRepository } from "./clip.repository";
 import { S3Module } from "src/aws/s3/s3.module";
-import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
-import { HashHelper } from "src/utils/hash/hash.helper";
 import { HashModule } from "src/utils/hash/hash.module";
 
 @Module({
@@ -31,12 +29,6 @@ import { HashModule } from "src/utils/hash/hash.module";
     HashModule,
   ],
   controllers: [ClipController],
-  providers: [
-    ClipService,
-    ClipRepository,
-    RoomRepository,
-    S3Repository,
-    HashHelper,
-  ],
+  providers: [ClipService, ClipRepository, RoomRepository],
 })
 export class ClipModule {}
