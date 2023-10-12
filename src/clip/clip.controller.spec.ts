@@ -4,7 +4,6 @@ import { S3Module } from "src/aws/s3/s3.module";
 import { RoomRepository } from "src/room/room.repository";
 import { Clip } from "src/schema/clips.schema";
 import { Room } from "src/schema/rooms.schema";
-import { HashHelper } from "src/utils/hash/hash.helper";
 import { HashModule } from "src/utils/hash/hash.module";
 import { ClipController } from "./clip.controller";
 import { ClipRepository } from "./clip.repository";

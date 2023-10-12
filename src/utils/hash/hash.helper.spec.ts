@@ -36,6 +36,20 @@ describe("HashHelper test", () => {
     expect(result).toBeTruthy();
   });
 
+  it("isMatch test (null)", async () => {
+    const password = null;
+
+    const result = await hashHelper.isMatch(password, null);
+    expect(result).toBeTruthy();
+  });
+
+  it("isMatch test (undefined)", async () => {
+    const password = undefined;
+
+    const result = await hashHelper.isMatch(password, null);
+    expect(result).toBeTruthy();
+  });
+
   it("isMatch test (wrong)", async () => {
     const password = "password";
     const hashed = await hashHelper.createHash(password);

@@ -13,7 +13,13 @@ export class HashHelper {
     return hash;
   }
 
-  async isMatch(password: string, hash: string): Promise<boolean> {
+  async isMatch(
+    password: string | null | undefined,
+    hash: string | null
+  ): Promise<boolean> {
+    if (!password && hash == null) {
+      return true;
+    }
     return await bcrypt.compare(password, hash);
   }
 }
