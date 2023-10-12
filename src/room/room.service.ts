@@ -81,8 +81,10 @@ export class RoomService {
     id: string,
     deleteRoomDto: DeleteRoomDto
   ): Promise<DeleteRoomResponseDto> {
-    const room = await this.roomRepository.findOne(id);
-    if (room == null) {
+    let room;
+    try {
+      room = await this.roomRepository.findOne(id);
+    } catch (err) {
       return new DeleteRoomResponseDto(false, "존재하지 않는 id 입니다.");
     }
     const isMatched = await this.hashHelper.isMatch(
