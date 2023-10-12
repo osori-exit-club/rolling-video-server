@@ -84,7 +84,7 @@ export class RoomController {
     description: "방 정보",
     type: RoomDto,
   })
-  remove(@Param("id") id: string) {
-    return this.roomService.remove(id);
+  remove(@Param("id") id: string, @Body() deleteRoomDto: DeleteRoomDto) {
+    return this.roomService.remove(id, deleteRoomDto);
   }
 }

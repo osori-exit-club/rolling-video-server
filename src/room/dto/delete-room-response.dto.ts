@@ -7,7 +7,14 @@ export class DeleteRoomResponseDto {
   })
   readonly isSucceess: boolean;
 
-  constructor(isSucceess: boolean) {
+  @ApiProperty({
+    description: "메세지",
+    example: "true",
+  })
+  readonly message: string;
+
+  constructor(isSucceess: boolean, message: string) {
     this.isSucceess = isSucceess;
+    this.message = message;
   }
 }

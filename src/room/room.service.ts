@@ -1,13 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { ClipDto } from "src/clip/dto/clip.dto";
+import { HashHelper } from "src/utils/hash/hash.helper";
 import { CreateRoomDto } from "./dto/create-room.dto";
 import { DeleteRoomResponseDto } from "./dto/delete-room-response.dto";
+import { DeleteRoomDto } from "./dto/delete-room.dto";
 import { RoomDto } from "./dto/room.dto";
 import { RoomRepository } from "./room.repository";
 
 @Injectable()
 export class RoomService {
-  constructor(private readonly roomRepository: RoomRepository) {}
+  constructor(
+    private readonly roomRepository: RoomRepository,
+    private readonly hashHelper: HashHelper
+  ) {}
 
   async create(createRoomDto: CreateRoomDto): Promise<RoomDto> {
     const room = await this.roomRepository.create(createRoomDto);
@@ -72,11 +77,25 @@ export class RoomService {
     );
   }
 
-  async remove(id: string): Promise<DeleteRoomResponseDto> {
+  async remove(
+    id: string,
+    deleteRoomDto: DeleteRoomDto
+  ): Promise<DeleteRoomResponseDto> {
+    const room = await this.roomRepository.findOne(id);
+    if (room == null) {
+      return new DeleteRoomResponseDto(false, "존재하지 않는 id 입니다.");
+    }
+    const isMatched = await this.hashHelper.isMatch(
+      deleteRoomDto.password,
+      room.passwordHashed
+    );
+    if (isMatched == false) {
+      return new DeleteRoomResponseDto(false, "잘못된 패스워드 입니다");
+    }
     const removedId = await this.roomRepository.remove(id);
     if (removedId != null) {
-      return new DeleteRoomResponseDto(true);
+      return new DeleteRoomResponseDto(true, "삭제에 성공 했습니다.");
     }
-    return new DeleteRoomResponseDto(false);
+    return new DeleteRoomResponseDto(false, "삭제에 실패 했습니다.");
   }
 }
