@@ -15,7 +15,7 @@ export class RoomService {
     return new RoomDto(
       room._id.toString(),
       room.name,
-      room.password,
+      room.passwordHashed,
       room.recipient,
       room.dueDate,
       room.clips.map((clip) => {
@@ -36,7 +36,7 @@ export class RoomService {
       return new RoomDto(
         room._id.toString(),
         room.name,
-        room.password,
+        room.passwordHashed,
         room.recipient,
         room.dueDate,
         room.clips.map((clip) => {
@@ -57,7 +57,7 @@ export class RoomService {
     return new RoomDto(
       room._id.toString(),
       room.name,
-      room.password,
+      room.passwordHashed,
       room.recipient,
       room.dueDate,
       room.clips.map((clip) => {

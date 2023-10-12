@@ -3,6 +3,8 @@ import { getModelToken, MongooseModule } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Model } from "mongoose";
 import { Room, RoomDocument, RoomScheme } from "src/schema/rooms.schema";
+import { HashHelper } from "src/utils/hash/hash.helper";
+import { HashModule } from "src/utils/hash/hash.module";
 import { CreateRoomDto } from "./dto/create-room.dto";
 import { RoomRepository } from "./room.repository";
 
@@ -14,6 +16,7 @@ describe("RoomRepository", () => {
     new CreateRoomDto("roomName3", "", "target3", new Date()),
   ];
   let presetDataList: any[];
+  let hashHelper: HashHelper;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,11 +38,25 @@ describe("RoomRepository", () => {
             },
           },
         ]),
+        HashModule,
       ],
       providers: [RoomRepository],
     }).compile();
 
     repository = module.get<RoomRepository>(RoomRepository);
+    hashHelper = module.get<HashHelper>(HashHelper);
+
+    jest
+      .spyOn(hashHelper, "createHash")
+      .mockImplementation(async (password: string) => {
+        return password;
+      });
+
+    jest
+      .spyOn(hashHelper, "isMatch")
+      .mockImplementation(async (password: string, hash: string) => {
+        return password == hash;
+      });
 
     // reset data for test
     const roomModel: Model<RoomDocument> = module.get(getModelToken(Room.name));
@@ -47,7 +64,9 @@ describe("RoomRepository", () => {
     await roomModel.deleteMany({});
     presetDataList = await Promise.all(
       presetInputList.map((it) => {
-        return new roomModel(it).save();
+        const obj: any = it;
+        obj.passwordHashed = obj.password;
+        return new roomModel(obj).save();
       })
     );
   });
@@ -77,6 +96,10 @@ describe("RoomRepository", () => {
 
       // Assert
       Object.keys(input).forEach((key) => {
+        if (key == "password") {
+          expect(result.passwordHashed).toEqual(input.password);
+          return;
+        }
         expect(result[key]).toEqual(input[key]);
       });
     });
@@ -90,6 +113,10 @@ describe("RoomRepository", () => {
 
       // Assert
       Object.keys(input).forEach((key) => {
+        if (key == "password") {
+          expect(result.passwordHashed).toEqual(input.password);
+          return;
+        }
         expect(result[key]).toEqual(input[key]);
       });
     });
@@ -104,6 +131,10 @@ describe("RoomRepository", () => {
       // Assert;
       const origin = presetInputList[0];
       Object.keys(origin).forEach((key) => {
+        if (key == "password") {
+          expect(result.passwordHashed).toEqual(origin.password);
+          return;
+        }
         expect(result[key]).toEqual(origin[key]);
       });
     });

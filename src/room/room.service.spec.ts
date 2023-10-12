@@ -1,15 +1,19 @@
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Room } from "src/schema/rooms.schema";
+import { HashHelper } from "src/utils/hash/hash.helper";
+import { HashModule } from "src/utils/hash/hash.module";
 import { RoomRepository } from "./room.repository";
 import { RoomService } from "./room.service";
 
 describe("RoomService", () => {
   let service: RoomService;
   let repository: RoomRepository;
+  let hashHelper: HashHelper;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [HashModule],
       providers: [
         RoomService,
         RoomRepository,
@@ -22,6 +26,19 @@ describe("RoomService", () => {
 
     service = module.get<RoomService>(RoomService);
     repository = module.get<RoomRepository>(RoomRepository);
+    hashHelper = module.get<HashHelper>(HashHelper);
+
+    jest
+      .spyOn(hashHelper, "createHash")
+      .mockImplementation(async (password: string) => {
+        return password;
+      });
+
+    jest
+      .spyOn(hashHelper, "isMatch")
+      .mockImplementation(async (password: string, hash: string) => {
+        return password == hash;
+      });
   });
 
   it("should be defined", () => {

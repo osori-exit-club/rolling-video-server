@@ -11,4 +11,4 @@ import { HashHelper } from "./hash.helper";
   providers: [HashHelper],
   exports: [HashHelper],
 })
-export class hashModule {}
+export class HashModule {}

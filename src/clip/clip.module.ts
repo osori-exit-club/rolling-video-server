@@ -8,6 +8,8 @@ import { ClipRepository } from "./clip.repository";
 import { S3Module } from "src/aws/s3/s3.module";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
+import { HashHelper } from "src/utils/hash/hash.helper";
+import { HashModule } from "src/utils/hash/hash.module";
 
 @Module({
   imports: [
@@ -26,8 +28,15 @@ import { RoomRepository } from "src/room/room.repository";
       },
     ]),
     S3Module,
+    HashModule,
   ],
   controllers: [ClipController],
-  providers: [ClipService, ClipRepository, RoomRepository, S3Repository],
+  providers: [
+    ClipService,
+    ClipRepository,
+    RoomRepository,
+    S3Repository,
+    HashHelper,
+  ],
 })
 export class ClipModule {}

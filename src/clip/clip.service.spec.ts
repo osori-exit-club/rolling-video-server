@@ -5,6 +5,7 @@ import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
 import { Clip } from "src/schema/clips.schema";
 import { Room } from "src/schema/rooms.schema";
+import { HashModule } from "src/utils/hash/hash.module";
 import { ClipRepository } from "./clip.repository";
 import { ClipService } from "./clip.service";
 import { CreateClipDto } from "./dto/create-clip.dto";
@@ -17,7 +18,7 @@ describe("ClipService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [S3Module],
+      imports: [S3Module, HashModule],
       providers: [
         ClipService,
         ClipRepository,

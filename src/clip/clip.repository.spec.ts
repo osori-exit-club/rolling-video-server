@@ -6,6 +6,7 @@ import { Clip, ClipDocument, ClipScheme } from "src/schema/clips.schema";
 import { CreateClipDto } from "./dto/create-clip.dto";
 import { ClipRepository } from "./clip.repository";
 import { Room, RoomDocument, RoomScheme } from "src/schema/rooms.schema";
+import { HashModule } from "src/utils/hash/hash.module";
 
 describe("ClipRepository", () => {
   let repository: ClipRepository;
@@ -39,6 +40,7 @@ describe("ClipRepository", () => {
             },
           },
         ]),
+        HashModule,
       ],
       providers: [ClipRepository],
     }).compile();

@@ -9,8 +9,8 @@ export class Room {
   @Prop({ require: true })
   name: string;
 
-  @Prop()
-  password: string;
+  @Prop({ require: true, default: null, nullable: true })
+  passwordHashed: string | null;
 
   @Prop({ require: true })
   recipient: string;

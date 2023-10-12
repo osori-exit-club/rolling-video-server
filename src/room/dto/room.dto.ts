@@ -12,10 +12,10 @@ export class RoomDto {
   id: string;
   readonly name: string;
   @ApiProperty({
-    description: "비밀번호",
-    example: "OO의 생일파티",
+    description: "비밀번호(헤싱)",
+    example: "$2b$10$WlaT2hfjhw7TxFY1PENLzerG6Ek.laga4/vjdVs2r8VgasuZiU7xy",
   })
-  readonly password: string | null;
+  readonly passwordHashed: string | null;
   @ApiProperty({
     description: "받는 사람",
     example: "용의자X",
@@ -47,14 +47,14 @@ export class RoomDto {
   constructor(
     id: string,
     name: string,
-    password: string,
+    passwordHashed: string,
     recipient: string,
     dueDate: Date,
     clipList: ClipDto[]
   ) {
     this.id = id;
     this.name = name;
-    this.password = password;
+    this.passwordHashed = passwordHashed;
     this.recipient = recipient;
     this.dueDate = dueDate;
     this.clipList = clipList;
