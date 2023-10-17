@@ -20,5 +20,6 @@ import { HashModule } from "src/utils/hash/hash.module";
   ],
   controllers: [RoomController],
   providers: [RoomService, RoomRepository],
+  exports: [RoomService, RoomRepository],
 })
 export class RoomModule {}

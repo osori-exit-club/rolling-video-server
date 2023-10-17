@@ -4,7 +4,8 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { RoomModule } from "./room/room.module";
-import { ClipModule } from './clip/clip.module';
+import { ClipModule } from "./clip/clip.module";
+import { GatheringModule } from "./gathering/gathering.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ClipModule } from './clip/clip.module';
     }),
     RoomModule,
     ClipModule,
+    GatheringModule,
   ],
   controllers: [AppController],
   providers: [AppService],
