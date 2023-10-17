@@ -11,4 +11,4 @@ import { CompressHelper } from "./comporess.helper";
   providers: [CompressHelper],
   exports: [CompressHelper],
 })
-export class S3Module {}
+export class CompressModule {}

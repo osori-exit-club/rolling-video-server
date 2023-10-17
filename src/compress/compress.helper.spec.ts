@@ -1,9 +1,11 @@
 import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { CompressHelper } from "./comporess.helper";
 
-describe("ClipRepository", () => {
+describe("CompressHelper", () => {
   let compressHelper: CompressHelper;
 
   beforeEach(async () => {
@@ -28,16 +30,27 @@ describe("ClipRepository", () => {
   describe("압축 테스트", () => {
     it("[1] compress normal", () => {
       // Arrange
-      const targetDir = "./temp/video";
+      const targetDir = path.join(
+        os.tmpdir(),
+        "rolling-paper-server-compress-test-target"
+      );
       if (!fs.existsSync(targetDir)) {
         fs.mkdirSync(targetDir, { recursive: true });
       }
-      const outDir = "./temp/out/zip/test.zip";
+
+      const outPath = path.join(
+        os.tmpdir(),
+        "rolling-paper-server-compress-test-out",
+        "test.zip"
+      );
       // Act
-      compressHelper.compress(targetDir, outDir);
+      compressHelper.compress(targetDir, outPath);
 
       // Assert
-      expect(fs.existsSync(outDir)).toBeTruthy();
+      expect(fs.existsSync(outPath)).toBeTruthy();
+
+      fs.unlink(targetDir, () => {});
+      fs.unlink(outPath, () => {});
     });
   });
 });
