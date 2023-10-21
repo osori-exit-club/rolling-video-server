@@ -4,17 +4,11 @@ import * as path from "path";
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { S3Repository } from "src/aws/s3/s3.repository";
-import { ClipDto } from "src/clip/dto/clip.dto";
-import { RoomDto } from "src/room/dto/room.dto";
-import { RoomService } from "src/room/room.service";
 import { GatheringService } from "./gathering.service";
 import { CompressHelper } from "src/compress/comporess.helper";
-import { CompressModule } from "src/compress/compress.module";
 
 describe("GatheringService", () => {
   let service: GatheringService;
-  let tempDir: string | null;
-  const roomId = "65099d54d2ba36bb284678e2";
 
   beforeEach(async () => {
     const mockS3Repository = {
@@ -24,19 +18,15 @@ describe("GatheringService", () => {
         }
         fs.writeFileSync(path.join(outDir, `${key}.mp4`), "video data");
       },
-    };
-    const mockRoomService = {
-      findOne: async (roomId: string): Promise<RoomDto> => {
-        return new RoomDto(
-          "id",
-          "name",
-          "passwordHashed",
-          "recipient",
-          null,
-          ["url1", "url2"].map(
-            (url) => new ClipDto("clipId", roomId, "nickname", true, url)
-          )
-        );
+
+      uploadFile: async ({
+        buffer,
+        key,
+      }: {
+        buffer: Buffer;
+        key: string;
+      }): Promise<string> => {
+        return `uploaded ${key}`;
       },
     };
 
@@ -52,22 +42,11 @@ describe("GatheringService", () => {
           provide: S3Repository,
           useValue: mockS3Repository,
         },
-        {
-          provide: RoomService,
-          useValue: mockRoomService,
-        },
         CompressHelper,
       ],
     }).compile();
 
     service = module.get<GatheringService>(GatheringService);
-    tempDir = path.join(os.tmpdir(), roomId);
-  });
-
-  afterEach(async () => {
-    if (tempDir != null) {
-      fs.unlink(tempDir, () => {});
-    }
   });
 
   it("should be defined", () => {
@@ -77,19 +56,26 @@ describe("GatheringService", () => {
   describe("취합 테스트", () => {
     let outDir: string;
     let outPath: string;
+    let tempDir: string | null;
 
     beforeEach(() => {
       outDir = path.join(os.tmpdir(), "rolling-paper");
+      tempDir = path.join(os.tmpdir(), "rolling-paper", "roomId");
       outPath = path.join(outDir, "test.zip");
     });
 
     it("[1] gathering normal", async () => {
-      await service.gather(roomId, tempDir, outPath);
+      await service.gather(["url1", "url2"], tempDir, outPath);
       expect(fs.existsSync(outPath)).toBeTruthy();
     });
 
     afterEach(() => {
-      fs.unlink(outDir, () => {});
+      if (outDir != null) {
+        fs.unlink(outDir, () => {});
+      }
+      if (tempDir != null) {
+        fs.unlink(tempDir, () => {});
+      }
     });
   });
 });
