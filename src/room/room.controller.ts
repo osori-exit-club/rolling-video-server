@@ -87,4 +87,13 @@ export class RoomController {
   remove(@Param("id") id: string, @Body() deleteRoomDto: DeleteRoomDto) {
     return this.roomService.remove(id, deleteRoomDto);
   }
+
+  @Post(":id/gather")
+  @ApiOperation({ summary: "클립 취합 API", description: "클립을 생성한다." })
+  @ApiOkResponse({
+    description: "취합 성공",
+  })
+  gather(@Param("id") roomId: string) {
+    return this.roomService.gather(roomId);
+  }
 }

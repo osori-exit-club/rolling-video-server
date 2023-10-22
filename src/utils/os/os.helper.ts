@@ -27,4 +27,17 @@ export class OsHelper {
       fs.unlink(targetDir, () => {});
     }
   }
+
+  async createTempDirectory(dirname: string): Promise<string> {
+    const targetDir = path.join(
+      os.tmpdir(),
+      "Rolling-Paper",
+      this.configService.get("NODE_ENV") || "test",
+      dirname
+    );
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+    return targetDir;
+  }
 }
