@@ -38,5 +38,17 @@ describe("S3Repository", () => {
       // Assert
       expect(fs.existsSync(outDir)).toBeTruthy();
     });
+    it("[2] download with full key", async () => {
+      // Arrange
+      const key =
+        "https://careerlego-salt-test.s3.amazonaws.com/videos/6534a53acda0e2345fe35bc7/6534a543cda0e2345fe35bc9.mp4";
+      const outDir = "./temp/video";
+
+      // Act
+      await s3Repository.download(key, outDir);
+
+      // Assert
+      expect(fs.existsSync(outDir)).toBeTruthy();
+    });
   });
 });
