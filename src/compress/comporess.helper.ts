@@ -19,4 +19,9 @@ export class CompressHelper {
       throw new Error(error.message);
     }
   }
+
+  extract(targetDir: string, outPath: string) {
+    const zip = new AdmZip(targetDir);
+    zip.extractAllTo(outPath, true);
+  }
 }
