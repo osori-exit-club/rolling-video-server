@@ -94,7 +94,7 @@ describe("ClipRepository", () => {
       const input = new CreateClipDto(roomId, "nickname", true);
 
       // Act
-      const result = await repository.create(input);
+      const result = await repository.create(input, "mp4");
 
       // Assert
       Object.keys(input).forEach((key) => {
@@ -107,7 +107,7 @@ describe("ClipRepository", () => {
       const input = new CreateClipDto(roomId, "nickname", false);
 
       // Act
-      const result = await repository.create(input);
+      const result = await repository.create(input, "mp4");
 
       // Assert
       Object.keys(input).forEach((key) => {

@@ -4,7 +4,6 @@ import { RoomRepository } from "src/room/room.repository";
 import { ClipRepository } from "./clip.repository";
 import { ClipDto } from "./dto/clip.dto";
 import { CreateClipDto } from "./dto/create-clip.dto";
-import { UpdateClipDto } from "./dto/update-clip.dto";
 
 @Injectable()
 export class ClipService {
@@ -59,10 +58,6 @@ export class ClipService {
       clip.isPublic,
       clip.extension
     );
-  }
-
-  update(id: string, updateClipDto: UpdateClipDto) {
-    return `This action updates a #${id} clip`;
   }
 
   remove(id: string) {
