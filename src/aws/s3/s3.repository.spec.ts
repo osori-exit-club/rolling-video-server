@@ -29,7 +29,7 @@ describe("S3Repository", () => {
     it("[1] download normal", async () => {
       // Arrange
       const key =
-        "videos/65099d54d2ba36bb284678e2/6509a7ab8173da335d01c6bc.mp4";
+        "rooms/6537cf63ba132621e8c041e0/clips/6537cf6aba132621e8c041e2.mp4";
       const outDir = "./temp/video";
 
       // Act

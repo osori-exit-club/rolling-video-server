@@ -1,5 +1,7 @@
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
+import { S3Module } from "src/aws/s3/s3.module";
+import { S3Repository } from "src/aws/s3/s3.repository";
 import { GatheringModule } from "src/gathering/gathering.module";
 import { GatheringService } from "src/gathering/gathering.service";
 import { Room } from "src/schema/rooms.schema";
@@ -17,7 +19,7 @@ describe("RoomService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [HashModule, OsModule, GatheringModule],
+      imports: [HashModule, OsModule, GatheringModule, S3Module],
       providers: [
         RoomService,
         RoomRepository,

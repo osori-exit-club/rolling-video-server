@@ -2,18 +2,9 @@ import * as fs from "fs";
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import * as AWS from "aws-sdk";
-import dayjs from "dayjs";
-import { v4 } from "uuid";
-import { S3GetPresignedUrlResponseDto } from "./dto/get-presigned-url/s3-get-presigned-url-response.dto";
 
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
-
-export enum FileExtensionType {
-  JPG = "jpg",
-  JPEG = "jpeg",
-  PNG = "png",
-  CSV = "csv",
-}
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 @Injectable()
 export class S3Repository {
@@ -30,35 +21,35 @@ export class S3Repository {
   /**
    * s3의 presigned url을 생성
    * @param path 파일의 경로명을 랜덤으로 생성
-   * @param contentType 파일의 컨텐츠 타입
-   * @returns getPresignedUrlResponseDto
+   * @returns string
    */
-  async getPresignedUrl(
-    path: "meeting",
-    contentType: FileExtensionType
-  ): Promise<S3GetPresignedUrlResponseDto> {
-    try {
-      const params = {
-        Bucket: this.configService.get("AWS_S3_BUCKET_NAME"),
-        Expires: 600, // 1분
-        Conditions: [["content-length-range", 0, 10000000]], // 100Byte - 10MB
-        Fields: {
-          "Content-Type": "image/jpeg,image/png",
-          key: this.getRandomUrl(path, contentType),
+  async getPresignedUrl(key: string): Promise<string | null> {
+    const region = this.configService.get("AWS_REGION");
+    const bucket = this.configService.get("AWS_S3_BUCKET_NAME");
+
+    const createPresignedUrlWithClient = async () => {
+      const client = new S3Client({
+        region: region,
+        credentials: {
+          accessKeyId: this.configService.get("AWS_ACCESS_KEY_ID"),
+          secretAccessKey: this.configService.get("AWS_SECRET_ACCESS_KEY"),
         },
-      };
-
-      return new Promise(async (resolve, reject) => {
-        this.s3.createPresignedPost(params, (err, data) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(data as unknown as S3GetPresignedUrlResponseDto);
-        });
       });
+
+      if (key[key.length - 1] == "/") {
+        return null;
+      }
+      const it = new GetObjectCommand({ Bucket: bucket, Key: key });
+
+      return getSignedUrl(client, it, { expiresIn: 10 });
+    };
+
+    try {
+      const clientUrl = await createPresignedUrlWithClient();
+      return clientUrl;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      console.log(error);
+      return null;
     }
   }
 
@@ -94,8 +85,6 @@ export class S3Repository {
    * @param key
    */
   async download(key: string, outDir: string) {
-    const BUCKET = "careerlego-salt-test";
-
     const s3Client = new S3Client({
       region: this.configService.get("AWS_REGION"),
       credentials: {
@@ -164,21 +153,8 @@ export class S3Repository {
       return null;
     }
     return downloadInChunks({
-      bucket: BUCKET,
+      bucket: this.configService.get("AWS_S3_BUCKET_NAME"),
       key: key,
     });
-  }
-
-  /**
-   * 파일의 경로명을 랜덤으로 생성
-   * @param path 구분 폴더 명
-   * @param contentType 파일의 컨텐츠 타입
-   * @returns 파일의 경로명
-   */
-  private getRandomUrl(path: "meeting", contentType: FileExtensionType) {
-    const uuid = v4();
-    const date = dayjs().format("YYYY/MM/DD");
-
-    return `${path}/${date}/${uuid}.${contentType}`;
   }
 }

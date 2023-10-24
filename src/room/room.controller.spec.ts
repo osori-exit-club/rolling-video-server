@@ -1,5 +1,7 @@
+import { ConfigModule } from "@nestjs/config";
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
+import { S3Module } from "src/aws/s3/s3.module";
 import { GatheringModule } from "src/gathering/gathering.module";
 import { Room } from "src/schema/rooms.schema";
 import { HashHelper } from "src/utils/hash/hash.helper";
@@ -16,7 +18,15 @@ describe("RoomController", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [HashModule, OsModule, GatheringModule],
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
+        HashModule,
+        OsModule,
+        GatheringModule,
+        S3Module,
+      ],
       controllers: [RoomController],
       providers: [
         RoomService,

@@ -3,6 +3,7 @@ import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
 import { ClipRepository } from "./clip.repository";
 import { ClipDto } from "./dto/clip.dto";
+import { ClipResponseDto } from "./dto/clip-response.dto";
 import { CreateClipDto } from "./dto/create-clip.dto";
 
 @Injectable()
@@ -13,7 +14,10 @@ export class ClipService {
     private readonly s3Respository: S3Repository
   ) {}
 
-  async create(createClipDto: CreateClipDto, file: any): Promise<ClipDto> {
+  async create(
+    createClipDto: CreateClipDto,
+    file: any
+  ): Promise<ClipResponseDto> {
     const splitted = file.originalname.split(".");
     const extension = splitted[splitted.length - 1];
     const clip = await this.clipRepository.create(createClipDto, extension);
@@ -32,7 +36,10 @@ export class ClipService {
     });
 
     this.roomRepository.addClip(createClipDto.roomId, clip);
-    return clipDto;
+    const signedUrl: string = await this.s3Respository.getPresignedUrl(
+      clipDto.getS3Key()
+    );
+    return new ClipResponseDto(clipDto, signedUrl);
   }
 
   async findAll(): Promise<ClipDto[]> {
@@ -48,16 +55,19 @@ export class ClipService {
     });
   }
 
-  async findOne(id: string): Promise<ClipDto> {
+  async findOne(id: string): Promise<ClipResponseDto> {
     const clip = await this.clipRepository.findOne(id);
-
-    return new ClipDto(
+    const clipDto = new ClipDto(
       clip._id.toString(),
       clip.roomId,
       clip.nickname,
       clip.isPublic,
       clip.extension
     );
+    const signedUrl: string = await this.s3Respository.getPresignedUrl(
+      clipDto.getS3Key()
+    );
+    return new ClipResponseDto(clipDto, signedUrl);
   }
 
   remove(id: string) {

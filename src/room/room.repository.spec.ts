@@ -2,6 +2,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { getModelToken, MongooseModule } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Model } from "mongoose";
+import { S3Module } from "src/aws/s3/s3.module";
+import { S3Repository } from "src/aws/s3/s3.repository";
 import { Room, RoomDocument, RoomScheme } from "src/schema/rooms.schema";
 import { HashHelper } from "src/utils/hash/hash.helper";
 import { HashModule } from "src/utils/hash/hash.module";
@@ -10,6 +12,7 @@ import { RoomRepository } from "./room.repository";
 
 describe("RoomRepository", () => {
   let repository: RoomRepository;
+  let s3Repository: S3Repository;
   const presetInputList: CreateRoomDto[] = [
     new CreateRoomDto("roomName1", "1234", "target", new Date()),
     new CreateRoomDto("roomName2", null, "target", new Date()),
@@ -39,11 +42,13 @@ describe("RoomRepository", () => {
           },
         ]),
         HashModule,
+        S3Module,
       ],
-      providers: [RoomRepository],
+      providers: [RoomRepository, S3Repository],
     }).compile();
 
     repository = module.get<RoomRepository>(RoomRepository);
+    s3Repository = module.get<S3Repository>(S3Repository);
     hashHelper = module.get<HashHelper>(HashHelper);
 
     jest
@@ -56,6 +61,12 @@ describe("RoomRepository", () => {
       .spyOn(hashHelper, "isMatch")
       .mockImplementation(async (password: string, hash: string) => {
         return password == hash;
+      });
+
+    jest
+      .spyOn(s3Repository, "getPresignedUrl")
+      .mockImplementation(async (key: string) => {
+        return "signedUrl";
       });
 
     // reset data for test

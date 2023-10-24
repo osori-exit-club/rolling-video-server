@@ -23,6 +23,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { ClipDto } from "./dto/clip.dto";
+import { ClipRepository } from "./clip.repository";
 
 @Controller("clip")
 @ApiTags("Clip API")
@@ -72,6 +73,7 @@ export class ClipController {
     if (sizeMB > 15) {
       throw new HttpException("size is over than 15MB", HttpStatus.BAD_REQUEST);
     }
+
     return this.clipService.create(createClipDto, file);
   }
 
@@ -84,13 +86,13 @@ export class ClipController {
     name: "id",
     type: "string",
     description: "clip id",
-    example: "651c105569ada488e158a346",
+    example: "6537cf6aba132621e8c041e2",
   })
   @ApiOkResponse({
     description: "Clip 정보",
-    type: ClipDto,
+    type: ClipRepository,
   })
-  findOne(@Param(":id") id: string) {
+  findOne(@Param("id") id: string) {
     return this.clipService.findOne(id);
   }
 
