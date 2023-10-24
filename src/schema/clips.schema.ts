@@ -15,7 +15,7 @@ export class Clip {
   isPublic: boolean;
 
   @Prop({ require: true })
-  videoUrl: string;
+  extension: string;
 }
 
 export const ClipScheme = SchemaFactory.createForClass(Clip);

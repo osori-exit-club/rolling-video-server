@@ -95,7 +95,6 @@ export class S3Repository {
    */
   async download(key: string, outDir: string) {
     const BUCKET = "careerlego-salt-test";
-    const bucketUrl = `https://${BUCKET}.s3.amazonaws.com/`;
 
     const s3Client = new S3Client({
       region: this.configService.get("AWS_REGION"),
@@ -166,7 +165,7 @@ export class S3Repository {
     }
     return downloadInChunks({
       bucket: BUCKET,
-      key: key.replace(bucketUrl, ""),
+      key: key,
     });
   }
 

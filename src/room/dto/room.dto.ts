@@ -25,7 +25,7 @@ export class RoomDto {
     description: "마감 일자",
     example: "2023-09-17T14:41:11.487Z",
   })
-  dueDate: Date;
+  readonly dueDate: Date;
   @ApiProperty({
     description: "Clip 리스트",
     example: ` {
@@ -33,17 +33,17 @@ export class RoomDto {
       "roomId": "65099d54d2ba36bb284678e2",
       "nickname": "nickname3",
       "isPublic": true,
-      "videoUrl": "https://careerlego-salt-test.s3.amazonaws.com/videos/65099d54d2ba36bb284678e2/65099d65d2ba36bb284678e6"
+      "extension": "mp4"
     },
     {
       "clipId": "6509a7ab8173da335d01c6bc",
       "roomId": "65099d54d2ba36bb284678e2",
       "nickname": "nickname3",
       "isPublic": true,
-      "videoUrl": "https://careerlego-salt-test.s3.amazonaws.com/videos/65099d54d2ba36bb284678e2/6509a7ab8173da335d01c6bc.mp4"
+      "extension": "mp4"
     }`,
   })
-  clipList: ClipDto[];
+  readonly clipList: ClipDto[];
   constructor(
     id: string,
     name: string,

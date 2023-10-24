@@ -11,14 +11,10 @@ export class GatheringService {
     private readonly compressHelper: CompressHelper
   ) {}
 
-  async gather(
-    fileUrlList: string[],
-    downloadDir: string,
-    outFilePath: string
-  ) {
+  async gather(s3PathList: string[], downloadDir: string, outFilePath: string) {
     await Promise.all(
-      fileUrlList.map((videoUrl: string) => {
-        this.s3Repository.download(videoUrl, downloadDir);
+      s3PathList.map((key: string) => {
+        this.s3Repository.download(key, downloadDir);
       })
     );
     await this.compressHelper.compress(downloadDir, outFilePath);

@@ -7,47 +7,50 @@ export class ClipDto {
     nullable: false,
     example: "6509a7ab8173da335d01c6bc",
   })
-  clipId: string;
+  readonly clipId: string;
   @ApiProperty({
     description: "clip이 속해 있는 Room의 id",
     required: true,
     nullable: false,
     example: "65099d54d2ba36bb284678e2",
   })
-  roomId: string;
+  readonly roomId: string;
   @ApiProperty({
     description: "clip을 생성한 사람의 닉네임",
     required: true,
     nullable: false,
     example: "nickname3",
   })
-  nickname: string;
+  readonly nickname: string;
   @ApiProperty({
     description: "clip 공개 여부",
     required: true,
     nullable: false,
     example: "true",
   })
-  isPublic: boolean;
+  readonly isPublic: boolean;
   @ApiProperty({
-    description: "clip 영상 이미지 링크",
+    description: "clip 파일 확장자",
     required: true,
     nullable: false,
-    example:
-      "https://careerlego-salt-test.s3.amazonaws.com/videos/65099d54d2ba36bb284678e2/6509a7ab8173da335d01c6bc.mp4",
+    example: "mp4",
   })
-  videoUrl: string;
+  readonly extension: string;
   constructor(
     clipId: string,
     roomId: string,
     nickname: string,
     isPublic: boolean,
-    videoUrl: string
+    extension: string
   ) {
     this.clipId = clipId;
     this.roomId = roomId;
     this.nickname = nickname;
     this.isPublic = isPublic;
-    this.videoUrl = videoUrl;
+    this.extension = extension;
+  }
+
+  getS3Key(): string {
+    return `rooms/${this.roomId}/clips/${this.clipId}.${this.extension}`;
   }
 }

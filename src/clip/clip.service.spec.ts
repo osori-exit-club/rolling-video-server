@@ -82,7 +82,7 @@ describe("ClipService", () => {
       });
 
       // Assert
-      expect(result.videoUrl).toEqual("video_url");
+      expect(result.extension).toEqual("mp4");
     });
   });
 });

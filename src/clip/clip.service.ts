@@ -17,23 +17,22 @@ export class ClipService {
   async create(createClipDto: CreateClipDto, file: any): Promise<ClipDto> {
     const clip = await this.clipRepository.create(createClipDto);
     const splitted = file.originalname.split(".");
-    const ext = splitted[splitted.length - 1];
-    const key = `videos/${createClipDto.roomId}/${clip.id}.${ext}`;
-    const buffer = file.buffer;
-    const video_url = await this.s3Respository.uploadFile({
-      key,
-      buffer,
-    });
-    clip.videoUrl = video_url;
-    await clip.save();
-    this.roomRepository.addClip(createClipDto.roomId, clip);
-    return new ClipDto(
+    const extension = splitted[splitted.length - 1];
+    const clipDto = new ClipDto(
       clip._id.toString(),
       clip.roomId,
       clip.nickname,
       clip.isPublic,
-      clip.videoUrl
+      extension
     );
+
+    await this.s3Respository.uploadFile({
+      key: clipDto.getS3Key(),
+      buffer: file.buffer,
+    });
+
+    this.roomRepository.addClip(createClipDto.roomId, clip);
+    return clipDto;
   }
 
   async findAll(): Promise<ClipDto[]> {
@@ -44,7 +43,7 @@ export class ClipService {
         clip.roomId,
         clip.nickname,
         clip.isPublic,
-        clip.videoUrl
+        clip.extension
       );
     });
   }
@@ -56,7 +55,7 @@ export class ClipService {
       clip.roomId,
       clip.nickname,
       clip.isPublic,
-      clip.videoUrl
+      clip.extension
     );
   }
 

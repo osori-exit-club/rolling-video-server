@@ -34,7 +34,7 @@ export class RoomService {
           clip.roomId,
           clip.nickname,
           clip.isPublic,
-          clip.videoUrl
+          clip.extension
         );
       })
     );
@@ -55,7 +55,7 @@ export class RoomService {
             clip.roomId,
             clip.nickname,
             clip.isPublic,
-            clip.videoUrl
+            clip.extension
           );
         })
       );
@@ -76,7 +76,7 @@ export class RoomService {
           clip.roomId,
           clip.nickname,
           clip.isPublic,
-          clip.videoUrl
+          clip.extension
         );
       })
     );
@@ -111,8 +111,8 @@ export class RoomService {
 
   async gather(roomId: string, outPath?: string) {
     const room = await this.findOne(roomId);
-    const videoUrlList = await Promise.all(
-      room.clipList.map((it: ClipDto) => it.videoUrl)
+    const keyList = await Promise.all(
+      room.clipList.map((it: ClipDto) => it.getS3Key())
     );
 
     let result: any = null;
@@ -129,7 +129,7 @@ export class RoomService {
               );
 
         result = await this.gatheringService.gather(
-          videoUrlList,
+          keyList,
           downloadDir,
           outFilePath
         );
