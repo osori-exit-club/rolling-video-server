@@ -11,7 +11,12 @@ export class GatheringService {
     private readonly compressHelper: CompressHelper
   ) {}
 
-  async gather(s3PathList: string[], downloadDir: string, outFilePath: string) {
+  async gather(
+    s3key: string,
+    s3PathList: string[],
+    downloadDir: string,
+    outFilePath: string
+  ) {
     await Promise.all(
       s3PathList.map((key: string) => {
         this.s3Repository.download(key, downloadDir);
@@ -19,11 +24,10 @@ export class GatheringService {
     );
     await this.compressHelper.compress(downloadDir, outFilePath);
     const fileContent = fs.readFileSync(outFilePath);
-    const fileName = outFilePath.split("/").pop();
 
     return await this.s3Repository.uploadFile({
       buffer: fileContent,
-      key: path.join("gathered", fileName),
+      key: s3key,
     });
   }
 }

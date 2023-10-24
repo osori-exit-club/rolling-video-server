@@ -59,4 +59,8 @@ export class RoomDto {
     this.dueDate = dueDate;
     this.clipList = clipList;
   }
+
+  static getS3key(roomId: string): string {
+    return `rooms/${roomId}/`;
+  }
 }

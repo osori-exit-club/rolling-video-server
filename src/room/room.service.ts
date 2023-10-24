@@ -116,6 +116,7 @@ export class RoomService {
     );
 
     let result: any = null;
+    const key = path.join(RoomDto.getS3key(roomId), "gathered.zip");
 
     await this.osHelper.openTempDirectory(
       `${roomId}/clips`,
@@ -129,6 +130,7 @@ export class RoomService {
               );
 
         result = await this.gatheringService.gather(
+          key,
           keyList,
           downloadDir,
           outFilePath

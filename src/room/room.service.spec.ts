@@ -49,7 +49,8 @@ describe("RoomService", () => {
       .spyOn(gatheringService, "gather")
       .mockImplementation(
         async (
-          fileUrlList: string[],
+          key: string,
+          s3PathList: string[],
           downloadDir?: string,
           outFilePath?: string
         ) => {
@@ -78,8 +79,8 @@ describe("RoomService", () => {
   describe("취합 테스트", () => {
     const mockResult: any = {
       _id: "id",
-      clips: ["url1", "url2"].map((url) => {
-        return { _id: "clipId", roomId: "id", videoUrl: url };
+      clips: ["1", "2"].map((id) => {
+        return { _id: `clip${id}`, roomId: "id", extension: "mp4" };
       }),
     };
 

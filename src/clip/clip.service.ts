@@ -50,6 +50,7 @@ export class ClipService {
 
   async findOne(id: string): Promise<ClipDto> {
     const clip = await this.clipRepository.findOne(id);
+
     return new ClipDto(
       clip._id.toString(),
       clip.roomId,

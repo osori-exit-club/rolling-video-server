@@ -63,7 +63,12 @@ describe("GatheringService", () => {
             "gathering-test-out-dir",
             async (outDir: string) => {
               const outPath: string = path.join(outDir, "test.zip");
-              await service.gather(["url1", "url2"], tempDir, outPath);
+              await service.gather(
+                "gatering.zip",
+                ["url1", "url2"],
+                tempDir,
+                outPath
+              );
               expect(fs.existsSync(outPath)).toBeTruthy();
             }
           );
