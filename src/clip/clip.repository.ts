@@ -8,8 +8,10 @@ import { CreateClipDto } from "./dto/create-clip.dto";
 export class ClipRepository {
   constructor(@InjectModel(Clip.name) private clipModel: Model<ClipDocument>) {}
 
-  async create(createClipDto: CreateClipDto) {
-    const createClip = new this.clipModel(Object.assign(createClipDto));
+  async create(createClipDto: CreateClipDto, extension: string) {
+    const createClip = new this.clipModel(
+      Object.assign({ extension: extension }, createClipDto)
+    );
     const created = await createClip.save();
     return created;
   }

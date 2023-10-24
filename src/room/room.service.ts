@@ -65,7 +65,7 @@ export class RoomService {
   async findOne(id: string): Promise<RoomDto> {
     const room = await this.roomRepository.findOne(id);
     return new RoomDto(
-      room._id.toString(),
+      id,
       room.name,
       room.passwordHashed,
       room.recipient,

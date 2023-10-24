@@ -3,7 +3,7 @@ export class Clip {
   readonly roomId: string;
   readonly nickname: string;
   readonly isPublic: boolean;
-  readonly extensions: string;
+  readonly extension: string;
   readonly createAt: string;
   readonly updatedAt: string;
   constructor(
@@ -11,7 +11,7 @@ export class Clip {
     roomId: string,
     nickname: string,
     isPublic: boolean,
-    extensions: string,
+    extension: string,
     createAt: string,
     updatedAt: string
   ) {
@@ -19,7 +19,7 @@ export class Clip {
     this.roomId = roomId;
     this.nickname = nickname;
     this.isPublic = isPublic;
-    this.extensions = extensions;
+    this.extension = extension;
     this.createAt = createAt;
     this.updatedAt = updatedAt;
   }

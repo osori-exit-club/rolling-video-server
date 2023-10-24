@@ -15,15 +15,16 @@ export class ClipService {
   ) {}
 
   async create(createClipDto: CreateClipDto, file: any): Promise<ClipDto> {
-    const clip = await this.clipRepository.create(createClipDto);
     const splitted = file.originalname.split(".");
     const extension = splitted[splitted.length - 1];
+    const clip = await this.clipRepository.create(createClipDto, extension);
+
     const clipDto = new ClipDto(
       clip._id.toString(),
       clip.roomId,
       clip.nickname,
       clip.isPublic,
-      extension
+      clip.extension
     );
 
     await this.s3Respository.uploadFile({
