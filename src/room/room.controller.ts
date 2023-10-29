@@ -152,6 +152,22 @@ export class RoomController {
     description: "취합 성공",
     type: GatherRoomResponseDto,
   })
+  @ApiNotFoundResponse({
+    description: "잘못된 id를 전송한 경우",
+    schema: {
+      type: "object",
+      properties: {
+        statusCode: {
+          type: "number",
+          example: 404,
+        },
+        message: {
+          type: "string",
+          example: ResponseMessage.ROOM_GATHER_FAIL_NOT_FOUND,
+        },
+      },
+    },
+  })
   gather(@Param("id") roomId: string): Promise<GatherRoomResponseDto> {
     return this.roomService.gather(roomId);
   }

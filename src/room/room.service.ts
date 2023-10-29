@@ -89,8 +89,13 @@ export class RoomService {
     });
   }
 
-  async findOne(id: string): Promise<RoomDto> {
-    const room = await this.roomRepository.findOne(id);
+  async findOne(id: string): Promise<RoomDto | null> {
+    let room: any;
+    try {
+      room = await this.roomRepository.findOne(id);
+    } catch (e) {
+      return null;
+    }
 
     const signedUrlMap: Map<string, string> = new Map();
     const clipList: any[] = room.clips;
@@ -174,7 +179,13 @@ export class RoomService {
     roomId: string,
     outPath?: string
   ): Promise<GatherRoomResponseDto> {
-    const room = await this.findOne(roomId);
+    const room: RoomDto | null = await this.findOne(roomId);
+    if (room == null) {
+      throw new HttpException(
+        ResponseMessage.ROOM_GATHER_FAIL_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
     const keyList = await Promise.all(
       room.clipList.map((it: ClipDto) => it.getS3Key())
     );
