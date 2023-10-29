@@ -14,6 +14,7 @@ import { ClipService } from "./clip.service";
 import { CreateClipDto } from "./dto/create-clip.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
+  ApiBadRequestResponse,
   ApiBody,
   ApiConsumes,
   ApiNotFoundResponse,
@@ -41,10 +42,6 @@ export class ClipController {
   @UseInterceptors(FileInterceptor("file"))
   @ApiOperation({ summary: "클립 생성 API", description: "클립을 생성한다." })
   @ApiConsumes("multipart/form-data")
-  @ApiOkResponse({
-    description: "생성된 클립 정보",
-    type: ClipDto,
-  })
   @ApiBody({
     schema: {
       type: "object",
@@ -69,7 +66,62 @@ export class ClipController {
           nullable: false,
         },
       },
-      required: ["roomId", "nickname", "isPublic", "file"],
+      required: ["roomId", "nickname", "file"],
+    },
+  })
+  @ApiOkResponse({
+    description: "생성된 클립 정보",
+    type: ClipDto,
+  })
+  @ApiNotFoundResponse({
+    description: "잘못된 id를 전송한 경우",
+    schema: {
+      type: "object",
+      properties: {
+        statusCode: {
+          type: "number",
+          example: HttpStatus.NOT_FOUND,
+        },
+        message: {
+          type: "string",
+          example: ResponseMessage.ROOM_READ_FAIL_NOT_FOUND,
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: "업로드 기한이 지난 경우",
+    schema: {
+      type: "object",
+      properties: {
+        statusCode: {
+          type: "number",
+          example: HttpStatus.BAD_REQUEST,
+        },
+        message: {
+          type: "string",
+          example: ResponseMessage.CLIP_CREATE_FAIL_EXPIRED(
+            new Date().toDateString(),
+            new Date(new Date().getDate() - 1).toDateString()
+          ),
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: "파일의 크기가 큰 경우",
+    schema: {
+      type: "object",
+      properties: {
+        statusCode: {
+          type: "number",
+          example: HttpStatus.BAD_REQUEST,
+        },
+        message: {
+          type: "string",
+          example: ResponseMessage.CLIP_CREATE_FAIL_SIZE_LIMIT("15MB"),
+        },
+      },
     },
   })
   async create(
@@ -80,14 +132,28 @@ export class ClipController {
     console.log(sizeMB);
 
     if (sizeMB > 15) {
-      throw new HttpException("size is over than 15MB", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        ResponseMessage.CLIP_CREATE_FAIL_SIZE_LIMIT("15MB"),
+        HttpStatus.BAD_REQUEST
+      );
     }
 
-    const room: RoomDto = await this.roomService.findOne(createClipDto.roomId);
+    const room: RoomDto | null = await this.roomService.findOne(
+      createClipDto.roomId
+    );
+    if (room == null) {
+      throw new HttpException(
+        ResponseMessage.ROOM_READ_FAIL_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
     const currentDate: Date = new Date();
     if (+room.dueDate < currentDate.getTime()) {
       throw new HttpException(
-        `This room is exipred because due date is ${room.dueDate} but today is ${currentDate}`,
+        ResponseMessage.CLIP_CREATE_FAIL_EXPIRED(
+          room.dueDate.toDateString(),
+          currentDate.toDateString()
+        ),
         HttpStatus.BAD_REQUEST
       );
     }
