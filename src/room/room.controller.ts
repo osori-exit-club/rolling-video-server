@@ -17,6 +17,7 @@ import { CreateRoomResponseDto } from "./dto/create-room-response.dto";
 import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
 import { HttpResponse } from "aws-sdk";
 import { ResponseMessage } from "src/utils/message.ko";
+import { ReadRoomResponseDto } from "./dto/read-room-response.dto";
 
 @Controller("room")
 @ApiTags("Room API")
@@ -74,11 +75,34 @@ export class RoomController {
   })
   @ApiOkResponse({
     description: "방 정보",
-    type: RoomDto,
+    type: ReadRoomResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description: "잘못된 id를 전송한 경우",
+    schema: {
+      type: "object",
+      properties: {
+        statusCode: {
+          type: "number",
+          example: 404,
+        },
+        message: {
+          type: "string",
+          example: ResponseMessage.ROOM_READ_FAIL_NOT_FOUND,
+        },
+      },
+    },
   })
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.roomService.findOne(id);
+  async findOne(@Param("id") id: string): Promise<ReadRoomResponseDto> {
+    const roomDto = await this.roomService.findOne(id);
+    return new ReadRoomResponseDto(
+      roomDto.roomId,
+      roomDto.name,
+      roomDto.recipient,
+      roomDto.dueDate,
+      roomDto.clipList.map((it) => it.clipId)
+    );
   }
 
   @Delete(":id")
