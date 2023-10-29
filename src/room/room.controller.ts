@@ -11,6 +11,7 @@ import {
 import { RoomDto } from "./dto/room.dto";
 import { DeleteRoomDto } from "./dto/delete-room.dto";
 import { GatherRoomResponseDto } from "./dto/gather-room-response.dto";
+import { CreateRoomResponseDto } from "./dto/create-room-response.dto";
 
 @Controller("room")
 @ApiTags("Room API")
@@ -28,10 +29,17 @@ export class RoomController {
   })
   @ApiOkResponse({
     description: "생성된 Room 객체",
-    type: RoomDto,
+    type: CreateRoomResponseDto,
   })
-  create(@Body() createRoomDto: CreateRoomDto): Promise<RoomDto> {
-    return this.roomService.create(createRoomDto);
+  async create(
+    @Body() createRoomDto: CreateRoomDto
+  ): Promise<CreateRoomResponseDto> {
+    const roomDto = await this.roomService.create(createRoomDto);
+    return new CreateRoomResponseDto(
+      roomDto.name,
+      roomDto.recipient,
+      roomDto.dueDate + ""
+    );
   }
 
   @Get()
