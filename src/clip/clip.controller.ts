@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UploadedFile,
@@ -24,11 +23,17 @@ import {
 } from "@nestjs/swagger";
 import { ClipDto } from "./dto/clip.dto";
 import { ClipRepository } from "./clip.repository";
+import { RoomService } from "src/room/room.service";
+import { RoomDto } from "src/room/dto/room.dto";
+import { ClipResponseDto } from "./dto/clip-response.dto";
 
 @Controller("clip")
 @ApiTags("Clip API")
 export class ClipController {
-  constructor(private readonly clipService: ClipService) {}
+  constructor(
+    private readonly clipService: ClipService,
+    private readonly roomService: RoomService
+  ) {}
 
   @Post()
   @UseInterceptors(FileInterceptor("file"))
@@ -66,12 +71,24 @@ export class ClipController {
       required: ["roomId", "nickname", "isPublic", "file"],
     },
   })
-  create(@Body() createClipDto: CreateClipDto, @UploadedFile() file) {
+  async create(
+    @Body() createClipDto: CreateClipDto,
+    @UploadedFile() file
+  ): Promise<ClipResponseDto> {
     const sizeMB = file.size / 1_000_000;
     console.log(sizeMB);
 
     if (sizeMB > 15) {
       throw new HttpException("size is over than 15MB", HttpStatus.BAD_REQUEST);
+    }
+
+    const room: RoomDto = await this.roomService.findOne(createClipDto.roomId);
+    const currentDate: Date = new Date();
+    if (+room.dueDate < currentDate.getTime()) {
+      throw new HttpException(
+        `This room is exipred because due date is ${room.dueDate} but today date is ${currentDate}`,
+        HttpStatus.BAD_REQUEST
+      );
     }
 
     return this.clipService.create(createClipDto, file);
