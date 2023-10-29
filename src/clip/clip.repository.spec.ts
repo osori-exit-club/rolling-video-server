@@ -22,7 +22,7 @@ describe("ClipRepository", () => {
         }),
         MongooseModule.forRootAsync({
           useFactory: (config: ConfigService) => ({
-            uri: config.get("MONGODB_URL") + "test_clip",
+            uri: config.get("MONGODB_URL").replace("${NODE_ENV}", "test"),
           }),
           inject: [ConfigService],
         }),

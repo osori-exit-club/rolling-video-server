@@ -14,7 +14,9 @@ import { GatheringModule } from "./gathering/gathering.module";
     }),
     MongooseModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
-        uri: config.get("MONGODB_URL") + "prd",
+        uri: config
+          .get("MONGODB_URL")
+          .replace("${NODE_ENV}", config.getOrThrow("NODE_ENV")),
       }),
       inject: [ConfigService],
     }),

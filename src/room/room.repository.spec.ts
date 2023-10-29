@@ -29,7 +29,7 @@ describe("RoomRepository", () => {
         }),
         MongooseModule.forRootAsync({
           useFactory: (config: ConfigService) => ({
-            uri: config.get("MONGODB_URL") + "test",
+            uri: config.get("MONGODB_URL").replace("${NODE_ENV}", "test"),
           }),
           inject: [ConfigService],
         }),

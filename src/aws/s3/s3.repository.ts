@@ -34,7 +34,9 @@ export class S3Repository {
     expiresIn: number = 10
   ): Promise<string | null> {
     const region = this.configService.get("AWS_REGION");
-    const bucket = this.configService.get("AWS_S3_BUCKET_NAME");
+    const bucket = this.configService
+      .get("AWS_S3_BUCKET_NAME")
+      .replace("${NODE_ENV}", this.configService.getOrThrow("NODE_ENV"));
 
     const createPresignedUrlWithClient = async () => {
       const client = new S3Client({
@@ -75,7 +77,9 @@ export class S3Repository {
   }): Promise<string> {
     try {
       const params = {
-        Bucket: this.configService.get("AWS_S3_BUCKET_NAME"),
+        Bucket: this.configService
+          .get("AWS_S3_BUCKET_NAME")
+          .replace("${NODE_ENV}", this.configService.getOrThrow("NODE_ENV")),
         Key: key,
         Body: buffer,
       };
@@ -161,7 +165,9 @@ export class S3Repository {
       return null;
     }
     return downloadInChunks({
-      bucket: this.configService.get("AWS_S3_BUCKET_NAME"),
+      bucket: this.configService
+        .get("AWS_S3_BUCKET_NAME")
+        .replace("${NODE_ENV}", this.configService.getOrThrow("NODE_ENV")),
       key: key,
     });
   }
@@ -174,7 +180,9 @@ export class S3Repository {
         secretAccessKey: this.configService.get("AWS_SECRET_ACCESS_KEY"),
       },
     });
-    const bucket = this.configService.get("AWS_S3_BUCKET_NAME");
+    const bucket = this.configService
+      .get("AWS_S3_BUCKET_NAME")
+      .replace("${NODE_ENV}", this.configService.getOrThrow("NODE_ENV"));
 
     try {
       const bucketParams: HeadObjectCommandInput = {
