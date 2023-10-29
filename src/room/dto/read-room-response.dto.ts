@@ -1,6 +1,4 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Date } from "mongoose";
-import { ClipDto } from "src/clip/dto/clip.dto";
 
 export class ReadRoomResponseDto {
   @ApiProperty({

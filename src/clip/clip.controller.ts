@@ -16,6 +16,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import {
   ApiBody,
   ApiConsumes,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -26,6 +27,7 @@ import { ClipRepository } from "./clip.repository";
 import { RoomService } from "src/room/room.service";
 import { RoomDto } from "src/room/dto/room.dto";
 import { ClipResponseDto } from "./dto/clip-response.dto";
+import { ResponseMessage } from "src/utils/message.ko";
 
 @Controller("clip")
 @ApiTags("Clip API")
@@ -108,8 +110,31 @@ export class ClipController {
     description: "Clip 정보",
     type: ClipRepository,
   })
-  findOne(@Param("id") id: string) {
-    return this.clipService.findOne(id);
+  @ApiNotFoundResponse({
+    description: "잘못된 id를 전송한 경우",
+    schema: {
+      type: "object",
+      properties: {
+        statusCode: {
+          type: "number",
+          example: 404,
+        },
+        message: {
+          type: "string",
+          example: ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
+        },
+      },
+    },
+  })
+  async findOne(@Param("id") id: string): Promise<ClipResponseDto> {
+    const result = await this.clipService.findOne(id);
+    if (result == null) {
+      throw new HttpException(
+        ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return result;
   }
 
   @Delete(":id")

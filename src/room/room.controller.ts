@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Delete } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  HttpException,
+  HttpStatus,
+} from "@nestjs/common";
 import { RoomService } from "./room.service";
 import { CreateRoomDto } from "./dto/create-room.dto";
 import {
@@ -40,7 +49,7 @@ export class RoomController {
   async create(
     @Body() createRoomDto: CreateRoomDto
   ): Promise<CreateRoomResponseDto> {
-    const roomDto = await this.roomService.create(createRoomDto);
+    const roomDto: RoomDto = await this.roomService.create(createRoomDto);
     return new CreateRoomResponseDto(
       roomDto.roomId,
       roomDto.name,
@@ -65,7 +74,7 @@ export class RoomController {
         roomDto.roomId,
         roomDto.name,
         roomDto.recipient,
-        roomDto.dueDate,
+        new Date(+roomDto.dueDate),
         roomDto.clipList.map((it) => it.clipId)
       );
     });
@@ -105,11 +114,17 @@ export class RoomController {
   @Get(":id")
   async findOne(@Param("id") id: string): Promise<ReadRoomResponseDto> {
     const roomDto = await this.roomService.findOne(id);
+    if (roomDto == null) {
+      throw new HttpException(
+        ResponseMessage.ROOM_READ_FAIL_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
     return new ReadRoomResponseDto(
       roomDto.roomId,
       roomDto.name,
       roomDto.recipient,
-      roomDto.dueDate,
+      new Date(+roomDto.dueDate),
       roomDto.clipList.map((it) => it.clipId)
     );
   }

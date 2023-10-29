@@ -32,7 +32,7 @@ export class RoomService {
       room.name,
       room.passwordHashed,
       room.recipient,
-      room.dueDate,
+      new Date(+room.dueDate),
       room.clips.map((clip) => {
         return new ClipDto(
           clip._id.toString(),
@@ -72,7 +72,7 @@ export class RoomService {
         room.name,
         room.passwordHashed,
         room.recipient,
-        room.dueDate,
+        new Date(+room.dueDate),
         room.clips.map((clip) => {
           return new ClipResponseDto(
             new ClipDto(

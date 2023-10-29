@@ -1,4 +1,6 @@
 export const ResponseMessage = {
+  CLIP_READ_FAIL_NOT_FOUND: "조회에 실패 했습니다. 원인: 존재하지 않는 id",
+
   ROOM_READ_FAIL_NOT_FOUND: "조회에 실패 했습니다. 원인: 존재하지 않는 id",
   ROOM_REMOVE_SUCCESS: "삭제에 성공 했습니다.",
   ROOM_REMOVE_FAIL: "삭제에 실패 했습니다.",
