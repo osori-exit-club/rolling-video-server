@@ -58,8 +58,17 @@ export class RoomController {
     description: "방 전체 정보 리스트",
     type: [RoomDto],
   })
-  findAll() {
-    return this.roomService.findAll();
+  async findAll(): Promise<ReadRoomResponseDto[]> {
+    const roomDtoList: RoomDto[] = await this.roomService.findAll();
+    return roomDtoList.map((roomDto) => {
+      return new ReadRoomResponseDto(
+        roomDto.roomId,
+        roomDto.name,
+        roomDto.recipient,
+        roomDto.dueDate,
+        roomDto.clipList.map((it) => it.clipId)
+      );
+    });
   }
 
   @Get(":id")
