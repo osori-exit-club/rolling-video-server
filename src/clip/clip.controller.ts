@@ -60,7 +60,6 @@ export class ClipController {
           type: "boolean",
           description: "클립 공개 여부",
           default: false,
-          nullable: false,
         },
         file: {
           type: "string",
@@ -86,7 +85,7 @@ export class ClipController {
     const currentDate: Date = new Date();
     if (+room.dueDate < currentDate.getTime()) {
       throw new HttpException(
-        `This room is exipred because due date is ${room.dueDate} but today date is ${currentDate}`,
+        `This room is exipred because due date is ${room.dueDate} but today is ${currentDate}`,
         HttpStatus.BAD_REQUEST
       );
     }
