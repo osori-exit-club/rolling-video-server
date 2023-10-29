@@ -11,6 +11,7 @@ import { RoomRepository } from "./room.repository";
 import { OsHelper } from "src/utils/os/os.helper";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { ClipResponseDto } from "src/clip/dto/clip-response.dto";
+import { GatherRoomResponseDto } from "./dto/gather-room-response.dto";
 
 @Injectable()
 export class RoomService {
@@ -156,13 +157,15 @@ export class RoomService {
     return new DeleteRoomResponseDto(false, "삭제에 실패 했습니다.");
   }
 
-  async gather(roomId: string, outPath?: string): Promise<string> {
+  async gather(
+    roomId: string,
+    outPath?: string
+  ): Promise<GatherRoomResponseDto> {
     const room = await this.findOne(roomId);
     const keyList = await Promise.all(
       room.clipList.map((it: ClipDto) => it.getS3Key())
     );
 
-    let result: any = null;
     const key = path.join(RoomDto.getS3key(roomId), "gathered.zip");
 
     const existsInS3 = await this.s3Repository.existsInS3(key);
@@ -179,7 +182,7 @@ export class RoomService {
                   `${roomId}.zip`
                 );
 
-          result = await this.gatheringService.gather(
+          await this.gatheringService.gather(
             key,
             keyList,
             downloadDir,
@@ -188,9 +191,13 @@ export class RoomService {
         }
       );
     }
-
-    const downloadableZipUrl = await this.s3Repository.getPresignedUrl(key);
-    console.log(downloadableZipUrl);
-    return downloadableZipUrl;
+    const expiresIn: number = 10;
+    const signedUrl: string = await this.s3Repository.getPresignedUrl(
+      key,
+      expiresIn
+    );
+    const expiresInDate: string =
+      new Date().setDate(new Date().getDate() + expiresIn) + "";
+    return new GatherRoomResponseDto(signedUrl, expiresInDate);
   }
 }

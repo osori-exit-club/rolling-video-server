@@ -10,6 +10,7 @@ import {
 } from "@nestjs/swagger";
 import { RoomDto } from "./dto/room.dto";
 import { DeleteRoomDto } from "./dto/delete-room.dto";
+import { GatherRoomResponseDto } from "./dto/gather-room-response.dto";
 
 @Controller("room")
 @ApiTags("Room API")
@@ -92,8 +93,9 @@ export class RoomController {
   @ApiOperation({ summary: "클립 취합 API", description: "클립을 생성한다." })
   @ApiOkResponse({
     description: "취합 성공",
+    type: GatherRoomResponseDto,
   })
-  gather(@Param("id") roomId: string) {
+  gather(@Param("id") roomId: string): Promise<GatherRoomResponseDto> {
     return this.roomService.gather(roomId);
   }
 }

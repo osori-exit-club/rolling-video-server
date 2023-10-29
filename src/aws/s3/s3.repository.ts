@@ -29,7 +29,10 @@ export class S3Repository {
    * @param key s3내 파일의 경로
    * @returns string
    */
-  async getPresignedUrl(key: string): Promise<string | null> {
+  async getPresignedUrl(
+    key: string,
+    expiresIn: number = 10
+  ): Promise<string | null> {
     const region = this.configService.get("AWS_REGION");
     const bucket = this.configService.get("AWS_S3_BUCKET_NAME");
 
@@ -46,7 +49,7 @@ export class S3Repository {
         return null;
       }
       const it = new GetObjectCommand({ Bucket: bucket, Key: key });
-      return getSignedUrl(client, it, { expiresIn: 10 });
+      return getSignedUrl(client, it, { expiresIn: expiresIn });
     };
 
     try {
