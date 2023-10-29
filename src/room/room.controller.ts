@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Param, Delete } from "@nestjs/common";
 import { RoomService } from "./room.service";
 import { CreateRoomDto } from "./dto/create-room.dto";
 import {
+  ApiBadRequestResponse,
   ApiBody,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -12,6 +14,9 @@ import { RoomDto } from "./dto/room.dto";
 import { DeleteRoomDto } from "./dto/delete-room.dto";
 import { GatherRoomResponseDto } from "./dto/gather-room-response.dto";
 import { CreateRoomResponseDto } from "./dto/create-room-response.dto";
+import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
+import { HttpResponse } from "aws-sdk";
+import { ResponseMessage } from "src/utils/message.ko";
 
 @Controller("room")
 @ApiTags("Room API")
@@ -92,9 +97,52 @@ export class RoomController {
   })
   @ApiOkResponse({
     description: "방 정보",
-    type: RoomDto,
+    schema: {
+      type: "object",
+      properties: {
+        message: {
+          type: "string",
+          example: ResponseMessage.ROOM_REMOVE_SUCCESS,
+        },
+      },
+    },
   })
-  remove(@Param("id") id: string, @Body() deleteRoomDto: DeleteRoomDto) {
+  @ApiNotFoundResponse({
+    description: "잘못된 id를 전송한 경우",
+    schema: {
+      type: "object",
+      properties: {
+        statusCode: {
+          type: "number",
+          example: 404,
+        },
+        message: {
+          type: "string",
+          example: ResponseMessage.ROOM_REMOVE_FAIL_NOT_FOUND,
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: "잘못된 password를 전송한 경우",
+    schema: {
+      type: "object",
+      properties: {
+        statusCode: {
+          type: "number",
+          example: 400,
+        },
+        message: {
+          type: "string",
+          example: ResponseMessage.ROOM_REMOVE_FAIL_WONG_PASSWORD,
+        },
+      },
+    },
+  })
+  remove(
+    @Param("id") id: string,
+    @Body() deleteRoomDto: DeleteRoomDto
+  ): Promise<SimpleResponseDto> {
     return this.roomService.remove(id, deleteRoomDto);
   }
 

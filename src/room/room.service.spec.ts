@@ -1,13 +1,16 @@
+import { HttpException, HttpStatus } from "@nestjs/common";
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import { S3Module } from "src/aws/s3/s3.module";
-import { S3Repository } from "src/aws/s3/s3.repository";
+import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
 import { GatheringModule } from "src/gathering/gathering.module";
 import { GatheringService } from "src/gathering/gathering.service";
 import { Room } from "src/schema/rooms.schema";
 import { HashHelper } from "src/utils/hash/hash.helper";
 import { HashModule } from "src/utils/hash/hash.module";
+import { ResponseMessage } from "src/utils/message.ko";
 import { OsModule } from "src/utils/os/os.module";
+import { DeleteRoomDto } from "./dto/delete-room.dto";
 import { RoomRepository } from "./room.repository";
 import { RoomService } from "./room.service";
 
@@ -75,6 +78,72 @@ describe("RoomService", () => {
 
       // Assert
       expect(result).toBeInstanceOf(Array);
+    });
+  });
+
+  describe("방 삭제 테스트", () => {
+    beforeEach(() => {
+      // Arrange
+      const roomId = "roomId";
+      const password = "password";
+
+      const roomEntity: any = {
+        _id: roomId,
+        passwordHashed: password,
+      };
+      jest
+        .spyOn(repository, "findOne")
+        .mockImplementation(async (id: string): Promise<any | null> => {
+          return id == roomId ? roomEntity : null;
+        });
+      jest
+        .spyOn(repository, "remove")
+        .mockImplementation(async (id: string): Promise<string | null> => {
+          return id == roomId ? roomId : null;
+        });
+    });
+
+    it("정상 케이스", async () => {
+      // Arrange
+      const roomId = "roomId";
+      const password = "password";
+
+      // Act
+      const result = await service.remove(roomId, new DeleteRoomDto(password));
+
+      // Assert
+      expect(result).toBeInstanceOf(SimpleResponseDto);
+      expect(result.message).toEqual(ResponseMessage.ROOM_REMOVE_SUCCESS);
+    });
+
+    it("실패 케이스 - 1. 존재하지 않는 roomId", async () => {
+      // Arrange
+      const roomId = "wrongRoomId";
+      const password = "password";
+      // Act & Assert
+      expect(async () => {
+        await service.remove(roomId, new DeleteRoomDto(password));
+      }).rejects.toThrowError(
+        new HttpException(
+          ResponseMessage.ROOM_REMOVE_FAIL_NOT_FOUND,
+          HttpStatus.NOT_FOUND
+        )
+      );
+    });
+
+    it("실패 케이스 - 2. 잘못된 패스워드", async () => {
+      // Arrange
+      const roomId = "roomId";
+      const password = "wroungPassword";
+      // Act & Assert
+      await expect(async () => {
+        await service.remove(roomId, new DeleteRoomDto(password));
+      }).rejects.toThrowError(
+        new HttpException(
+          ResponseMessage.ROOM_REMOVE_FAIL_WONG_PASSWORD,
+          HttpStatus.BAD_REQUEST
+        )
+      );
     });
   });
 

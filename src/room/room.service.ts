@@ -1,10 +1,9 @@
 import * as path from "path";
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { ClipDto } from "src/clip/dto/clip.dto";
 import { GatheringService } from "src/gathering/gathering.service";
 import { HashHelper } from "src/utils/hash/hash.helper";
 import { CreateRoomDto } from "./dto/create-room.dto";
-import { DeleteRoomResponseDto } from "./dto/delete-room-response.dto";
 import { DeleteRoomDto } from "./dto/delete-room.dto";
 import { RoomDto } from "./dto/room.dto";
 import { RoomRepository } from "./room.repository";
@@ -12,6 +11,8 @@ import { OsHelper } from "src/utils/os/os.helper";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { ClipResponseDto } from "src/clip/dto/clip-response.dto";
 import { GatherRoomResponseDto } from "./dto/gather-room-response.dto";
+import { ResponseMessage } from "src/utils/message.ko";
+import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
 
 @Injectable()
 export class RoomService {
@@ -133,28 +134,40 @@ export class RoomService {
   async remove(
     id: string,
     deleteRoomDto: DeleteRoomDto
-  ): Promise<DeleteRoomResponseDto> {
+  ): Promise<SimpleResponseDto> {
     let room;
     try {
       room = await this.roomRepository.findOne(id);
     } catch (err) {
-      return new DeleteRoomResponseDto(false, "존재하지 않는 id 입니다.");
+      throw new HttpException(
+        ResponseMessage.ROOM_REMOVE_FAIL_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
     }
     if (room == null) {
-      return new DeleteRoomResponseDto(false, "존재하지 않는 id 입니다.");
+      throw new HttpException(
+        ResponseMessage.ROOM_REMOVE_FAIL_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
     }
     const isMatched = await this.hashHelper.isMatch(
       deleteRoomDto.password,
       room.passwordHashed
     );
     if (isMatched == false) {
-      return new DeleteRoomResponseDto(false, "잘못된 패스워드 입니다");
+      throw new HttpException(
+        ResponseMessage.ROOM_REMOVE_FAIL_WONG_PASSWORD,
+        HttpStatus.BAD_REQUEST
+      );
     }
     const removedId = await this.roomRepository.remove(id);
     if (removedId != null) {
-      return new DeleteRoomResponseDto(true, "삭제에 성공 했습니다.");
+      return new SimpleResponseDto(ResponseMessage.ROOM_REMOVE_SUCCESS);
     }
-    return new DeleteRoomResponseDto(false, "삭제에 실패 했습니다.");
+    throw new HttpException(
+      ResponseMessage.ROOM_REMOVE_FAIL,
+      HttpStatus.INTERNAL_SERVER_ERROR
+    );
   }
 
   async gather(
