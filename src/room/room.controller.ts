@@ -36,6 +36,7 @@ export class RoomController {
   ): Promise<CreateRoomResponseDto> {
     const roomDto = await this.roomService.create(createRoomDto);
     return new CreateRoomResponseDto(
+      roomDto.roomId,
       roomDto.name,
       roomDto.recipient,
       roomDto.dueDate + ""

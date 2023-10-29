@@ -4,12 +4,17 @@ import { ClipDto } from "src/clip/dto/clip.dto";
 
 export class RoomDto {
   @ApiProperty({
+    required: true,
+    nullable: false,
+    example: "653e44fad37be7b4c7482e44",
+  })
+  readonly roomId: string;
+  @ApiProperty({
     description: "방의 이름",
     required: true,
     nullable: false,
     example: "OO의 생일파티",
   })
-  id: string;
   readonly name: string;
   @ApiProperty({
     description: "비밀번호(헤싱)",
@@ -45,14 +50,14 @@ export class RoomDto {
   })
   readonly clipList: ClipDto[];
   constructor(
-    id: string,
+    roomId: string,
     name: string,
     passwordHashed: string,
     recipient: string,
     dueDate: Date,
     clipList: ClipDto[]
   ) {
-    this.id = id;
+    this.roomId = roomId;
     this.name = name;
     this.passwordHashed = passwordHashed;
     this.recipient = recipient;
