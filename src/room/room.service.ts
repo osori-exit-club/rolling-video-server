@@ -156,7 +156,7 @@ export class RoomService {
     return new DeleteRoomResponseDto(false, "삭제에 실패 했습니다.");
   }
 
-  async gather(roomId: string, outPath?: string) {
+  async gather(roomId: string, outPath?: string): Promise<string> {
     const room = await this.findOne(roomId);
     const keyList = await Promise.all(
       room.clipList.map((it: ClipDto) => it.getS3Key())
@@ -165,26 +165,32 @@ export class RoomService {
     let result: any = null;
     const key = path.join(RoomDto.getS3key(roomId), "gathered.zip");
 
-    await this.osHelper.openTempDirectory(
-      `${roomId}/clips`,
-      async (downloadDir: string) => {
-        const outFilePath =
-          outPath != null
-            ? outPath
-            : path.join(
-                await this.osHelper.createTempDirectory("gathered"),
-                `${roomId}.zip`
-              );
+    const existsInS3 = await this.s3Repository.existsInS3(key);
+    if (!existsInS3) {
+      console.log(`There is no gathered.zip (key: ${key}`);
+      await this.osHelper.openTempDirectory(
+        `${roomId}/clips`,
+        async (downloadDir: string) => {
+          const outFilePath =
+            outPath != null
+              ? outPath
+              : path.join(
+                  await this.osHelper.createTempDirectory("gathered"),
+                  `${roomId}.zip`
+                );
 
-        result = await this.gatheringService.gather(
-          key,
-          keyList,
-          downloadDir,
-          outFilePath
-        );
-      }
-    );
-    console.log(result);
-    return result;
+          result = await this.gatheringService.gather(
+            key,
+            keyList,
+            downloadDir,
+            outFilePath
+          );
+        }
+      );
+    }
+
+    const downloadableZipUrl = await this.s3Repository.getPresignedUrl(key);
+    console.log(downloadableZipUrl);
+    return downloadableZipUrl;
   }
 }

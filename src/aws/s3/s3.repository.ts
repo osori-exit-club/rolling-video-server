@@ -3,7 +3,13 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import * as AWS from "aws-sdk";
 
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  GetObjectCommand,
+  HeadObjectCommand,
+  HeadObjectCommandInput,
+  HeadObjectCommandOutput,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 @Injectable()
@@ -20,7 +26,7 @@ export class S3Repository {
 
   /**
    * s3의 presigned url을 생성
-   * @param path 파일의 경로명을 랜덤으로 생성
+   * @param key s3내 파일의 경로
    * @returns string
    */
   async getPresignedUrl(key: string): Promise<string | null> {
@@ -40,7 +46,6 @@ export class S3Repository {
         return null;
       }
       const it = new GetObjectCommand({ Bucket: bucket, Key: key });
-
       return getSignedUrl(client, it, { expiresIn: 10 });
     };
 
@@ -156,5 +161,39 @@ export class S3Repository {
       bucket: this.configService.get("AWS_S3_BUCKET_NAME"),
       key: key,
     });
+  }
+
+  async existsInS3(key: string): Promise<boolean> {
+    const client = new S3Client({
+      region: this.configService.get("AWS_REGION"),
+      credentials: {
+        accessKeyId: this.configService.get("AWS_ACCESS_KEY_ID"),
+        secretAccessKey: this.configService.get("AWS_SECRET_ACCESS_KEY"),
+      },
+    });
+    const bucket = this.configService.get("AWS_S3_BUCKET_NAME");
+
+    try {
+      const bucketParams: HeadObjectCommandInput = {
+        Bucket: bucket,
+        Key: key,
+      };
+      const cmd = new HeadObjectCommand(bucketParams);
+      const data: HeadObjectCommandOutput = await client.send(cmd);
+
+      // I always get 200 for my testing if the object exists
+      const exists = data.$metadata.httpStatusCode === 200;
+      return exists;
+    } catch (error) {
+      if (error.$metadata?.httpStatusCode === 404) {
+        // doesn't exist and permission policy includes s3:ListBucket
+        return false;
+      } else if (error.$metadata?.httpStatusCode === 403) {
+        // doesn't exist, permission policy WITHOUT s3:ListBucket
+        return false;
+      } else {
+        // some other error...log and rethrow if you like
+      }
+    }
   }
 }

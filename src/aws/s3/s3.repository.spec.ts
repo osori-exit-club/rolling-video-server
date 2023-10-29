@@ -39,4 +39,18 @@ describe("S3Repository", () => {
       expect(fs.existsSync(outDir)).toBeTruthy();
     });
   });
+
+  describe("파일 유효 테스트", () => {
+    it("[1] download normal", async () => {
+      // Arrange
+      const key =
+        "rooms/6537cf63ba132621e8c041e0/clips/6537cf6aba132621e8c041e2.mp4";
+
+      // Act
+      const result = await s3Repository.existsInS3(key);
+
+      // Assert
+      expect(result).toBeTruthy();
+    });
+  });
 });
