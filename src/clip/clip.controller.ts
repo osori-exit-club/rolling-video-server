@@ -174,7 +174,7 @@ export class ClipController {
   })
   @ApiOkResponse({
     description: "Clip 정보",
-    type: ClipRepository,
+    type: ClipResponseDto,
   })
   @ApiNotFoundResponse({
     description: "잘못된 id를 전송한 경우",
