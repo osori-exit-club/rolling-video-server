@@ -1,4 +1,6 @@
 import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { S3Repository } from "./s3.repository";
@@ -30,13 +32,14 @@ describe("S3Repository", () => {
       // Arrange
       const key =
         "rooms/6537cf63ba132621e8c041e0/clips/6537cf6aba132621e8c041e2.mp4";
-      const outDir = "./temp/video";
+      const outDir = path.join(os.tmpdir(), "test", "/video");
 
       // Act
       await s3Repository.download(key, outDir);
 
       // Assert
       expect(fs.existsSync(outDir)).toBeTruthy();
+      fs.unlink(outDir);
     });
   });
 
