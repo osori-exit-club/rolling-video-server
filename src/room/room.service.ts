@@ -96,6 +96,9 @@ export class RoomService {
     let room: any;
     try {
       room = await this.roomRepository.findOne(id);
+      if (room == null) {
+        return null;
+      }
     } catch (e) {
       return null;
     }
