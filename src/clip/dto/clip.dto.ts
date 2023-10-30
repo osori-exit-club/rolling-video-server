@@ -36,18 +36,27 @@ export class ClipDto {
     example: "mp4",
   })
   readonly extension: string;
+  @ApiProperty({
+    description: "clip 해시키",
+    required: true,
+    nullable: false,
+    example: "hashed",
+  })
+  readonly secretKey: string;
   constructor(
     clipId: string,
     roomId: string,
     nickname: string,
     isPublic: boolean,
-    extension: string
+    extension: string,
+    secretKey: string
   ) {
     this.clipId = clipId;
     this.roomId = roomId;
     this.nickname = nickname;
     this.isPublic = isPublic;
     this.extension = extension;
+    this.secretKey = secretKey;
   }
 
   getS3Key(): string {

@@ -27,7 +27,8 @@ export class ClipService {
       clip.roomId,
       clip.nickname,
       clip.isPublic,
-      clip.extension
+      clip.extension,
+      clip.secretKey
     );
 
     await this.s3Respository.uploadFile({
@@ -50,7 +51,8 @@ export class ClipService {
         clip.roomId,
         clip.nickname,
         clip.isPublic,
-        clip.extension
+        clip.extension,
+        clip.secretKey
       );
     });
   }
@@ -62,7 +64,8 @@ export class ClipService {
       clip.roomId,
       clip.nickname,
       clip.isPublic,
-      clip.extension
+      clip.extension,
+      clip.secretKey
     );
     const signedUrl: string = await this.s3Respository.getPresignedUrl(
       clipDto.getS3Key()

@@ -65,9 +65,18 @@ describe("ClipRepository", () => {
       new CreateClipDto(room.id, "nickname3", false),
     ];
     presetDataList = await Promise.all(
-      presetInputList.map((it) => {
-        return new clipModel(it).save();
-      })
+      presetInputList
+        .map((it) => {
+          return Object.assign(
+            {
+              secretKey: "secretKey",
+            },
+            it
+          );
+        })
+        .map((it) => {
+          return new clipModel(it).save();
+        })
     );
   });
 
@@ -100,6 +109,7 @@ describe("ClipRepository", () => {
       Object.keys(input).forEach((key) => {
         expect(result[key]).toEqual(input[key]);
       });
+      expect(result.secretKey).toBeDefined();
     });
 
     it("[2] 클립 생성 (방번호 + 닉네팀 + 비공개 + 이미지) ", async () => {
@@ -113,6 +123,7 @@ describe("ClipRepository", () => {
       Object.keys(input).forEach((key) => {
         expect(result[key]).toEqual(input[key]);
       });
+      expect(result.secretKey).toBeDefined();
     });
   });
 
@@ -127,6 +138,7 @@ describe("ClipRepository", () => {
       Object.keys(origin).forEach((key) => {
         expect(result[key]).toEqual(origin[key]);
       });
+      expect(result.secretKey).toBeDefined();
     });
   });
 

@@ -15,7 +15,8 @@ export class ClipResponseDto extends ClipDto {
       clipDto.roomId,
       clipDto.nickname,
       clipDto.isPublic,
-      clipDto.extension
+      clipDto.extension,
+      clipDto.secretKey
     );
     this.signedVideoUrl = signedVideoUrl;
   }

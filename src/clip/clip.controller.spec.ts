@@ -15,7 +15,6 @@ import { ClipRepository } from "./clip.repository";
 import { ClipService } from "./clip.service";
 import { ClipResponseDto } from "./dto/clip-response.dto";
 import { ClipDto } from "./dto/clip.dto";
-import { CreateClipDto } from "./dto/create-clip.dto";
 
 describe("ClipController", () => {
   let controller: ClipController;
@@ -60,7 +59,7 @@ describe("ClipController", () => {
         .mockResolvedValue(
           Promise.resolve(
             new ClipResponseDto(
-              new ClipDto(clipId, roomId, "nickName", true, "mp4"),
+              new ClipDto(clipId, roomId, "nickName", true, "mp4", "secretKey"),
               "signedUrl"
             )
           )
@@ -70,7 +69,14 @@ describe("ClipController", () => {
         return Promise.resolve(
           id == clipId
             ? new ClipResponseDto(
-                new ClipDto(clipId, roomId, "nickName", true, "mp4"),
+                new ClipDto(
+                  clipId,
+                  roomId,
+                  "nickName",
+                  true,
+                  "mp4",
+                  "secretKey"
+                ),
                 "signedUrl"
               )
             : null
