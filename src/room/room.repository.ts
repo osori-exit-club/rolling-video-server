@@ -49,6 +49,9 @@ export class RoomRepository {
   async remove(id: string): Promise<string | null> {
     try {
       const result = await this.roomModel.findByIdAndRemove(id).exec();
+      if (result == null) {
+        return null;
+      }
       return result._id.toString();
     } catch (err) {
       if (err.__proto__.toString() != "CastError") {

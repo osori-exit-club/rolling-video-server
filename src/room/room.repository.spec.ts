@@ -21,7 +21,7 @@ describe("RoomRepository", () => {
   let presetDataList: any[];
   let hashHelper: HashHelper;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
@@ -68,7 +68,6 @@ describe("RoomRepository", () => {
       .mockImplementation(async (key: string) => {
         return "signedUrl";
       });
-
     // reset data for test
     const roomModel: Model<RoomDocument> = module.get(getModelToken(Room.name));
     // clear previous data
