@@ -24,7 +24,6 @@ import { DeleteRoomDto } from "./dto/delete-room.dto";
 import { GatherRoomResponseDto } from "./dto/gather-room-response.dto";
 import { CreateRoomResponseDto } from "./dto/create-room-response.dto";
 import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
-import { HttpResponse } from "aws-sdk";
 import { ResponseMessage } from "src/utils/message.ko";
 import { ReadRoomResponseDto } from "./dto/read-room-response.dto";
 
@@ -102,7 +101,7 @@ export class RoomController {
       properties: {
         statusCode: {
           type: "number",
-          example: 404,
+          example: HttpStatus.NOT_FOUND,
         },
         message: {
           type: "string",
@@ -162,7 +161,7 @@ export class RoomController {
       properties: {
         statusCode: {
           type: "number",
-          example: 404,
+          example: HttpStatus.NOT_FOUND,
         },
         message: {
           type: "string",
@@ -178,7 +177,7 @@ export class RoomController {
       properties: {
         statusCode: {
           type: "number",
-          example: 400,
+          example: HttpStatus.BAD_REQUEST,
         },
         message: {
           type: "string",
@@ -207,7 +206,7 @@ export class RoomController {
       properties: {
         statusCode: {
           type: "number",
-          example: 404,
+          example: HttpStatus.NOT_FOUND,
         },
         message: {
           type: "string",

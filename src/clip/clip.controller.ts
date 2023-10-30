@@ -29,6 +29,7 @@ import { RoomDto } from "src/room/dto/room.dto";
 import { ClipResponseDto } from "./dto/clip-response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { CreateClipResponseDto } from "./dto/create-clip-response.dto";
+import { DeleteClipDto } from "./dto/delete-clip.dto";
 
 @Controller("clip")
 @ApiTags("Clip API")
@@ -204,7 +205,64 @@ export class ClipController {
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.clipService.remove(id);
+  @ApiOperation({
+    summary: "클립 삭제 API",
+    description: "클립 삭제 API",
+  })
+  @ApiParam({
+    name: "id",
+    type: "string",
+    description: "clip id",
+    example: "651c1bc85130dd8a0abf7727",
+  })
+  @ApiBody({
+    type: DeleteClipDto,
+  })
+  @ApiOkResponse({
+    description: "삭제 겅공 여부",
+    schema: {
+      type: "object",
+      properties: {
+        message: {
+          type: "string",
+          example: ResponseMessage.CLIP_REMOVE_SUCCESS,
+        },
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    description: "잘못된 id를 전송한 경우",
+    schema: {
+      type: "object",
+      properties: {
+        statusCode: {
+          type: "number",
+          example: HttpStatus.NOT_FOUND,
+        },
+        message: {
+          type: "string",
+          example: ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: "잘못된 secretKey를 전송한 경우",
+    schema: {
+      type: "object",
+      properties: {
+        statusCode: {
+          type: "number",
+          example: HttpStatus.BAD_GATEWAY,
+        },
+        message: {
+          type: "string",
+          example: ResponseMessage.CLIP_REMOVE_FAIL_WONG_PASSWORD,
+        },
+      },
+    },
+  })
+  async remove(@Param("id") id: string, deleteClipDto: DeleteClipDto) {
+    return this.clipService.remove(id, deleteClipDto);
   }
 }

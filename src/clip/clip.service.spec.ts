@@ -10,6 +10,7 @@ import { ClipRepository } from "./clip.repository";
 import { ClipService } from "./clip.service";
 import { CreateClipResponseDto } from "./dto/create-clip-response.dto";
 import { CreateClipDto } from "./dto/create-clip.dto";
+import { DeleteClipDto } from "./dto/delete-clip.dto";
 
 describe("ClipService", () => {
   let service: ClipService;
@@ -86,6 +87,32 @@ describe("ClipService", () => {
       // Assert
       expect(result).toBeInstanceOf(CreateClipResponseDto);
       expect(result.extension).toEqual("mp4");
+    });
+  });
+
+  describe("클립 삭제 테스트", () => {
+    it("성공 케이스", async () => {
+      // Arrange
+      const clipId = "clipId";
+      const secretKey = "password";
+      const input = new DeleteClipDto(secretKey);
+      const repoResult: any = {};
+
+      jest.spyOn(clipRepository, "findOne").mockImplementation((id) => {
+        return id == clipId
+          ? Promise.resolve({ secretKey })
+          : Promise.resolve(null);
+      });
+
+      jest
+        .spyOn(clipRepository, "remove")
+        .mockResolvedValue(Promise.resolve(repoResult));
+
+      // Act
+      const result = await service.remove(clipId, input);
+
+      // Assert
+      expect(result).toEqual(repoResult);
     });
   });
 });

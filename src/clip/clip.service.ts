@@ -7,6 +7,8 @@ import { ClipResponseDto } from "./dto/clip-response.dto";
 import { CreateClipDto } from "./dto/create-clip.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { CreateClipResponseDto } from "./dto/create-clip-response.dto";
+import { stringList } from "aws-sdk/clients/datapipeline";
+import { DeleteClipDto } from "./dto/delete-clip.dto";
 
 @Injectable()
 export class ClipService {
@@ -79,7 +81,20 @@ export class ClipService {
     return new ClipResponseDto(clipDto, signedUrl);
   }
 
-  remove(id: string) {
+  async remove(id: string, deleteClipDto: DeleteClipDto) {
+    const clipDto = await this.clipRepository.findOne(id);
+    if (clipDto == null) {
+      throw new HttpException(
+        ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    if (clipDto.secretKey != deleteClipDto.secretKey) {
+      throw new HttpException(
+        ResponseMessage.CLIP_REMOVE_FAIL_WONG_PASSWORD,
+        HttpStatus.BAD_REQUEST
+      );
+    }
     return this.clipRepository.remove(id);
   }
 }

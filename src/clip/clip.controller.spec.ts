@@ -122,7 +122,9 @@ describe("ClipController", () => {
 
       // Act & Assert
       await expect(async () => {
-        await controller.create(new CreateClipDto("", "", true), {});
+        await controller.create(new CreateClipDto("", "", true), {
+          size: 10_000_000,
+        });
       }).rejects.toThrowError(
         new HttpException(
           ResponseMessage.ROOM_READ_FAIL_NOT_FOUND,
@@ -142,6 +144,36 @@ describe("ClipController", () => {
               "",
               "",
               "",
+              new Date(new Date().getTime() + 5),
+              []
+            )
+          )
+        );
+
+      // Act & Assert
+      await expect(async () => {
+        await controller.create(new CreateClipDto("", "", true), {
+          size: 20_000_000,
+        });
+      }).rejects.toThrowError(
+        new HttpException(
+          ResponseMessage.CLIP_CREATE_FAIL_SIZE_LIMIT("15MB"),
+          HttpStatus.BAD_REQUEST
+        )
+      );
+    });
+
+    it("실패 케이스 - 3. 초과된 파일 크기", async () => {
+      // Arrange
+      jest
+        .spyOn(roomService, "findOne")
+        .mockResolvedValue(
+          Promise.resolve(
+            new RoomDto(
+              "roomId",
+              "",
+              "",
+              "",
               new Date(new Date().getTime() - 1),
               []
             )
@@ -150,7 +182,9 @@ describe("ClipController", () => {
 
       // Act & Assert
       try {
-        await controller.create(new CreateClipDto("", "", true), {});
+        await controller.create(new CreateClipDto("", "", true), {
+          size: 10_000_000,
+        });
       } catch (err) {
         expect(err).toBeInstanceOf(HttpException);
         expect(err.message.slice(0, 10)).toEqual(
