@@ -82,14 +82,17 @@ export class ClipService {
   }
 
   async remove(id: string, deleteClipDto: DeleteClipDto) {
-    const clipDto = await this.clipRepository.findOne(id);
-    if (clipDto == null) {
+    let clip = null;
+    try {
+      clip = await this.clipRepository.findOne(id);
+    } catch (err) {}
+    if (clip == null) {
       throw new HttpException(
         ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
         HttpStatus.NOT_FOUND
       );
     }
-    if (clipDto.secretKey != deleteClipDto.secretKey) {
+    if (clip.secretKey != deleteClipDto.secretKey) {
       throw new HttpException(
         ResponseMessage.CLIP_REMOVE_FAIL_WONG_PASSWORD,
         HttpStatus.BAD_REQUEST

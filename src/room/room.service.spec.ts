@@ -108,12 +108,16 @@ describe("RoomService", () => {
       const roomId = "roomId";
       const password = "password";
 
+      const repoResult: any = {};
+      jest
+        .spyOn(repository, "remove")
+        .mockResolvedValue(Promise.resolve(repoResult));
+
       // Act
       const result = await service.remove(roomId, new DeleteRoomDto(password));
 
       // Assert
-      expect(result).toBeInstanceOf(SimpleResponseDto);
-      expect(result.message).toEqual(ResponseMessage.ROOM_REMOVE_SUCCESS);
+      expect(result).toEqual(repoResult);
     });
 
     it("실패 케이스 - 1. 존재하지 않는 roomId", async () => {

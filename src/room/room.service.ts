@@ -144,10 +144,7 @@ export class RoomService {
     );
   }
 
-  async remove(
-    id: string,
-    deleteRoomDto: DeleteRoomDto
-  ): Promise<SimpleResponseDto> {
+  async remove(id: string, deleteRoomDto: DeleteRoomDto): Promise<any> {
     let room;
     try {
       room = await this.roomRepository.findOne(id);
@@ -173,14 +170,7 @@ export class RoomService {
         HttpStatus.BAD_REQUEST
       );
     }
-    const removedId = await this.roomRepository.remove(id);
-    if (removedId != null) {
-      return new SimpleResponseDto(ResponseMessage.ROOM_REMOVE_SUCCESS);
-    }
-    throw new HttpException(
-      ResponseMessage.ROOM_REMOVE_FAIL,
-      HttpStatus.INTERNAL_SERVER_ERROR
-    );
+    return await this.roomRepository.remove(id);
   }
 
   async gather(

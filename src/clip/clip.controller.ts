@@ -30,6 +30,7 @@ import { ClipResponseDto } from "./dto/clip-response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { CreateClipResponseDto } from "./dto/create-clip-response.dto";
 import { DeleteClipDto } from "./dto/delete-clip.dto";
+import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
 
 @Controller("clip")
 @ApiTags("Clip API")
@@ -262,7 +263,12 @@ export class ClipController {
       },
     },
   })
-  async remove(@Param("id") id: string, deleteClipDto: DeleteClipDto) {
-    return this.clipService.remove(id, deleteClipDto);
+  async remove(@Param("id") id: string, @Body() deleteClipDto: DeleteClipDto) {
+    const result = await this.clipService.remove(id, deleteClipDto);
+    const isSuccess = result._id.toString() == id;
+    if (isSuccess == false) {
+      return new SimpleResponseDto(ResponseMessage.CLIP_REMOVE_FAIL);
+    }
+    return new SimpleResponseDto(ResponseMessage.CLIP_REMOVE_SUCCESS);
   }
 }

@@ -186,11 +186,15 @@ export class RoomController {
       },
     },
   })
-  remove(
+  async remove(
     @Param("id") id: string,
     @Body() deleteRoomDto: DeleteRoomDto
   ): Promise<SimpleResponseDto> {
-    return this.roomService.remove(id, deleteRoomDto);
+    const result = await this.roomService.remove(id, deleteRoomDto);
+    if (result != null && result._id.toString() == id) {
+      return new SimpleResponseDto(ResponseMessage.ROOM_REMOVE_SUCCESS);
+    }
+    return new SimpleResponseDto(ResponseMessage.ROOM_REMOVE_FAIL);
   }
 
   @Post(":id/gather")
