@@ -248,7 +248,7 @@ export class ClipController {
     },
   })
   @ApiBadRequestResponse({
-    description: "잘못된 secretKey를 전송한 경우",
+    description: "잘못된 패스워드를 전송한 경우",
     schema: {
       type: "object",
       properties: {

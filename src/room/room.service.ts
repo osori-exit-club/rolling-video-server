@@ -40,7 +40,7 @@ export class RoomService {
           clip.nickname,
           clip.isPublic,
           clip.extension,
-          clip.secretKey
+          clip.password
         );
       })
     );
@@ -60,7 +60,7 @@ export class RoomService {
         clip.nickname,
         clip.isPublic,
         clip.extension,
-        clip.secretKey
+        clip.password
       );
       const signedUrl = await this.s3Repository.getPresignedUrl(
         clipDto.getS3Key()
@@ -83,7 +83,7 @@ export class RoomService {
               clip.nickname,
               clip.isPublic,
               clip.extension,
-              clip.secretKey
+              clip.password
             ),
             signedUrlMap[clip._id.toString()]
           );
@@ -114,7 +114,7 @@ export class RoomService {
         clip.nickname,
         clip.isPublic,
         clip.extension,
-        clip.secretKey
+        clip.password
       );
       const signedUrl = await this.s3Repository.getPresignedUrl(
         clipDto.getS3Key()
@@ -136,7 +136,7 @@ export class RoomService {
             clip.nickname,
             clip.isPublic,
             clip.extension,
-            clip.secretKey
+            clip.password
           ),
           signedUrlMap[clip._id.toString()]
         );

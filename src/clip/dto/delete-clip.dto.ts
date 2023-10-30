@@ -5,9 +5,9 @@ export class DeleteClipDto {
     description: "비밀키",
     example: "해시값",
   })
-  readonly secretKey: string;
+  readonly password: string;
 
-  constructor(secretKey: string) {
-    this.secretKey = secretKey;
+  constructor(password: string) {
+    this.password = password;
   }
 }

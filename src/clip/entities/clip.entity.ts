@@ -6,7 +6,7 @@ export class Clip {
   readonly extension: string;
   readonly createAt: string;
   readonly updatedAt: string;
-  readonly secretKey: string;
+  readonly password: string;
   constructor(
     _id: string,
     roomId: string,
@@ -15,7 +15,7 @@ export class Clip {
     extension: string,
     createAt: string,
     updatedAt: string,
-    secretKey: string
+    password: string
   ) {
     this._id = _id;
     this.roomId = roomId;
@@ -24,6 +24,6 @@ export class Clip {
     this.extension = extension;
     this.createAt = createAt;
     this.updatedAt = updatedAt;
-    this.secretKey = secretKey;
+    this.password = password;
   }
 }

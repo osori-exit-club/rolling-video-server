@@ -18,7 +18,7 @@ export class Clip {
   extension: string;
 
   @Prop({ require: true })
-  secretKey: string;
+  password: string;
 }
 
 export const ClipScheme = SchemaFactory.createForClass(Clip);

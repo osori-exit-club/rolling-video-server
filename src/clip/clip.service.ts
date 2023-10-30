@@ -32,7 +32,7 @@ export class ClipService {
       clip.nickname,
       clip.isPublic,
       clip.extension,
-      clip.secretKey
+      clip.password
     );
 
     await this.s3Respository.uploadFile({
@@ -54,7 +54,7 @@ export class ClipService {
         clip.nickname,
         clip.isPublic,
         clip.extension,
-        clip.secretKey
+        clip.password
       );
     });
   }
@@ -73,7 +73,7 @@ export class ClipService {
       clip.nickname,
       clip.isPublic,
       clip.extension,
-      clip.secretKey
+      clip.password
     );
     const signedUrl: string = await this.s3Respository.getPresignedUrl(
       clipDto.getS3Key()
@@ -92,7 +92,7 @@ export class ClipService {
         HttpStatus.NOT_FOUND
       );
     }
-    if (clip.secretKey != deleteClipDto.secretKey) {
+    if (clip.password != deleteClipDto.password) {
       throw new HttpException(
         ResponseMessage.CLIP_REMOVE_FAIL_WONG_PASSWORD,
         HttpStatus.BAD_REQUEST

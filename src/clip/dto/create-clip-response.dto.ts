@@ -42,27 +42,27 @@ export class CreateClipResponseDto {
     nullable: false,
     example: "hashed",
   })
-  readonly secretKey: string;
+  readonly password: string;
   constructor({
     clipId,
     roomId,
     nickname,
     isPublic,
     extension,
-    secretKey,
+    password,
   }: {
     clipId: string;
     roomId: string;
     nickname: string;
     isPublic: boolean;
     extension: string;
-    secretKey: string;
+    password: string;
   }) {
     this.clipId = clipId;
     this.roomId = roomId;
     this.nickname = nickname;
     this.isPublic = isPublic;
     this.extension = extension;
-    this.secretKey = secretKey;
+    this.password = password;
   }
 }

@@ -63,7 +63,7 @@ describe("ClipController", () => {
         .mockResolvedValue(
           Promise.resolve(
             new CreateClipResponseDto(
-              new ClipDto(clipId, roomId, "nickName", true, "mp4", "secretKey")
+              new ClipDto(clipId, roomId, "nickName", true, "mp4", "password")
             )
           )
         );
@@ -78,7 +78,7 @@ describe("ClipController", () => {
                   "nickName",
                   true,
                   "mp4",
-                  "secretKey"
+                  "password"
                 ),
                 "signedUrl"
               )
@@ -206,7 +206,7 @@ describe("ClipController", () => {
         .mockResolvedValue(
           Promise.resolve(
             new ClipResponseDto(
-              new ClipDto(clipId, roomId, "nickName", true, "mp4", "secretKey"),
+              new ClipDto(clipId, roomId, "nickName", true, "mp4", "password"),
               "signedUrl"
             )
           )
@@ -222,7 +222,7 @@ describe("ClipController", () => {
                   "nickName",
                   true,
                   "mp4",
-                  "secretKey"
+                  "password"
                 ),
                 "signedUrl"
               )

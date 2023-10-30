@@ -17,13 +17,10 @@ export class ClipRepository {
       createClipDto.roomId,
       createClipDto.nickname,
     ].join("/");
-    const secretKey = await this.hashHelper.createHash(hashString, 10);
+    const password = await this.hashHelper.createHash(hashString, 10);
 
     const createClip = new this.clipModel(
-      Object.assign(
-        { extension: extension, secretKey: secretKey },
-        createClipDto
-      )
+      Object.assign({ extension: extension, password: password }, createClipDto)
     );
     const created = await createClip.save();
     return created;

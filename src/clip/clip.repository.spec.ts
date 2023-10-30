@@ -69,7 +69,7 @@ describe("ClipRepository", () => {
         .map((it) => {
           return Object.assign(
             {
-              secretKey: "secretKey",
+              password: "password",
             },
             it
           );
@@ -109,7 +109,7 @@ describe("ClipRepository", () => {
       Object.keys(input).forEach((key) => {
         expect(result[key]).toEqual(input[key]);
       });
-      expect(result.secretKey).toBeDefined();
+      expect(result.password).toBeDefined();
     });
 
     it("[2] 클립 생성 (방번호 + 닉네팀 + 비공개 + 이미지) ", async () => {
@@ -123,7 +123,7 @@ describe("ClipRepository", () => {
       Object.keys(input).forEach((key) => {
         expect(result[key]).toEqual(input[key]);
       });
-      expect(result.secretKey).toBeDefined();
+      expect(result.password).toBeDefined();
     });
   });
 
@@ -138,7 +138,7 @@ describe("ClipRepository", () => {
       Object.keys(origin).forEach((key) => {
         expect(result[key]).toEqual(origin[key]);
       });
-      expect(result.secretKey).toBeDefined();
+      expect(result.password).toBeDefined();
     });
   });
 

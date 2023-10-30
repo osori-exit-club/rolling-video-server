@@ -94,13 +94,13 @@ describe("ClipService", () => {
     it("성공 케이스", async () => {
       // Arrange
       const clipId = "clipId";
-      const secretKey = "password";
-      const input = new DeleteClipDto(secretKey);
+      const password = "password";
+      const input = new DeleteClipDto(password);
       const repoResult: any = {};
 
       jest.spyOn(clipRepository, "findOne").mockImplementation((id) => {
         return id == clipId
-          ? Promise.resolve({ secretKey })
+          ? Promise.resolve({ password })
           : Promise.resolve(null);
       });
 
