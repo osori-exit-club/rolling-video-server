@@ -8,6 +8,7 @@ import { Room } from "src/schema/rooms.schema";
 import { HashModule } from "src/utils/hash/hash.module";
 import { ClipRepository } from "./clip.repository";
 import { ClipService } from "./clip.service";
+import { CreateClipResponseDto } from "./dto/create-clip-response.dto";
 import { CreateClipDto } from "./dto/create-clip.dto";
 
 describe("ClipService", () => {
@@ -76,12 +77,14 @@ describe("ClipService", () => {
       jest
         .spyOn(roomRepository, "addClip")
         .mockResolvedValue(Promise.resolve(mockClip));
+
       // Act
-      const result = await service.create(input, {
+      const result: CreateClipResponseDto = await service.create(input, {
         originalname: "test.mp4",
       });
 
       // Assert
+      expect(result).toBeInstanceOf(CreateClipResponseDto);
       expect(result.extension).toEqual("mp4");
     });
   });

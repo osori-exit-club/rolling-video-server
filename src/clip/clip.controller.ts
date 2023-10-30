@@ -24,11 +24,11 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { ClipDto } from "./dto/clip.dto";
-import { ClipRepository } from "./clip.repository";
 import { RoomService } from "src/room/room.service";
 import { RoomDto } from "src/room/dto/room.dto";
 import { ClipResponseDto } from "./dto/clip-response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
+import { CreateClipResponseDto } from "./dto/create-clip-response.dto";
 
 @Controller("clip")
 @ApiTags("Clip API")
@@ -71,7 +71,7 @@ export class ClipController {
   })
   @ApiOkResponse({
     description: "생성된 클립 정보",
-    type: ClipDto,
+    type: CreateClipResponseDto,
   })
   @ApiNotFoundResponse({
     description: "잘못된 id를 전송한 경우",
@@ -127,7 +127,7 @@ export class ClipController {
   async create(
     @Body() createClipDto: CreateClipDto,
     @UploadedFile() file
-  ): Promise<ClipResponseDto> {
+  ): Promise<CreateClipResponseDto> {
     const sizeMB = file.size / 1_000_000;
     console.log(sizeMB);
 

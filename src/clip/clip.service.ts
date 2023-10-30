@@ -6,6 +6,7 @@ import { ClipDto } from "./dto/clip.dto";
 import { ClipResponseDto } from "./dto/clip-response.dto";
 import { CreateClipDto } from "./dto/create-clip.dto";
 import { ResponseMessage } from "src/utils/message.ko";
+import { CreateClipResponseDto } from "./dto/create-clip-response.dto";
 
 @Injectable()
 export class ClipService {
@@ -18,7 +19,7 @@ export class ClipService {
   async create(
     createClipDto: CreateClipDto,
     file: any
-  ): Promise<ClipResponseDto> {
+  ): Promise<CreateClipResponseDto> {
     const splitted = file.originalname.split(".");
     const extension = splitted[splitted.length - 1];
     const clip = await this.clipRepository.create(createClipDto, extension);
@@ -38,10 +39,8 @@ export class ClipService {
     });
 
     this.roomRepository.addClip(createClipDto.roomId, clip);
-    const signedUrl: string = await this.s3Respository.getPresignedUrl(
-      clipDto.getS3Key()
-    );
-    return new ClipResponseDto(clipDto, signedUrl);
+
+    return new CreateClipResponseDto(clipDto);
   }
 
   async findAll(): Promise<ClipDto[]> {
