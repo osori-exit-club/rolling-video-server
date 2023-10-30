@@ -24,7 +24,7 @@ describe("ClipController", () => {
   let service: ClipService;
   let roomService: RoomService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [S3Module, HashModule, OsModule, GatheringModule],
       controllers: [ClipController],
@@ -107,7 +107,7 @@ describe("ClipController", () => {
       // Act
       const result: CreateClipResponseDto = await controller.create(
         new CreateClipDto("", "", true),
-        {}
+        { size: 1_000_000 }
       );
 
       // Assert

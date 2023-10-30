@@ -39,7 +39,7 @@ describe("S3Repository", () => {
 
       // Assert
       expect(fs.existsSync(outDir)).toBeTruthy();
-      fs.unlink(outDir);
+      fs.unlink(outDir, () => {});
     });
   });
 

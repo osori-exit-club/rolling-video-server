@@ -21,7 +21,7 @@ describe("RoomRepository", () => {
   let presetDataList: any[];
   let hashHelper: HashHelper;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
@@ -80,6 +80,7 @@ describe("RoomRepository", () => {
         return new roomModel(obj).save();
       })
     );
+    return true;
   });
 
   it("should be defined", () => {
@@ -136,7 +137,7 @@ describe("RoomRepository", () => {
   describe("방 조회 테스트", () => {
     it("[1] 방 조회", async () => {
       // Arrange;
-      const id = presetDataList[0]._id;
+      const id = presetDataList[0]._id.toString();
       // Act
       const result = await repository.findOne(id);
       // Assert;
@@ -154,7 +155,7 @@ describe("RoomRepository", () => {
   describe("방 삭제 테스트", () => {
     it("[1] 방 삭제", async () => {
       // Arrange;
-      const id = presetDataList[0]._id;
+      const id = presetDataList[2]._id.toString();
       // Act
       const result = await repository.remove(id);
       // Assert;
@@ -169,7 +170,7 @@ describe("RoomRepository", () => {
   describe("클립 추가", () => {
     it("클립 추가 ", async () => {
       // Arrange
-      const roomId = presetDataList[0]._id;
+      const roomId = presetDataList[0]._id.toString();
       const clip = { roomId, clip: "clip" };
       // Act
       const result = await repository.addClip(roomId, clip);

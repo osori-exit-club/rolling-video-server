@@ -131,9 +131,9 @@ export class ClipController {
     @UploadedFile() file
   ): Promise<CreateClipResponseDto> {
     const sizeMB = file.size / 1_000_000;
-    console.log(sizeMB);
 
     if (sizeMB > 15) {
+      console.log(sizeMB);
       throw new HttpException(
         ResponseMessage.CLIP_CREATE_FAIL_SIZE_LIMIT("15MB"),
         HttpStatus.BAD_REQUEST

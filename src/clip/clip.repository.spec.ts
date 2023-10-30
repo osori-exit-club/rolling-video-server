@@ -78,9 +78,8 @@ describe("ClipRepository", () => {
           return new clipModel(it).save();
         })
     );
+    return true;
   });
-
-  beforeEach(async () => {});
 
   it("should be defined", () => {
     expect(repository).toBeDefined();
