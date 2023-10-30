@@ -1,10 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
 import { ClipRepository } from "./clip.repository";
 import { ClipDto } from "./dto/clip.dto";
 import { ClipResponseDto } from "./dto/clip-response.dto";
 import { CreateClipDto } from "./dto/create-clip.dto";
+import { ResponseMessage } from "src/utils/message.ko";
 
 @Injectable()
 export class ClipService {
@@ -59,6 +60,12 @@ export class ClipService {
 
   async findOne(id: string): Promise<ClipResponseDto> {
     const clip = await this.clipRepository.findOne(id);
+    if (clip == null) {
+      throw new HttpException(
+        ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
     const clipDto = new ClipDto(
       clip._id.toString(),
       clip.roomId,
