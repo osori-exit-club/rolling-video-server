@@ -73,7 +73,7 @@ export class RoomController {
         roomDto.roomId,
         roomDto.name,
         roomDto.recipient,
-        new Date(+roomDto.dueDate),
+        roomDto.dueDate,
         roomDto.clipList.map((it) => it.clipId)
       );
     });

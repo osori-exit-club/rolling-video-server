@@ -24,7 +24,6 @@ export class RoomService {
   ) {}
 
   async create(createRoomDto: CreateRoomRequest): Promise<RoomDto> {
-    const room = await this.roomRepository.create(createRoomDto);
     const dueDate: Date = new Date();
     dueDate.setDate(new Date().getDate() + Constants.ROOM_DEFAULT_EXPIRED_DAY);
     dueDate.setUTCHours(0);
@@ -32,12 +31,16 @@ export class RoomService {
     dueDate.setUTCSeconds(0);
     dueDate.setUTCMilliseconds(0);
 
+    const room = await this.roomRepository.create(
+      Object.assign({ dueDate }, createRoomDto)
+    );
+
     return new RoomDto(
       room._id.toString(),
       room.name,
       room.passwordHashed,
       room.recipient,
-      dueDate,
+      new Date(+room.dueDate),
       room.clips.map((clip) => {
         return new ClipDto(
           clip._id.toString(),
