@@ -7,16 +7,16 @@ import { S3Repository } from "src/aws/s3/s3.repository";
 import { Room, RoomDocument, RoomScheme } from "src/schema/rooms.schema";
 import { HashHelper } from "src/utils/hash/hash.helper";
 import { HashModule } from "src/utils/hash/hash.module";
-import { CreateRoomDto } from "./dto/create-room.dto";
+import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { RoomRepository } from "./room.repository";
 
 describe("RoomRepository", () => {
   let repository: RoomRepository;
   let s3Repository: S3Repository;
-  const presetInputList: CreateRoomDto[] = [
-    new CreateRoomDto("roomName1", "1234", "target", new Date()),
-    new CreateRoomDto("roomName2", null, "target", new Date()),
-    new CreateRoomDto("roomName3", "", "target3", new Date()),
+  const presetInputList: CreateRoomRequest[] = [
+    new CreateRoomRequest("roomName1", "1234", "target", new Date()),
+    new CreateRoomRequest("roomName2", null, "target", new Date()),
+    new CreateRoomRequest("roomName3", "", "target3", new Date()),
   ];
   let presetDataList: any[];
   let hashHelper: HashHelper;
@@ -100,7 +100,12 @@ describe("RoomRepository", () => {
   describe("방 생성 테스트", () => {
     it("[1] 방생성 (방이름 + 비밀번호 + 받는사람) ", async () => {
       // Arrange
-      const input = new CreateRoomDto("방이름", "1234", "받는사람", new Date());
+      const input = new CreateRoomRequest(
+        "방이름",
+        "1234",
+        "받는사람",
+        new Date()
+      );
 
       // Act
       const result = await repository.create(input);
@@ -117,7 +122,12 @@ describe("RoomRepository", () => {
 
     it("[2] 방생성 (방이름 + 받는사람) ", async () => {
       // Arrange
-      const input = new CreateRoomDto("방이름", null, "받는사람", new Date());
+      const input = new CreateRoomRequest(
+        "방이름",
+        null,
+        "받는사람",
+        new Date()
+      );
 
       // Act
       const result = await repository.create(input);

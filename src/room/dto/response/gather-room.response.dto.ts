@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class GatherRoomResponseDto {
+export class GatherRoomResponse {
   @ApiProperty({
     description: "zip 다온로드 URL",
     example:

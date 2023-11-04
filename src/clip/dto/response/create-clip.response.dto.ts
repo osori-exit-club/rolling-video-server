@@ -37,7 +37,7 @@ export class CreateClipResponse {
   })
   readonly extension: string;
   @ApiProperty({
-    description: "clip 해시키",
+    description: "자동 생성된 비밀 번호",
     required: true,
     nullable: false,
     example: "$2b$10$7PGL5xUa/1RutkG7ZX2.euxACTiyGc1s6v/sx/JVk/wUcVwAAwUsO",

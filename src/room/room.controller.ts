@@ -9,7 +9,7 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import { RoomService } from "./room.service";
-import { CreateRoomDto } from "./dto/create-room.dto";
+import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -20,12 +20,12 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { RoomDto } from "./dto/room.dto";
-import { DeleteRoomDto } from "./dto/delete-room.dto";
-import { GatherRoomResponseDto } from "./dto/gather-room-response.dto";
-import { CreateRoomResponseDto } from "./dto/create-room-response.dto";
+import { DeleteRoomRequest } from "./dto/request/delete-room.request.dto";
+import { GatherRoomResponse } from "./dto/response/gather-room.response.dto";
+import { CreateRoomResponse } from "./dto/response/create-room.response.dto";
 import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
-import { ReadRoomResponseDto } from "./dto/read-room-response.dto";
+import { RoomResponse } from "./dto/response/room.response.dto";
 
 @Controller("room")
 @ApiTags("Room API")
@@ -39,17 +39,17 @@ export class RoomController {
   })
   @ApiBody({
     description: "방 정보",
-    type: CreateRoomDto,
+    type: CreateRoomRequest,
   })
   @ApiOkResponse({
     description: "생성된 Room 객체",
-    type: CreateRoomResponseDto,
+    type: CreateRoomResponse,
   })
   async create(
-    @Body() createRoomDto: CreateRoomDto
-  ): Promise<CreateRoomResponseDto> {
+    @Body() createRoomDto: CreateRoomRequest
+  ): Promise<CreateRoomResponse> {
     const roomDto: RoomDto = await this.roomService.create(createRoomDto);
-    return new CreateRoomResponseDto(
+    return new CreateRoomResponse(
       roomDto.roomId,
       roomDto.name,
       roomDto.recipient,
@@ -66,10 +66,10 @@ export class RoomController {
     description: "방 전체 정보 리스트",
     type: [RoomDto],
   })
-  async findAll(): Promise<ReadRoomResponseDto[]> {
+  async findAll(): Promise<RoomResponse[]> {
     const roomDtoList: RoomDto[] = await this.roomService.findAll();
     return roomDtoList.map((roomDto) => {
-      return new ReadRoomResponseDto(
+      return new RoomResponse(
         roomDto.roomId,
         roomDto.name,
         roomDto.recipient,
@@ -92,7 +92,7 @@ export class RoomController {
   })
   @ApiOkResponse({
     description: "방 정보",
-    type: ReadRoomResponseDto,
+    type: RoomResponse,
   })
   @ApiNotFoundResponse({
     description: "잘못된 id를 전송한 경우",
@@ -111,7 +111,7 @@ export class RoomController {
     },
   })
   @Get(":id")
-  async findOne(@Param("id") id: string): Promise<ReadRoomResponseDto> {
+  async findOne(@Param("id") id: string): Promise<RoomResponse> {
     const roomDto = await this.roomService.findOne(id);
     if (roomDto == null) {
       throw new HttpException(
@@ -119,7 +119,7 @@ export class RoomController {
         HttpStatus.NOT_FOUND
       );
     }
-    return new ReadRoomResponseDto(
+    return new RoomResponse(
       roomDto.roomId,
       roomDto.name,
       roomDto.recipient,
@@ -140,7 +140,7 @@ export class RoomController {
     example: "651c1bc85130dd8a0abf7727",
   })
   @ApiBody({
-    type: DeleteRoomDto,
+    type: DeleteRoomRequest,
   })
   @ApiOkResponse({
     description: "방 정보",
@@ -188,7 +188,7 @@ export class RoomController {
   })
   async remove(
     @Param("id") id: string,
-    @Body() deleteRoomDto: DeleteRoomDto
+    @Body() deleteRoomDto: DeleteRoomRequest
   ): Promise<SimpleResponseDto> {
     const result = await this.roomService.remove(id, deleteRoomDto);
     if (result != null && result._id.toString() == id) {
@@ -201,7 +201,7 @@ export class RoomController {
   @ApiOperation({ summary: "클립 취합 API", description: "클립을 생성한다." })
   @ApiOkResponse({
     description: "취합 성공",
-    type: GatherRoomResponseDto,
+    type: GatherRoomResponse,
   })
   @ApiNotFoundResponse({
     description: "잘못된 id를 전송한 경우",
@@ -219,7 +219,7 @@ export class RoomController {
       },
     },
   })
-  gather(@Param("id") roomId: string): Promise<GatherRoomResponseDto> {
+  gather(@Param("id") roomId: string): Promise<GatherRoomResponse> {
     return this.roomService.gather(roomId);
   }
 }

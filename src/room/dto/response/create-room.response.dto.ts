@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CreateRoomResponseDto {
+export class CreateRoomResponse {
   @ApiProperty({
     required: true,
     nullable: false,

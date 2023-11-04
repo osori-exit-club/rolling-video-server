@@ -9,9 +9,9 @@ import { HashHelper } from "src/utils/hash/hash.helper";
 import { HashModule } from "src/utils/hash/hash.module";
 import { ResponseMessage } from "src/utils/message.ko";
 import { OsModule } from "src/utils/os/os.module";
-import { CreateRoomResponseDto } from "./dto/create-room-response.dto";
-import { CreateRoomDto } from "./dto/create-room.dto";
-import { ReadRoomResponseDto } from "./dto/read-room-response.dto";
+import { CreateRoomResponse } from "./dto/response/create-room.response.dto";
+import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
+import { RoomResponse } from "./dto/response/room.response.dto";
 import { RoomDto } from "./dto/room.dto";
 import { RoomController } from "./room.controller";
 import { RoomRepository } from "./room.repository";
@@ -76,11 +76,11 @@ describe("RoomController", () => {
 
       // Act
       const result = await controller.create(
-        new CreateRoomDto("", "", "", new Date())
+        new CreateRoomRequest("", "", "", new Date())
       );
 
       // Assert
-      expect(result).toBeInstanceOf(CreateRoomResponseDto);
+      expect(result).toBeInstanceOf(CreateRoomResponse);
     });
   });
 
@@ -107,10 +107,10 @@ describe("RoomController", () => {
       const roomId = "roomId";
 
       // Act
-      const result: ReadRoomResponseDto = await controller.findOne(roomId);
+      const result: RoomResponse = await controller.findOne(roomId);
 
       // Assert
-      expect(result).toBeInstanceOf(ReadRoomResponseDto);
+      expect(result).toBeInstanceOf(RoomResponse);
     });
 
     it("실패 케이스 - 존재하지 않는 roomId", async () => {

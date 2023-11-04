@@ -10,7 +10,7 @@ import { HashHelper } from "src/utils/hash/hash.helper";
 import { HashModule } from "src/utils/hash/hash.module";
 import { ResponseMessage } from "src/utils/message.ko";
 import { OsModule } from "src/utils/os/os.module";
-import { DeleteRoomDto } from "./dto/delete-room.dto";
+import { DeleteRoomRequest } from "./dto/request/delete-room.request.dto";
 import { RoomRepository } from "./room.repository";
 import { RoomService } from "./room.service";
 
@@ -114,7 +114,10 @@ describe("RoomService", () => {
         .mockResolvedValue(Promise.resolve(repoResult));
 
       // Act
-      const result = await service.remove(roomId, new DeleteRoomDto(password));
+      const result = await service.remove(
+        roomId,
+        new DeleteRoomRequest(password)
+      );
 
       // Assert
       expect(result).toEqual(repoResult);
@@ -126,7 +129,7 @@ describe("RoomService", () => {
       const password = "password";
       // Act & Assert
       expect(async () => {
-        await service.remove(roomId, new DeleteRoomDto(password));
+        await service.remove(roomId, new DeleteRoomRequest(password));
       }).rejects.toThrowError(
         new HttpException(
           ResponseMessage.ROOM_REMOVE_FAIL_NOT_FOUND,
@@ -141,7 +144,7 @@ describe("RoomService", () => {
       const password = "wroungPassword";
       // Act & Assert
       await expect(async () => {
-        await service.remove(roomId, new DeleteRoomDto(password));
+        await service.remove(roomId, new DeleteRoomRequest(password));
       }).rejects.toThrowError(
         new HttpException(
           ResponseMessage.ROOM_REMOVE_FAIL_WONG_PASSWORD,

@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CreateRoomDto {
+export class CreateRoomRequest {
   @ApiProperty({
     description: "방의 이름",
     required: true,

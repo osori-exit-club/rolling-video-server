@@ -3,13 +3,13 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { ClipDto } from "src/clip/dto/clip.dto";
 import { GatheringService } from "src/gathering/gathering.service";
 import { HashHelper } from "src/utils/hash/hash.helper";
-import { CreateRoomDto } from "./dto/create-room.dto";
-import { DeleteRoomDto } from "./dto/delete-room.dto";
+import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
+import { DeleteRoomRequest } from "./dto/request/delete-room.request.dto";
 import { RoomDto } from "./dto/room.dto";
 import { RoomRepository } from "./room.repository";
 import { OsHelper } from "src/utils/os/os.helper";
 import { S3Repository } from "src/aws/s3/s3.repository";
-import { GatherRoomResponseDto } from "./dto/gather-room-response.dto";
+import { GatherRoomResponse } from "./dto/response/gather-room.response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 
 @Injectable()
@@ -22,7 +22,7 @@ export class RoomService {
     private readonly osHelper: OsHelper
   ) {}
 
-  async create(createRoomDto: CreateRoomDto): Promise<RoomDto> {
+  async create(createRoomDto: CreateRoomRequest): Promise<RoomDto> {
     const room = await this.roomRepository.create(createRoomDto);
 
     return new RoomDto(
@@ -98,7 +98,7 @@ export class RoomService {
     );
   }
 
-  async remove(id: string, deleteRoomDto: DeleteRoomDto): Promise<any> {
+  async remove(id: string, deleteRoomDto: DeleteRoomRequest): Promise<any> {
     let room;
     try {
       room = await this.roomRepository.findOne(id);
@@ -127,10 +127,7 @@ export class RoomService {
     return await this.roomRepository.remove(id);
   }
 
-  async gather(
-    roomId: string,
-    outPath?: string
-  ): Promise<GatherRoomResponseDto> {
+  async gather(roomId: string, outPath?: string): Promise<GatherRoomResponse> {
     const room: RoomDto | null = await this.findOne(roomId);
     if (room == null) {
       throw new HttpException(
@@ -174,6 +171,6 @@ export class RoomService {
     );
     const expiresInDate: string =
       new Date().setDate(new Date().getDate() + expiresIn) + "";
-    return new GatherRoomResponseDto(signedUrl, expiresInDate);
+    return new GatherRoomResponse(signedUrl, expiresInDate);
   }
 }
