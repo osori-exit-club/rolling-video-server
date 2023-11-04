@@ -75,9 +75,7 @@ describe("RoomController", () => {
         );
 
       // Act
-      const result = await controller.create(
-        new CreateRoomRequest("", "", "", new Date())
-      );
+      const result = await controller.create(new CreateRoomRequest("", "", ""));
 
       // Assert
       expect(result).toBeInstanceOf(CreateRoomResponse);
