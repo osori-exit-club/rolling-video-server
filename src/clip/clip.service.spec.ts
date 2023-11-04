@@ -8,9 +8,9 @@ import { Room } from "src/schema/rooms.schema";
 import { HashModule } from "src/utils/hash/hash.module";
 import { ClipRepository } from "./clip.repository";
 import { ClipService } from "./clip.service";
-import { CreateClipResponseDto } from "./dto/create-clip-response.dto";
-import { CreateClipDto } from "./dto/create-clip.dto";
-import { DeleteClipDto } from "./dto/delete-clip.dto";
+import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
+import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
+import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
 
 describe("ClipService", () => {
   let service: ClipService;
@@ -65,7 +65,7 @@ describe("ClipService", () => {
     it("[1] 클립 생성", async () => {
       // Arrange
       const roomId = "roomId";
-      const input = new CreateClipDto(roomId, "nickname", true);
+      const input = new CreateClipRequest(roomId, "nickname", true);
       // TODO clipRepository의 리턴 타입은 무엇이고 mock 객체 못만드나?
       const mockClip: any = { _id: "testId", extension: "mp4" };
       mockClip.save = () => {};
@@ -80,12 +80,12 @@ describe("ClipService", () => {
         .mockResolvedValue(Promise.resolve(mockClip));
 
       // Act
-      const result: CreateClipResponseDto = await service.create(input, {
+      const result: CreateClipResponse = await service.create(input, {
         originalname: "test.mp4",
       });
 
       // Assert
-      expect(result).toBeInstanceOf(CreateClipResponseDto);
+      expect(result).toBeInstanceOf(CreateClipResponse);
       expect(result.extension).toEqual("mp4");
     });
   });
@@ -95,7 +95,7 @@ describe("ClipService", () => {
       // Arrange
       const clipId = "clipId";
       const password = "password";
-      const input = new DeleteClipDto(password);
+      const input = new DeleteClipRequest(password);
       const repoResult: any = {};
 
       jest.spyOn(clipRepository, "findOne").mockImplementation((id) => {

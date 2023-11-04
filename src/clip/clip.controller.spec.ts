@@ -14,10 +14,10 @@ import { OsModule } from "src/utils/os/os.module";
 import { ClipController } from "./clip.controller";
 import { ClipRepository } from "./clip.repository";
 import { ClipService } from "./clip.service";
-import { ClipResponseDto } from "./dto/clip-response.dto";
+import { ClipResponse } from "./dto/response/clip.response.dto";
 import { ClipDto } from "./dto/clip.dto";
-import { CreateClipResponseDto } from "./dto/create-clip-response.dto";
-import { CreateClipDto } from "./dto/create-clip.dto";
+import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
+import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 
 describe("ClipController", () => {
   let controller: ClipController;
@@ -62,7 +62,7 @@ describe("ClipController", () => {
         .spyOn(service, "create")
         .mockResolvedValue(
           Promise.resolve(
-            new CreateClipResponseDto(
+            new CreateClipResponse(
               new ClipDto(clipId, roomId, "nickName", true, "mp4", "password")
             )
           )
@@ -71,7 +71,7 @@ describe("ClipController", () => {
       jest.spyOn(service, "findOne").mockImplementation((id) => {
         return Promise.resolve(
           id == clipId
-            ? new ClipResponseDto(
+            ? new ClipResponse(
                 new ClipDto(
                   clipId,
                   roomId,
@@ -105,13 +105,13 @@ describe("ClipController", () => {
         );
 
       // Act
-      const result: CreateClipResponseDto = await controller.create(
-        new CreateClipDto("", "", true),
+      const result: CreateClipResponse = await controller.create(
+        new CreateClipRequest("", "", true),
         { size: 1_000_000 }
       );
 
       // Assert
-      expect(result).toBeInstanceOf(CreateClipResponseDto);
+      expect(result).toBeInstanceOf(CreateClipResponse);
     });
 
     it("실패 케이스 - 1. 존재하지 않는 roomId", async () => {
@@ -122,7 +122,7 @@ describe("ClipController", () => {
 
       // Act & Assert
       await expect(async () => {
-        await controller.create(new CreateClipDto("", "", true), {
+        await controller.create(new CreateClipRequest("", "", true), {
           size: 10_000_000,
         });
       }).rejects.toThrowError(
@@ -152,7 +152,7 @@ describe("ClipController", () => {
 
       // Act & Assert
       await expect(async () => {
-        await controller.create(new CreateClipDto("", "", true), {
+        await controller.create(new CreateClipRequest("", "", true), {
           size: 20_000_000,
         });
       }).rejects.toThrowError(
@@ -182,7 +182,7 @@ describe("ClipController", () => {
 
       // Act & Assert
       try {
-        await controller.create(new CreateClipDto("", "", true), {
+        await controller.create(new CreateClipRequest("", "", true), {
           size: 10_000_000,
         });
       } catch (err) {
@@ -203,7 +203,7 @@ describe("ClipController", () => {
 
       jest.spyOn(service, "create").mockResolvedValue(
         Promise.resolve(
-          new CreateClipResponseDto({
+          new CreateClipResponse({
             clipId,
             roomId,
             nickname: "nickName",
@@ -217,7 +217,7 @@ describe("ClipController", () => {
       jest.spyOn(service, "findOne").mockImplementation((id) => {
         return Promise.resolve(
           id == clipId
-            ? new ClipResponseDto(
+            ? new ClipResponse(
                 new ClipDto(
                   clipId,
                   roomId,
@@ -238,10 +238,10 @@ describe("ClipController", () => {
       const clipId = "clipId";
 
       // Act
-      const result: ClipResponseDto = await controller.findOne(clipId);
+      const result: ClipResponse = await controller.findOne(clipId);
 
       // Assert
-      expect(result).toBeInstanceOf(ClipResponseDto);
+      expect(result).toBeInstanceOf(ClipResponse);
     });
 
     it("실패 케이스 - 존재하지 않는 roomId", async () => {

@@ -3,7 +3,7 @@ import { getModelToken, MongooseModule } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Model } from "mongoose";
 import { Clip, ClipDocument, ClipScheme } from "src/schema/clips.schema";
-import { CreateClipDto } from "./dto/create-clip.dto";
+import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { ClipRepository } from "./clip.repository";
 import { Room, RoomDocument, RoomScheme } from "src/schema/rooms.schema";
 import { HashModule } from "src/utils/hash/hash.module";
@@ -60,9 +60,9 @@ describe("ClipRepository", () => {
     }).save();
     roomId = room.id;
     presetInputList = [
-      new CreateClipDto(room.id, "nickname1", true),
-      new CreateClipDto(room.id, "nickname2", true),
-      new CreateClipDto(room.id, "nickname3", false),
+      new CreateClipRequest(room.id, "nickname1", true),
+      new CreateClipRequest(room.id, "nickname2", true),
+      new CreateClipRequest(room.id, "nickname3", false),
     ];
     presetDataList = await Promise.all(
       presetInputList
@@ -99,7 +99,7 @@ describe("ClipRepository", () => {
   describe("클립 생성 테스트", () => {
     it("[1] 클립 생성 (방번호 + 닉네팀 + 공개 + 이미지) ", async () => {
       // Arrange
-      const input = new CreateClipDto(roomId, "nickname", true);
+      const input = new CreateClipRequest(roomId, "nickname", true);
 
       // Act
       const result = await repository.create(input, "mp4");
@@ -113,7 +113,7 @@ describe("ClipRepository", () => {
 
     it("[2] 클립 생성 (방번호 + 닉네팀 + 비공개 + 이미지) ", async () => {
       // Arrange
-      const input = new CreateClipDto(roomId, "nickname", false);
+      const input = new CreateClipRequest(roomId, "nickname", false);
 
       // Act
       const result = await repository.create(input, "mp4");

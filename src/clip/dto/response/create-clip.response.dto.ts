@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CreateClipResponseDto {
+export class CreateClipResponse {
   @ApiProperty({
     description: "clip's id",
     required: true,

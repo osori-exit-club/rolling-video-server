@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class DeleteClipDto {
+export class DeleteClipRequest {
   @ApiProperty({
     description: "비밀키",
     example: "해시값",

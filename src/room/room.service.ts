@@ -9,10 +9,8 @@ import { RoomDto } from "./dto/room.dto";
 import { RoomRepository } from "./room.repository";
 import { OsHelper } from "src/utils/os/os.helper";
 import { S3Repository } from "src/aws/s3/s3.repository";
-import { ClipResponseDto } from "src/clip/dto/clip-response.dto";
 import { GatherRoomResponseDto } from "./dto/gather-room-response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
-import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
 
 @Injectable()
 export class RoomService {

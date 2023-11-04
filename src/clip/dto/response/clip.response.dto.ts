@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ClipDto } from "./clip.dto";
+import { ClipDto } from "../clip.dto";
 
-export class ClipResponseDto {
+export class ClipResponse {
   @ApiProperty({
     description: "clip's id",
     required: true,

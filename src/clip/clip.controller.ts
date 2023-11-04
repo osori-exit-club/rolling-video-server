@@ -14,7 +14,7 @@ import {
   FileTypeValidator,
 } from "@nestjs/common";
 import { ClipService } from "./clip.service";
-import { CreateClipDto } from "./dto/create-clip.dto";
+import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
   ApiBadRequestResponse,
@@ -29,11 +29,11 @@ import {
 } from "@nestjs/swagger";
 import { RoomService } from "src/room/room.service";
 import { RoomDto } from "src/room/dto/room.dto";
-import { ClipResponseDto } from "./dto/clip-response.dto";
+import { ClipResponse } from "./dto/response/clip.response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
-import { CreateClipResponseDto } from "./dto/create-clip-response.dto";
-import { DeleteClipDto } from "./dto/delete-clip.dto";
+import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
+import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
 
 @Controller("clip")
 @ApiTags("Clip API")
@@ -76,7 +76,7 @@ export class ClipController {
   })
   @ApiOkResponse({
     description: "생성된 클립 정보",
-    type: CreateClipResponseDto,
+    type: CreateClipResponse,
   })
   @ApiNotFoundResponse({
     description: "잘못된 id를 전송한 경우",
@@ -156,7 +156,7 @@ export class ClipController {
     },
   })
   async create(
-    @Body() createClipDto: CreateClipDto,
+    @Body() createClipDto: CreateClipRequest,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -166,7 +166,7 @@ export class ClipController {
       })
     )
     file
-  ): Promise<CreateClipResponseDto> {
+  ): Promise<CreateClipResponse> {
     // TODO : remove below error code because it will be unreachable by UploadedFile validator
     const sizeMB = file.size / 1_000_000;
     if (sizeMB > 15) {
@@ -214,7 +214,7 @@ export class ClipController {
   })
   @ApiOkResponse({
     description: "Clip 정보",
-    type: ClipResponseDto,
+    type: ClipResponse,
   })
   @ApiNotFoundResponse({
     description: "잘못된 id를 전송한 경우",
@@ -232,7 +232,7 @@ export class ClipController {
       },
     },
   })
-  async findOne(@Param("id") id: string): Promise<ClipResponseDto> {
+  async findOne(@Param("id") id: string): Promise<ClipResponse> {
     const result = await this.clipService.findOne(id);
     if (result == null) {
       throw new HttpException(
@@ -255,7 +255,7 @@ export class ClipController {
     example: "651c1bc85130dd8a0abf7727",
   })
   @ApiBody({
-    type: DeleteClipDto,
+    type: DeleteClipRequest,
   })
   @ApiOkResponse({
     description: "삭제 겅공 여부",
@@ -301,7 +301,10 @@ export class ClipController {
       },
     },
   })
-  async remove(@Param("id") id: string, @Body() deleteClipDto: DeleteClipDto) {
+  async remove(
+    @Param("id") id: string,
+    @Body() deleteClipDto: DeleteClipRequest
+  ) {
     const result = await this.clipService.remove(id, deleteClipDto);
     const isSuccess = result._id.toString() == id;
     if (isSuccess == false) {

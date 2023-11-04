@@ -3,12 +3,11 @@ import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
 import { ClipRepository } from "./clip.repository";
 import { ClipDto } from "./dto/clip.dto";
-import { ClipResponseDto } from "./dto/clip-response.dto";
-import { CreateClipDto } from "./dto/create-clip.dto";
+import { ClipResponse } from "./dto/response/clip.response.dto";
+import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { ResponseMessage } from "src/utils/message.ko";
-import { CreateClipResponseDto } from "./dto/create-clip-response.dto";
-import { stringList } from "aws-sdk/clients/datapipeline";
-import { DeleteClipDto } from "./dto/delete-clip.dto";
+import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
+import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
 
 @Injectable()
 export class ClipService {
@@ -19,9 +18,9 @@ export class ClipService {
   ) {}
 
   async create(
-    createClipDto: CreateClipDto,
+    createClipDto: CreateClipRequest,
     file: any
-  ): Promise<CreateClipResponseDto> {
+  ): Promise<CreateClipResponse> {
     const splitted = file.originalname.split(".");
     const extension = splitted[splitted.length - 1];
     const clip = await this.clipRepository.create(createClipDto, extension);
@@ -42,7 +41,7 @@ export class ClipService {
 
     this.roomRepository.addClip(createClipDto.roomId, clip);
 
-    return new CreateClipResponseDto(clipDto);
+    return new CreateClipResponse(clipDto);
   }
 
   async findAll(): Promise<ClipDto[]> {
@@ -59,7 +58,7 @@ export class ClipService {
     });
   }
 
-  async findOne(id: string): Promise<ClipResponseDto> {
+  async findOne(id: string): Promise<ClipResponse> {
     const clip = await this.clipRepository.findOne(id);
     if (clip == null) {
       throw new HttpException(
@@ -78,10 +77,10 @@ export class ClipService {
     const signedUrl: string = await this.s3Respository.getPresignedUrl(
       clipDto.getS3Key()
     );
-    return new ClipResponseDto(clipDto, signedUrl);
+    return new ClipResponse(clipDto, signedUrl);
   }
 
-  async remove(id: string, deleteClipDto: DeleteClipDto) {
+  async remove(id: string, deleteClipDto: DeleteClipRequest) {
     let clip = null;
     try {
       clip = await this.clipRepository.findOne(id);

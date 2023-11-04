@@ -3,7 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Clip, ClipDocument } from "src/schema/clips.schema";
 import { HashHelper } from "src/utils/hash/hash.helper";
-import { CreateClipDto } from "./dto/create-clip.dto";
+import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 
 @Injectable()
 export class ClipRepository {
@@ -12,7 +12,7 @@ export class ClipRepository {
     private readonly hashHelper: HashHelper
   ) {}
 
-  async create(createClipDto: CreateClipDto, extension: string) {
+  async create(createClipDto: CreateClipRequest, extension: string) {
     const hashString: string = [
       createClipDto.roomId,
       createClipDto.nickname,
