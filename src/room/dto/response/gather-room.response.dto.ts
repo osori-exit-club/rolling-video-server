@@ -10,7 +10,7 @@ export class GatherRoomResponse {
 
   @ApiProperty({
     description: "만료 기한",
-    example: "",
+    example: "2023-11-14T15:39:40.987Z",
   })
   readonly expiresIn: string;
 
