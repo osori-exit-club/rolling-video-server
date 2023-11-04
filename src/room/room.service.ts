@@ -176,8 +176,9 @@ export class RoomService {
       key,
       expiresIn
     );
-    const expiresInDate: string =
-      new Date().setDate(new Date().getDate() + expiresIn) + "";
-    return new GatherRoomResponse(signedUrl, expiresInDate);
+    const expiresInDate: Date = new Date();
+    expiresInDate.setDate(new Date().getDate() + expiresIn);
+
+    return new GatherRoomResponse(signedUrl, expiresInDate.toISOString());
   }
 }
