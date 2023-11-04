@@ -201,16 +201,18 @@ describe("ClipController", () => {
       const clipId = "clipId";
       const password = "password";
 
-      jest
-        .spyOn(service, "create")
-        .mockResolvedValue(
-          Promise.resolve(
-            new ClipResponseDto(
-              new ClipDto(clipId, roomId, "nickName", true, "mp4", "password"),
-              "signedUrl"
-            )
-          )
-        );
+      jest.spyOn(service, "create").mockResolvedValue(
+        Promise.resolve(
+          new CreateClipResponseDto({
+            clipId,
+            roomId,
+            nickname: "nickName",
+            isPublic: true,
+            extension: "mp4",
+            password: "password",
+          })
+        )
+      );
 
       jest.spyOn(service, "findOne").mockImplementation((id) => {
         return Promise.resolve(

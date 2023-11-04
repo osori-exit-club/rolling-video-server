@@ -1,7 +1,42 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ClipDto } from "./clip.dto";
 
-export class ClipResponseDto extends ClipDto {
+export class ClipResponseDto {
+  @ApiProperty({
+    description: "clip's id",
+    required: true,
+    nullable: false,
+    example: "6509a7ab8173da335d01c6bc",
+  })
+  readonly clipId: string;
+  @ApiProperty({
+    description: "clip이 속해 있는 Room의 id",
+    required: true,
+    nullable: false,
+    example: "65099d54d2ba36bb284678e2",
+  })
+  readonly roomId: string;
+  @ApiProperty({
+    description: "clip을 생성한 사람의 닉네임",
+    required: true,
+    nullable: false,
+    example: "nickname3",
+  })
+  readonly nickname: string;
+  @ApiProperty({
+    description: "clip 공개 여부",
+    required: true,
+    nullable: false,
+    example: "true",
+  })
+  readonly isPublic: boolean;
+  @ApiProperty({
+    description: "clip 파일 확장자",
+    required: true,
+    nullable: false,
+    example: "mp4",
+  })
+  readonly extension: string;
   @ApiProperty({
     description: "clip 영상 url",
     required: true,
@@ -10,14 +45,11 @@ export class ClipResponseDto extends ClipDto {
   })
   readonly signedVideoUrl: string;
   constructor(clipDto: ClipDto, signedVideoUrl: string) {
-    super(
-      clipDto.clipId,
-      clipDto.roomId,
-      clipDto.nickname,
-      clipDto.isPublic,
-      clipDto.extension,
-      clipDto.password
-    );
+    this.clipId = clipDto.clipId;
+    this.roomId = clipDto.roomId;
+    this.nickname = clipDto.nickname;
+    this.isPublic = clipDto.isPublic;
+    this.extension = clipDto.extension;
     this.signedVideoUrl = signedVideoUrl;
   }
 }

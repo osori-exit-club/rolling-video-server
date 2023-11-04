@@ -49,25 +49,6 @@ export class RoomService {
   async findAll(): Promise<RoomDto[]> {
     const result = await this.roomRepository.findAll();
 
-    const signedUrlMap: Map<string, string> = new Map();
-    const clipList: any[] = result.flatMap((room) => room.clips);
-    for (let index = 0; index < clipList.length; index++) {
-      const clip = clipList[index];
-
-      const clipDto = new ClipDto(
-        clip._id.toString(),
-        clip.roomId,
-        clip.nickname,
-        clip.isPublic,
-        clip.extension,
-        clip.password
-      );
-      const signedUrl = await this.s3Repository.getPresignedUrl(
-        clipDto.getS3Key()
-      );
-      signedUrlMap[clipDto.clipId] = signedUrl;
-    }
-
     return result.map((room) => {
       return new RoomDto(
         room._id.toString(),
@@ -76,16 +57,13 @@ export class RoomService {
         room.recipient,
         new Date(+room.dueDate),
         room.clips.map((clip) => {
-          return new ClipResponseDto(
-            new ClipDto(
-              clip._id.toString(),
-              clip.roomId,
-              clip.nickname,
-              clip.isPublic,
-              clip.extension,
-              clip.password
-            ),
-            signedUrlMap[clip._id.toString()]
+          return new ClipDto(
+            clip._id.toString(),
+            clip.roomId,
+            clip.nickname,
+            clip.isPublic,
+            clip.extension,
+            clip.password
           );
         })
       );
@@ -103,25 +81,6 @@ export class RoomService {
       return null;
     }
 
-    const signedUrlMap: Map<string, string> = new Map();
-    const clipList: any[] = room.clips;
-    for (let index = 0; index < clipList.length; index++) {
-      const clip = clipList[index];
-
-      const clipDto = new ClipDto(
-        clip._id.toString(),
-        clip.roomId,
-        clip.nickname,
-        clip.isPublic,
-        clip.extension,
-        clip.password
-      );
-      const signedUrl = await this.s3Repository.getPresignedUrl(
-        clipDto.getS3Key()
-      );
-      signedUrlMap[clipDto.clipId] = signedUrl;
-    }
-
     return new RoomDto(
       id,
       room.name,
@@ -129,16 +88,13 @@ export class RoomService {
       room.recipient,
       room.dueDate,
       room.clips.map((clip) => {
-        return new ClipResponseDto(
-          new ClipDto(
-            clip._id.toString(),
-            clip.roomId,
-            clip.nickname,
-            clip.isPublic,
-            clip.extension,
-            clip.password
-          ),
-          signedUrlMap[clip._id.toString()]
+        return new ClipDto(
+          clip._id.toString(),
+          clip.roomId,
+          clip.nickname,
+          clip.isPublic,
+          clip.extension,
+          clip.password
         );
       })
     );
