@@ -100,12 +100,7 @@ describe("RoomRepository", () => {
   describe("방 생성 테스트", () => {
     it("[1] 방생성 (방이름 + 비밀번호 + 받는사람) ", async () => {
       // Arrange
-      const input = new CreateRoomRequest(
-        "방이름",
-        "1234",
-        "받는사람",
-        new Date()
-      );
+      const input = new CreateRoomRequest("방이름", "1234", "받는사람");
 
       // Act
       const result = await repository.create(input);
