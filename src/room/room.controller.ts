@@ -64,7 +64,7 @@ export class RoomController {
   })
   @ApiOkResponse({
     description: "방 전체 정보 리스트",
-    type: [RoomDto],
+    type: [RoomResponse],
   })
   async findAll(): Promise<RoomResponse[]> {
     const roomDtoList: RoomDto[] = await this.roomService.findAll();
