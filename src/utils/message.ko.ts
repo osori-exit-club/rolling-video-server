@@ -4,7 +4,7 @@ export const ResponseMessage = {
     return `This room is exipred because due date is ${dueDate} but today is ${currentDate}`;
   },
   CLIP_CREATE_FAIL_SIZE_LIMIT(limit: string) {
-    return `size is over than ${limit}`;
+    return `Validation failed (expected size is less than ${limit})`;
   },
   CLIP_REMOVE_SUCCESS: "삭제에 성공 했습니다.",
   CLIP_REMOVE_FAIL: "삭제에 실패 했습니다.",

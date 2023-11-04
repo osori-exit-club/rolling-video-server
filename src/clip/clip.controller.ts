@@ -9,6 +9,9 @@ import {
   UseInterceptors,
   HttpException,
   HttpStatus,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from "@nestjs/common";
 import { ClipService } from "./clip.service";
 import { CreateClipDto } from "./dto/create-clip.dto";
@@ -21,9 +24,9 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
-import { ClipDto } from "./dto/clip.dto";
 import { RoomService } from "src/room/room.service";
 import { RoomDto } from "src/room/dto/room.dto";
 import { ClipResponseDto } from "./dto/clip-response.dto";
@@ -91,47 +94,81 @@ export class ClipController {
       },
     },
   })
-  @ApiBadRequestResponse({
-    description: "업로드 기한이 지난 경우",
-    schema: {
-      type: "object",
-      properties: {
-        statusCode: {
-          type: "number",
-          example: HttpStatus.BAD_REQUEST,
-        },
-        message: {
-          type: "string",
-          example: ResponseMessage.CLIP_CREATE_FAIL_EXPIRED(
-            new Date().toDateString(),
-            new Date(new Date().getDate() - 1).toDateString()
-          ),
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    content: {
+      "업로드 기한이 지난 경우": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.BAD_REQUEST,
+            },
+            message: {
+              type: "string",
+              example: ResponseMessage.CLIP_CREATE_FAIL_EXPIRED(
+                new Date().toDateString(),
+                new Date(new Date().getDate() - 1).toDateString()
+              ),
+            },
+          },
         },
       },
-    },
-  })
-  @ApiBadRequestResponse({
-    description: "파일의 크기가 큰 경우",
-    schema: {
-      type: "object",
-      properties: {
-        statusCode: {
-          type: "number",
-          example: HttpStatus.BAD_REQUEST,
+      "파일의 크기가 큰 경우": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.BAD_REQUEST,
+            },
+            message: {
+              type: "string",
+              example: ResponseMessage.CLIP_CREATE_FAIL_SIZE_LIMIT("15MB"),
+            },
+            error: {
+              type: "string",
+              example: "Bad Request",
+            },
+          },
         },
-        message: {
-          type: "string",
-          example: ResponseMessage.CLIP_CREATE_FAIL_SIZE_LIMIT("15MB"),
+      },
+      "비디오가 아닌 파일": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.BAD_REQUEST,
+            },
+            message: {
+              type: "string",
+              example: "Validation failed (expected type is video/*)",
+            },
+            error: {
+              type: "string",
+              example: "Bad Request",
+            },
+          },
         },
       },
     },
   })
   async create(
     @Body() createClipDto: CreateClipDto,
-    @UploadedFile() file
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 15_000_000 }),
+          new FileTypeValidator({ fileType: "video/*" }),
+        ],
+      })
+    )
+    file
   ): Promise<CreateClipResponseDto> {
+    // TODO : remove below error code because it will be unreachable by UploadedFile validator
     const sizeMB = file.size / 1_000_000;
-
     if (sizeMB > 15) {
       console.log(sizeMB);
       throw new HttpException(
@@ -163,6 +200,7 @@ export class ClipController {
     return this.clipService.create(createClipDto, file);
   }
 
+  // TODO: password는 생성 시에만 보내주고, get에서는 보내주면 안됨.
   @Get(":id")
   @ApiOperation({
     summary: "클립 조회 API",
