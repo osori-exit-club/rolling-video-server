@@ -11,6 +11,7 @@ import { OsHelper } from "src/utils/os/os.helper";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { GatherRoomResponse } from "./dto/response/gather-room.response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
+import { Constants } from "src/utils/constants";
 
 @Injectable()
 export class RoomService {
@@ -24,13 +25,19 @@ export class RoomService {
 
   async create(createRoomDto: CreateRoomRequest): Promise<RoomDto> {
     const room = await this.roomRepository.create(createRoomDto);
+    const dueDate: Date = new Date();
+    dueDate.setDate(new Date().getDate() + Constants.ROOM_DEFAULT_EXPIRED_DAY);
+    dueDate.setUTCHours(0);
+    dueDate.setUTCMinutes(0);
+    dueDate.setUTCSeconds(0);
+    dueDate.setUTCMilliseconds(0);
 
     return new RoomDto(
       room._id.toString(),
       room.name,
       room.passwordHashed,
       room.recipient,
-      new Date(+room.dueDate),
+      dueDate,
       room.clips.map((clip) => {
         return new ClipDto(
           clip._id.toString(),

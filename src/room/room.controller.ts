@@ -46,14 +46,14 @@ export class RoomController {
     type: CreateRoomResponse,
   })
   async create(
-    @Body() createRoomDto: CreateRoomRequest
+    @Body() createRoomRequest: CreateRoomRequest
   ): Promise<CreateRoomResponse> {
-    const roomDto: RoomDto = await this.roomService.create(createRoomDto);
+    const roomDto: RoomDto = await this.roomService.create(createRoomRequest);
     return new CreateRoomResponse(
       roomDto.roomId,
       roomDto.name,
       roomDto.recipient,
-      roomDto.dueDate + ""
+      roomDto.dueDate.toISOString()
     );
   }
 

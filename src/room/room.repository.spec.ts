@@ -14,9 +14,9 @@ describe("RoomRepository", () => {
   let repository: RoomRepository;
   let s3Repository: S3Repository;
   const presetInputList: CreateRoomRequest[] = [
-    new CreateRoomRequest("roomName1", "1234", "target", new Date()),
-    new CreateRoomRequest("roomName2", null, "target", new Date()),
-    new CreateRoomRequest("roomName3", "", "target3", new Date()),
+    new CreateRoomRequest("roomName1", "1234", "target"),
+    new CreateRoomRequest("roomName2", null, "target"),
+    new CreateRoomRequest("roomName3", "", "target3"),
   ];
   let presetDataList: any[];
   let hashHelper: HashHelper;
@@ -122,12 +122,7 @@ describe("RoomRepository", () => {
 
     it("[2] 방생성 (방이름 + 받는사람) ", async () => {
       // Arrange
-      const input = new CreateRoomRequest(
-        "방이름",
-        null,
-        "받는사람",
-        new Date()
-      );
+      const input = new CreateRoomRequest("방이름", null, "받는사람");
 
       // Act
       const result = await repository.create(input);
