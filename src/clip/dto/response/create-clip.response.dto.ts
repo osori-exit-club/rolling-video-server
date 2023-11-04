@@ -40,7 +40,7 @@ export class CreateClipResponse {
     description: "clip 해시키",
     required: true,
     nullable: false,
-    example: "hashed",
+    example: "$2b$10$7PGL5xUa/1RutkG7ZX2.euxACTiyGc1s6v/sx/JVk/wUcVwAAwUsO",
   })
   readonly password: string;
   constructor({
