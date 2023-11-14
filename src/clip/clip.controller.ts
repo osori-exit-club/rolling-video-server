@@ -13,14 +13,17 @@ import {
   MaxFileSizeValidator,
   FileTypeValidator,
   Logger,
+  UseGuards,
 } from "@nestjs/common";
 import { ClipService } from "./clip.service";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -35,6 +38,7 @@ import { ResponseMessage } from "src/utils/message.ko";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
 import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
+import { ApiKeyGuard } from "src/auth/apikeyguard";
 
 @Controller("clip")
 @ApiTags("Clip API")
@@ -45,6 +49,8 @@ export class ClipController {
   ) {}
 
   @Post()
+  @UseGuards(ApiKeyGuard)
+  @ApiBearerAuth("X-API-KEY")
   @UseInterceptors(FileInterceptor("file"))
   @ApiOperation({ summary: "클립 생성 API", description: "클립을 생성한다." })
   @ApiConsumes("multipart/form-data")
@@ -79,18 +85,22 @@ export class ClipController {
     description: "생성된 클립 정보",
     type: CreateClipResponse,
   })
-  @ApiNotFoundResponse({
-    description: "잘못된 id를 전송한 경우",
+  @ApiForbiddenResponse({
+    description: "잘못된 API KEY",
     schema: {
       type: "object",
       properties: {
-        statusCode: {
-          type: "number",
-          example: HttpStatus.BAD_REQUEST,
-        },
         message: {
           type: "string",
-          example: ResponseMessage.ROOM_READ_FAIL_WRONG_ID,
+          example: "Forbidden resource",
+        },
+        error: {
+          type: "string",
+          example: "Forbidden",
+        },
+        statusCode: {
+          type: "number",
+          example: HttpStatus.FORBIDDEN,
         },
       },
     },
@@ -98,6 +108,21 @@ export class ClipController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     content: {
+      "잘못된 id를 전송한 경우": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.BAD_REQUEST,
+            },
+            message: {
+              type: "string",
+              example: ResponseMessage.ROOM_READ_FAIL_WRONG_ID,
+            },
+          },
+        },
+      },
       "업로드 기한이 지난 경우": {
         schema: {
           type: "object",
@@ -203,6 +228,8 @@ export class ClipController {
 
   // TODO: password는 생성 시에만 보내주고, get에서는 보내주면 안됨.
   @Get(":id")
+  @UseGuards(ApiKeyGuard)
+  @ApiBearerAuth("X-API-KEY")
   @ApiOperation({
     summary: "클립 조회 API",
     description: "하나의 클립에 대한 정보를 조회 한다",
@@ -217,7 +244,27 @@ export class ClipController {
     description: "Clip 정보",
     type: ClipResponse,
   })
-  @ApiNotFoundResponse({
+  @ApiForbiddenResponse({
+    description: "잘못된 API KEY",
+    schema: {
+      type: "object",
+      properties: {
+        message: {
+          type: "string",
+          example: "Forbidden resource",
+        },
+        error: {
+          type: "string",
+          example: "Forbidden",
+        },
+        statusCode: {
+          type: "number",
+          example: HttpStatus.FORBIDDEN,
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
     description: "잘못된 id를 전송한 경우",
     schema: {
       type: "object",
@@ -245,6 +292,8 @@ export class ClipController {
   }
 
   @Delete(":id")
+  @UseGuards(ApiKeyGuard)
+  @ApiBearerAuth("X-API-KEY")
   @ApiOperation({
     summary: "클립 삭제 API",
     description: "클립 삭제 API",
@@ -270,34 +319,57 @@ export class ClipController {
       },
     },
   })
-  @ApiNotFoundResponse({
-    description: "잘못된 id를 전송한 경우",
+  @ApiForbiddenResponse({
+    description: "잘못된 API KEY",
     schema: {
       type: "object",
       properties: {
-        statusCode: {
-          type: "number",
-          example: HttpStatus.BAD_REQUEST,
-        },
         message: {
           type: "string",
-          example: ResponseMessage.CLIP_READ_FAIL_WRONG_ID,
+          example: "Forbidden resource",
+        },
+        error: {
+          type: "string",
+          example: "Forbidden",
+        },
+        statusCode: {
+          type: "number",
+          example: HttpStatus.FORBIDDEN,
         },
       },
     },
   })
-  @ApiBadRequestResponse({
-    description: "잘못된 패스워드를 전송한 경우",
-    schema: {
-      type: "object",
-      properties: {
-        statusCode: {
-          type: "number",
-          example: HttpStatus.BAD_GATEWAY,
+  @ApiResponse({
+    status: HttpStatus.BAD_GATEWAY,
+    content: {
+      "잘못된 id를 전송한 경우": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.BAD_REQUEST,
+            },
+            message: {
+              type: "string",
+              example: ResponseMessage.CLIP_READ_FAIL_WRONG_ID,
+            },
+          },
         },
-        message: {
-          type: "string",
-          example: ResponseMessage.CLIP_REMOVE_FAIL_WONG_PASSWORD,
+      },
+      "잘못된 패스워드를 전송한 경우": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.BAD_GATEWAY,
+            },
+            message: {
+              type: "string",
+              example: ResponseMessage.CLIP_REMOVE_FAIL_WONG_PASSWORD,
+            },
+          },
         },
       },
     },

@@ -14,6 +14,15 @@ export function setupSwagger(app: INestApplication): void {
     .setVersion(process.env.npm_package_version)
     .addTag("Room API")
     .addTag("Clip API")
+    .addBearerAuth(
+      {
+        type: "apiKey",
+        description: "API KEY",
+        in: "header",
+        name: "X-API-KEY",
+      },
+      "X-API-KEY"
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document);

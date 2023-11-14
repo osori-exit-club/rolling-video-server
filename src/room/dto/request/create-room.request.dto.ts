@@ -18,7 +18,6 @@ export class CreateRoomRequest {
     example: "용의자X",
   })
   readonly recipient: string;
-  readonly dueDate: Date;
   constructor(name: string, password: string | null, recipient: string) {
     this.name = name;
     this.password = password;

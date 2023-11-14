@@ -6,6 +6,7 @@ import { AppService } from "./app.service";
 import { RoomModule } from "./room/room.module";
 import { ClipModule } from "./clip/clip.module";
 import { GatheringModule } from "./gathering/gathering.module";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { GatheringModule } from "./gathering/gathering.module";
     RoomModule,
     ClipModule,
     GatheringModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+} from "@nestjs/common";
 import { AuthService } from "./auth.service";
 
 @Injectable()
@@ -7,7 +12,8 @@ export class ApiKeyGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
-    const key = req.headers["X-API-KEY"] ?? req.query.api_key;
+    const key = req.headers["x-api-key"] ?? req.query.api_key;
+    Logger.debug("X-API-KEY is " + key);
 
     return this.authService.isKeyValid(key);
   }

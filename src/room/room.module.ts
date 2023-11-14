@@ -8,6 +8,7 @@ import { HashModule } from "src/utils/hash/hash.module";
 import { GatheringModule } from "src/gathering/gathering.module";
 import { OsModule } from "src/utils/os/os.module";
 import { S3Module } from "src/aws/s3/s3.module";
+import { AuthModule } from "src/auth/auth.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { S3Module } from "src/aws/s3/s3.module";
     GatheringModule,
     OsModule,
     S3Module,
+    AuthModule,
   ],
   controllers: [RoomController],
   providers: [RoomService, RoomRepository],

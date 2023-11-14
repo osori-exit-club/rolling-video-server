@@ -7,16 +7,19 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from "@nestjs/common";
 import { RoomService } from "./room.service";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
-  ApiNotFoundResponse,
+  ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
 import { RoomDto } from "./dto/room.dto";
@@ -26,6 +29,7 @@ import { CreateRoomResponse } from "./dto/response/create-room.response.dto";
 import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { RoomResponse } from "./dto/response/room.response.dto";
+import { ApiKeyGuard } from "src/auth/apikeyguard";
 
 @Controller("room")
 @ApiTags("Room API")
@@ -33,6 +37,8 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Post()
+  @UseGuards(ApiKeyGuard)
+  @ApiBearerAuth("X-API-KEY")
   @ApiOperation({
     summary: "방 생성 API",
     description: "방 생성 API",
@@ -44,6 +50,26 @@ export class RoomController {
   @ApiOkResponse({
     description: "생성된 Room 객체",
     type: CreateRoomResponse,
+  })
+  @ApiForbiddenResponse({
+    description: "잘못된 API KEY",
+    schema: {
+      type: "object",
+      properties: {
+        message: {
+          type: "string",
+          example: "Forbidden resource",
+        },
+        error: {
+          type: "string",
+          example: "Forbidden",
+        },
+        statusCode: {
+          type: "number",
+          example: HttpStatus.FORBIDDEN,
+        },
+      },
+    },
   })
   async create(
     @Body() createRoomRequest: CreateRoomRequest
@@ -58,6 +84,8 @@ export class RoomController {
   }
 
   @Get()
+  @UseGuards(ApiKeyGuard)
+  @ApiBearerAuth("X-API-KEY")
   @ApiOperation({
     summary: "전체 방 조회 API",
     description: "전체 방 조회 API",
@@ -65,6 +93,26 @@ export class RoomController {
   @ApiOkResponse({
     description: "방 전체 정보 리스트",
     type: [RoomResponse],
+  })
+  @ApiForbiddenResponse({
+    description: "잘못된 API KEY",
+    schema: {
+      type: "object",
+      properties: {
+        message: {
+          type: "string",
+          example: "Forbidden resource",
+        },
+        error: {
+          type: "string",
+          example: "Forbidden",
+        },
+        statusCode: {
+          type: "number",
+          example: HttpStatus.FORBIDDEN,
+        },
+      },
+    },
   })
   async findAll(): Promise<RoomResponse[]> {
     const roomDtoList: RoomDto[] = await this.roomService.findAll();
@@ -80,6 +128,8 @@ export class RoomController {
   }
 
   @Get(":id")
+  @UseGuards(ApiKeyGuard)
+  @ApiBearerAuth("X-API-KEY")
   @ApiOperation({
     summary: "방 조회 API",
     description: "방 조회 API",
@@ -94,7 +144,27 @@ export class RoomController {
     description: "방 정보",
     type: RoomResponse,
   })
-  @ApiNotFoundResponse({
+  @ApiForbiddenResponse({
+    description: "잘못된 API KEY",
+    schema: {
+      type: "object",
+      properties: {
+        message: {
+          type: "string",
+          example: "Forbidden resource",
+        },
+        error: {
+          type: "string",
+          example: "Forbidden",
+        },
+        statusCode: {
+          type: "number",
+          example: HttpStatus.FORBIDDEN,
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
     description: "잘못된 id를 전송한 경우",
     schema: {
       type: "object",
@@ -129,6 +199,8 @@ export class RoomController {
   }
 
   @Delete(":id")
+  @UseGuards(ApiKeyGuard)
+  @ApiBearerAuth("X-API-KEY")
   @ApiOperation({
     summary: "방 삭제 API",
     description: "방 삭제 API",
@@ -154,34 +226,57 @@ export class RoomController {
       },
     },
   })
-  @ApiNotFoundResponse({
-    description: "잘못된 id를 전송한 경우",
+  @ApiForbiddenResponse({
+    description: "잘못된 API KEY",
     schema: {
       type: "object",
       properties: {
-        statusCode: {
-          type: "number",
-          example: HttpStatus.BAD_REQUEST,
-        },
         message: {
           type: "string",
-          example: ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
+          example: "Forbidden resource",
+        },
+        error: {
+          type: "string",
+          example: "Forbidden",
+        },
+        statusCode: {
+          type: "number",
+          example: HttpStatus.FORBIDDEN,
         },
       },
     },
   })
-  @ApiBadRequestResponse({
-    description: "잘못된 password를 전송한 경우",
-    schema: {
-      type: "object",
-      properties: {
-        statusCode: {
-          type: "number",
-          example: HttpStatus.BAD_REQUEST,
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    content: {
+      "잘못된 id를 전송한 경우": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.BAD_REQUEST,
+            },
+            message: {
+              type: "string",
+              example: ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
+            },
+          },
         },
-        message: {
-          type: "string",
-          example: ResponseMessage.ROOM_REMOVE_FAIL_WONG_PASSWORD,
+      },
+      "잘못된 password를 전송한 경우": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.BAD_REQUEST,
+            },
+            message: {
+              type: "string",
+              example: ResponseMessage.ROOM_REMOVE_FAIL_WONG_PASSWORD,
+            },
+          },
         },
       },
     },
@@ -198,12 +293,34 @@ export class RoomController {
   }
 
   @Post(":id/gather")
+  @UseGuards(ApiKeyGuard)
+  @ApiBearerAuth("X-API-KEY")
   @ApiOperation({ summary: "클립 취합 API", description: "클립을 생성한다." })
   @ApiOkResponse({
     description: "취합 성공",
     type: GatherRoomResponse,
   })
-  @ApiNotFoundResponse({
+  @ApiForbiddenResponse({
+    description: "잘못된 API KEY",
+    schema: {
+      type: "object",
+      properties: {
+        message: {
+          type: "string",
+          example: "Forbidden resource",
+        },
+        error: {
+          type: "string",
+          example: "Forbidden",
+        },
+        statusCode: {
+          type: "number",
+          example: HttpStatus.FORBIDDEN,
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
     description: "잘못된 id를 전송한 경우",
     schema: {
       type: "object",

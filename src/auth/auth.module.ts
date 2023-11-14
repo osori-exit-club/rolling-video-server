@@ -1,5 +1,10 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { MongooseModule } from "@nestjs/mongoose";
+import {
+  Configuration,
+  ConfigurationSchema,
+} from "src/schema/configuration.schema";
 import { ApiKeyGuard } from "./apikeyguard";
 import { AuthService } from "./auth.service";
 
@@ -8,8 +13,16 @@ import { AuthService } from "./auth.service";
     ConfigModule.forRoot({
       envFilePath: ".env",
     }),
+    MongooseModule.forFeatureAsync([
+      {
+        name: Configuration.name,
+        useFactory: () => {
+          return ConfigurationSchema;
+        },
+      },
+    ]),
   ],
   providers: [AuthService, ApiKeyGuard],
   exports: [AuthService, ApiKeyGuard],
 })
-export class ConfigurationModule {}
+export class AuthModule {}

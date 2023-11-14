@@ -16,11 +16,15 @@ export class AuthService {
   async isKeyValid(apiKey: string): Promise<boolean> {
     const configuration: {
       allowApiKeyList: string[];
-      disallowApiKeyList: string[];
+      blockedApiKeyList: string[];
     } = await this.getConfiguration();
+    if (configuration.blockedApiKeyList.includes(apiKey)) {
+      return false;
+    }
     if (configuration.allowApiKeyList.includes(apiKey)) {
       return true;
     }
+    return configuration.allowApiKeyList.includes("*");
   }
 
   async getConfiguration(): Promise<any> {
@@ -32,7 +36,7 @@ export class AuthService {
         return new this.configurationModel({
           name: "default",
           allowApiKeyList: [],
-          disallowApiKeyList: [],
+          blockedApiKeyList: [],
         }).save();
       } else {
         return obj;

@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { getModelToken } from "@nestjs/mongoose";
+import { getModelToken, MongooseModule } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import { S3Module } from "src/aws/s3/s3.module";
 import { GatheringModule } from "src/gathering/gathering.module";
@@ -18,6 +18,13 @@ import { ClipResponse } from "./dto/response/clip.response.dto";
 import { ClipDto } from "./dto/clip.dto";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
+import { AuthModule } from "src/auth/auth.module";
+import { AuthService } from "src/auth/auth.service";
+import {
+  Configuration,
+  ConfigurationSchema,
+} from "src/schema/configuration.schema";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 describe("ClipController", () => {
   let controller: ClipController;
@@ -26,7 +33,30 @@ describe("ClipController", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [S3Module, HashModule, OsModule, GatheringModule],
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
+        S3Module,
+        HashModule,
+        OsModule,
+        GatheringModule,
+        AuthModule,
+        MongooseModule.forRootAsync({
+          useFactory: (config: ConfigService) => ({
+            uri: config.get("MONGODB_URL").replace("${NODE_ENV}", "test"),
+          }),
+          inject: [ConfigService],
+        }),
+        MongooseModule.forFeatureAsync([
+          {
+            name: Configuration.name,
+            useFactory: () => {
+              return ConfigurationSchema;
+            },
+          },
+        ]),
+      ],
       controllers: [ClipController],
       providers: [
         ClipService,
@@ -47,6 +77,9 @@ describe("ClipController", () => {
     controller = module.get<ClipController>(ClipController);
     service = module.get<ClipService>(ClipService);
     roomService = module.get<RoomService>(RoomService);
+    const authService: AuthService = module.get<AuthService>(AuthService);
+
+    jest.spyOn(authService, "isKeyValid").mockResolvedValue(true);
   });
 
   it("should be defined", () => {

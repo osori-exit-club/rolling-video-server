@@ -2,7 +2,6 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import { S3Module } from "src/aws/s3/s3.module";
-import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
 import { GatheringModule } from "src/gathering/gathering.module";
 import { GatheringService } from "src/gathering/gathering.service";
 import { Room } from "src/schema/rooms.schema";

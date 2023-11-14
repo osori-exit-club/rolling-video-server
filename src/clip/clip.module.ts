@@ -6,10 +6,9 @@ import { Room, RoomScheme } from "src/schema/rooms.schema";
 import { Clip, ClipScheme } from "src/schema/clips.schema";
 import { ClipRepository } from "./clip.repository";
 import { S3Module } from "src/aws/s3/s3.module";
-import { RoomRepository } from "src/room/room.repository";
 import { HashModule } from "src/utils/hash/hash.module";
-import { RoomService } from "src/room/room.service";
 import { RoomModule } from "src/room/room.module";
+import { AuthModule } from "src/auth/auth.module";
 
 @Module({
   imports: [
@@ -30,6 +29,7 @@ import { RoomModule } from "src/room/room.module";
     S3Module,
     HashModule,
     RoomModule,
+    AuthModule,
   ],
   controllers: [ClipController],
   providers: [ClipService, ClipRepository],
