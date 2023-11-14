@@ -114,13 +114,13 @@ export class RoomService {
       room = await this.roomRepository.findOne(id);
     } catch (err) {
       throw new HttpException(
-        ResponseMessage.ROOM_REMOVE_FAIL_NOT_FOUND,
+        ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
         HttpStatus.NOT_FOUND
       );
     }
     if (room == null) {
       throw new HttpException(
-        ResponseMessage.ROOM_REMOVE_FAIL_NOT_FOUND,
+        ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
         HttpStatus.NOT_FOUND
       );
     }

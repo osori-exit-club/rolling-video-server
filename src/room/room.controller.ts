@@ -161,11 +161,11 @@ export class RoomController {
       properties: {
         statusCode: {
           type: "number",
-          example: HttpStatus.NOT_FOUND,
+          example: HttpStatus.BAD_REQUEST,
         },
         message: {
           type: "string",
-          example: ResponseMessage.ROOM_REMOVE_FAIL_NOT_FOUND,
+          example: ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
         },
       },
     },

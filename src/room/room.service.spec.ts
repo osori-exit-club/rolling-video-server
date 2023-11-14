@@ -132,7 +132,7 @@ describe("RoomService", () => {
         await service.remove(roomId, new DeleteRoomRequest(password));
       }).rejects.toThrowError(
         new HttpException(
-          ResponseMessage.ROOM_REMOVE_FAIL_NOT_FOUND,
+          ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
           HttpStatus.NOT_FOUND
         )
       );
