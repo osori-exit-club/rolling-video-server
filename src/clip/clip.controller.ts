@@ -24,7 +24,6 @@ import {
   ApiBody,
   ApiConsumes,
   ApiForbiddenResponse,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -340,7 +339,7 @@ export class ClipController {
     },
   })
   @ApiResponse({
-    status: HttpStatus.BAD_GATEWAY,
+    status: HttpStatus.BAD_REQUEST,
     content: {
       "잘못된 id를 전송한 경우": {
         schema: {
@@ -363,7 +362,7 @@ export class ClipController {
           properties: {
             statusCode: {
               type: "number",
-              example: HttpStatus.BAD_GATEWAY,
+              example: HttpStatus.BAD_REQUEST,
             },
             message: {
               type: "string",
