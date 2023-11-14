@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import * as AdmZip from "adm-zip";
 
 @Injectable()
@@ -10,9 +10,9 @@ export class CompressHelper {
     try {
       zip.addLocalFolder(targetDir);
       // or write everything to disk
-      console.log(`Start Ziping ... ${outPath}`);
+      Logger.debug(`Start Ziping ... ${outPath}`);
       zip.writeZip(outPath);
-      console.log(`Done Zip ${outPath}`);
+      Logger.debug(`Done Zip ${outPath}`);
     } catch (error) {
       console.error(error.stack);
       console.error("Zipping failed. Reason: %s", error);

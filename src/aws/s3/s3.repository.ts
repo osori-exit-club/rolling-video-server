@@ -1,5 +1,9 @@
 import * as fs from "fs";
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import * as AWS from "aws-sdk";
 
@@ -58,7 +62,7 @@ export class S3Repository {
       const clientUrl = await createPresignedUrlWithClient();
       return clientUrl;
     } catch (error) {
-      console.log(error);
+      Logger.error(error);
       return null;
     }
   }
@@ -147,8 +151,9 @@ export class S3Repository {
       while (!isComplete(rangeAndLength)) {
         const { end } = rangeAndLength;
         const nextRange = { start: end + 1, end: end + oneMB };
-
-        console.log(`Downloading bytes ${nextRange.start} to ${nextRange.end}`);
+        Logger.debug(
+          `Downloading bytes ${nextRange.start} to ${nextRange.end}`
+        );
 
         const { ContentRange, Body } = await getObjectRange({
           bucket,
@@ -159,7 +164,7 @@ export class S3Repository {
         writeStream.write(await Body.transformToByteArray());
         rangeAndLength = getRangeAndLength(ContentRange);
       }
-      console.log(`Downloading Done ${key}`);
+      Logger.debug(`Downloading Done ${key}`);
     };
     if (key[key.length - 1] == "/") {
       return null;

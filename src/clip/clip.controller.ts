@@ -12,6 +12,7 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  Logger,
 } from "@nestjs/common";
 import { ClipService } from "./clip.service";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
@@ -170,7 +171,7 @@ export class ClipController {
     // TODO : remove below error code because it will be unreachable by UploadedFile validator
     const sizeMB = file.size / 1_000_000;
     if (sizeMB > 15) {
-      console.log(sizeMB);
+      Logger.debug(sizeMB);
       throw new HttpException(
         ResponseMessage.CLIP_CREATE_FAIL_SIZE_LIMIT("15MB"),
         HttpStatus.BAD_REQUEST

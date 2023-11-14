@@ -1,5 +1,5 @@
 import * as path from "path";
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { ClipDto } from "src/clip/dto/clip.dto";
 import { GatheringService } from "src/gathering/gathering.service";
 import { HashHelper } from "src/utils/hash/hash.helper";
@@ -153,7 +153,7 @@ export class RoomService {
 
     const existsInS3 = await this.s3Repository.existsInS3(key);
     if (!existsInS3) {
-      console.log(`There is no gathered.zip (key: ${key}`);
+      Logger.debug(`There is no gathered.zip (key: ${key}`);
       await this.osHelper.openTempDirectory(
         `${roomId}/clips`,
         async (downloadDir: string) => {
