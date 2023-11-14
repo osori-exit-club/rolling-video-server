@@ -120,7 +120,7 @@ describe("RoomController", () => {
         await controller.findOne(roomId);
       }).rejects.toThrowError(
         new HttpException(
-          ResponseMessage.ROOM_READ_FAIL_NOT_FOUND,
+          ResponseMessage.ROOM_READ_FAIL_WRONG_ID,
           HttpStatus.NOT_FOUND
         )
       );

@@ -127,7 +127,7 @@ describe("ClipController", () => {
         });
       }).rejects.toThrowError(
         new HttpException(
-          ResponseMessage.ROOM_READ_FAIL_NOT_FOUND,
+          ResponseMessage.ROOM_READ_FAIL_WRONG_ID,
           HttpStatus.NOT_FOUND
         )
       );
@@ -253,7 +253,7 @@ describe("ClipController", () => {
         await controller.findOne(clipId);
       }).rejects.toThrowError(
         new HttpException(
-          ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
+          ResponseMessage.CLIP_READ_FAIL_WRONG_ID,
           HttpStatus.NOT_FOUND
         )
       );

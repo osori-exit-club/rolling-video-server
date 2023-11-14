@@ -86,11 +86,11 @@ export class ClipController {
       properties: {
         statusCode: {
           type: "number",
-          example: HttpStatus.NOT_FOUND,
+          example: HttpStatus.BAD_REQUEST,
         },
         message: {
           type: "string",
-          example: ResponseMessage.ROOM_READ_FAIL_NOT_FOUND,
+          example: ResponseMessage.ROOM_READ_FAIL_WRONG_ID,
         },
       },
     },
@@ -183,7 +183,7 @@ export class ClipController {
     );
     if (room == null) {
       throw new HttpException(
-        ResponseMessage.ROOM_READ_FAIL_NOT_FOUND,
+        ResponseMessage.ROOM_READ_FAIL_WRONG_ID,
         HttpStatus.NOT_FOUND
       );
     }
@@ -224,11 +224,11 @@ export class ClipController {
       properties: {
         statusCode: {
           type: "number",
-          example: 404,
+          example: HttpStatus.BAD_REQUEST,
         },
         message: {
           type: "string",
-          example: ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
+          example: ResponseMessage.CLIP_READ_FAIL_WRONG_ID,
         },
       },
     },
@@ -237,7 +237,7 @@ export class ClipController {
     const result = await this.clipService.findOne(id);
     if (result == null) {
       throw new HttpException(
-        ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
+        ResponseMessage.CLIP_READ_FAIL_WRONG_ID,
         HttpStatus.NOT_FOUND
       );
     }
@@ -277,11 +277,11 @@ export class ClipController {
       properties: {
         statusCode: {
           type: "number",
-          example: HttpStatus.NOT_FOUND,
+          example: HttpStatus.BAD_REQUEST,
         },
         message: {
           type: "string",
-          example: ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
+          example: ResponseMessage.CLIP_READ_FAIL_WRONG_ID,
         },
       },
     },

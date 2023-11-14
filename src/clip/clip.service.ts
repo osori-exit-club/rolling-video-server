@@ -62,7 +62,7 @@ export class ClipService {
     const clip = await this.clipRepository.findOne(id);
     if (clip == null) {
       throw new HttpException(
-        ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
+        ResponseMessage.CLIP_READ_FAIL_WRONG_ID,
         HttpStatus.NOT_FOUND
       );
     }
@@ -87,7 +87,7 @@ export class ClipService {
     } catch (err) {}
     if (clip == null) {
       throw new HttpException(
-        ResponseMessage.CLIP_READ_FAIL_NOT_FOUND,
+        ResponseMessage.CLIP_READ_FAIL_WRONG_ID,
         HttpStatus.NOT_FOUND
       );
     }

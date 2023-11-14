@@ -101,11 +101,11 @@ export class RoomController {
       properties: {
         statusCode: {
           type: "number",
-          example: HttpStatus.NOT_FOUND,
+          example: HttpStatus.BAD_REQUEST,
         },
         message: {
           type: "string",
-          example: ResponseMessage.ROOM_READ_FAIL_NOT_FOUND,
+          example: ResponseMessage.ROOM_READ_FAIL_WRONG_ID,
         },
       },
     },
@@ -115,7 +115,7 @@ export class RoomController {
     const roomDto = await this.roomService.findOne(id);
     if (roomDto == null) {
       throw new HttpException(
-        ResponseMessage.ROOM_READ_FAIL_NOT_FOUND,
+        ResponseMessage.ROOM_READ_FAIL_WRONG_ID,
         HttpStatus.NOT_FOUND
       );
     }
@@ -210,11 +210,11 @@ export class RoomController {
       properties: {
         statusCode: {
           type: "number",
-          example: HttpStatus.NOT_FOUND,
+          example: HttpStatus.BAD_REQUEST,
         },
         message: {
           type: "string",
-          example: ResponseMessage.ROOM_GATHER_FAIL_NOT_FOUND,
+          example: ResponseMessage.ROOM_GATHER_FAIL_WRONG_ID,
         },
       },
     },

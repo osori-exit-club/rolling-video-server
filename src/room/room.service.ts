@@ -141,7 +141,7 @@ export class RoomService {
     const room: RoomDto | null = await this.findOne(roomId);
     if (room == null) {
       throw new HttpException(
-        ResponseMessage.ROOM_GATHER_FAIL_NOT_FOUND,
+        ResponseMessage.ROOM_GATHER_FAIL_WRONG_ID,
         HttpStatus.NOT_FOUND
       );
     }
