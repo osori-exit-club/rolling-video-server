@@ -51,12 +51,20 @@ export class ClipResponse {
     example: "",
   })
   readonly signedVideoUrl: string;
-  constructor(clipDto: ClipDto, signedVideoUrl: string) {
+  @ApiProperty({
+    description: "clip 영상 시간",
+    required: true,
+    nullable: false,
+    example: "00:00:00",
+  })
+  readonly playtime: string;
+  constructor(clipDto: ClipDto, signedVideoUrl: string, playtime: string) {
     this.clipId = clipDto.clipId;
     this.roomId = clipDto.roomId;
     this.nickname = clipDto.nickname;
     this.isPublic = clipDto.isPublic;
     this.extension = clipDto.extension;
     this.signedVideoUrl = signedVideoUrl;
+    this.playtime = playtime;
   }
 }

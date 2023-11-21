@@ -122,7 +122,8 @@ describe("ClipController", () => {
                   "mp4",
                   "password"
                 ),
-                "signedUrl"
+                "signedUrl",
+                "00:00:00"
               )
             : null
         );
@@ -270,7 +271,8 @@ describe("ClipController", () => {
                   "mp4",
                   "password"
                 ),
-                "signedUrl"
+                "signedUrl",
+                "00:00:00"
               )
             : null
         );

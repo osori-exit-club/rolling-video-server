@@ -1,6 +1,7 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
+import { getVideoDurationInSeconds } from "get-video-duration";
 import { ClipRepository } from "./clip.repository";
 import { ClipDto } from "./dto/clip.dto";
 import { ClipResponse } from "./dto/response/clip.response.dto";
@@ -77,10 +78,16 @@ export class ClipService {
       clip.extension,
       clip.password
     );
+    // TODO 업로드 하는 시점에 저장해야 할거 같은데...
     const signedUrl: string = await this.s3Respository.getPresignedUrl(
       clipDto.getS3Key()
     );
-    return new ClipResponse(clipDto, signedUrl);
+    const duration: number = await getVideoDurationInSeconds(signedUrl);
+    const hour: string = (duration / 3600).toFixed().padStart(2, "0");
+    const minute: string = ((duration / 60) % 60).toFixed().padStart(2, "0");
+    const seconds: string = (duration % 60).toFixed().padStart(2, "0");
+    const playtime = `${hour}:${minute}:${seconds}`;
+    return new ClipResponse(clipDto, signedUrl, playtime);
   }
 
   async remove(id: string, deleteClipDto: DeleteClipRequest) {
