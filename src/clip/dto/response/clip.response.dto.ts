@@ -24,6 +24,13 @@ export class ClipResponse {
   })
   readonly nickname: string;
   @ApiProperty({
+    description: "clip 메세지",
+    required: true,
+    nullable: false,
+    example: "message",
+  })
+  readonly message: string;
+  @ApiProperty({
     description: "clip 공개 여부",
     required: true,
     nullable: false,

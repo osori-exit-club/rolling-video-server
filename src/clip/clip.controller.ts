@@ -66,6 +66,10 @@ export class ClipController {
           type: "string",
           description: "clip 생성자 이름",
         },
+        message: {
+          type: "string",
+          description: "clip 메세지",
+        },
         isPublic: {
           type: "boolean",
           description: "클립 공개 여부",

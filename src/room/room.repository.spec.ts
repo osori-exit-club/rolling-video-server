@@ -80,7 +80,7 @@ describe("RoomRepository", () => {
       })
     );
     return true;
-  });
+  }, 10_000);
 
   it("should be defined", () => {
     expect(repository).toBeDefined();

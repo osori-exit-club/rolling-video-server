@@ -2,6 +2,7 @@ export class Clip {
   readonly _id: string;
   readonly roomId: string;
   readonly nickname: string;
+  readonly message: string;
   readonly isPublic: boolean;
   readonly extension: string;
   readonly createAt: string;
@@ -11,6 +12,7 @@ export class Clip {
     _id: string,
     roomId: string,
     nickname: string,
+    message: string,
     isPublic: boolean,
     extension: string,
     createAt: string,
@@ -20,6 +22,7 @@ export class Clip {
     this._id = _id;
     this.roomId = roomId;
     this.nickname = nickname;
+    this.message = message;
     this.isPublic = isPublic;
     this.extension = extension;
     this.createAt = createAt;

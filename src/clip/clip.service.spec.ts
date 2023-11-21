@@ -65,7 +65,7 @@ describe("ClipService", () => {
     it("[1] 클립 생성", async () => {
       // Arrange
       const roomId = "roomId";
-      const input = new CreateClipRequest(roomId, "nickname", true);
+      const input = new CreateClipRequest(roomId, "nickname", "message", true);
       // TODO clipRepository의 리턴 타입은 무엇이고 mock 객체 못만드나?
       const mockClip: any = { _id: "testId", extension: "mp4" };
       mockClip.save = () => {};

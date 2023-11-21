@@ -14,14 +14,26 @@ export class CreateClipRequest {
   })
   nickname: string;
   @ApiProperty({
+    description: "clip 메세지",
+    required: true,
+    nullable: false,
+  })
+  message: string;
+  @ApiProperty({
     description: "clip 공개 여부",
     required: true,
     nullable: false,
   })
   isPublic: boolean;
-  constructor(roomId: string, nickname: string, isPublic: boolean) {
+  constructor(
+    roomId: string,
+    nickname: string,
+    message: string,
+    isPublic: boolean
+  ) {
     this.roomId = roomId;
     this.nickname = nickname;
+    this.message = message;
     this.isPublic = isPublic;
   }
 }

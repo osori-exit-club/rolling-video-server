@@ -11,6 +11,9 @@ export class Clip {
   @Prop({ require: true })
   nickname: string;
 
+  @Prop({ require: true })
+  message: string;
+
   @Prop({ default: true })
   isPublic: boolean;
 

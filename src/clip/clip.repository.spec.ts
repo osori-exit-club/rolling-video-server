@@ -60,9 +60,9 @@ describe("ClipRepository", () => {
     }).save();
     roomId = room.id;
     presetInputList = [
-      new CreateClipRequest(room.id, "nickname1", true),
-      new CreateClipRequest(room.id, "nickname2", true),
-      new CreateClipRequest(room.id, "nickname3", false),
+      new CreateClipRequest(room.id, "nickname1", "Message1", true),
+      new CreateClipRequest(room.id, "nickname2", "Message2", true),
+      new CreateClipRequest(room.id, "nickname3", "Message3", false),
     ];
     presetDataList = await Promise.all(
       presetInputList
@@ -99,7 +99,7 @@ describe("ClipRepository", () => {
   describe("클립 생성 테스트", () => {
     it("[1] 클립 생성 (방번호 + 닉네팀 + 공개 + 이미지) ", async () => {
       // Arrange
-      const input = new CreateClipRequest(roomId, "nickname", true);
+      const input = new CreateClipRequest(roomId, "nickname", "message", true);
 
       // Act
       const result = await repository.create(input, "mp4");
@@ -113,7 +113,7 @@ describe("ClipRepository", () => {
 
     it("[2] 클립 생성 (방번호 + 닉네팀 + 비공개 + 이미지) ", async () => {
       // Arrange
-      const input = new CreateClipRequest(roomId, "nickname", false);
+      const input = new CreateClipRequest(roomId, "nickname", "message", false);
 
       // Act
       const result = await repository.create(input, "mp4");

@@ -19,9 +19,16 @@ export class CreateClipResponse {
     description: "clip을 생성한 사람의 닉네임",
     required: true,
     nullable: false,
-    example: "nickname3",
+    example: "nickname",
   })
   readonly nickname: string;
+  @ApiProperty({
+    description: "메세지",
+    required: true,
+    nullable: false,
+    example: "message",
+  })
+  readonly message: string;
   @ApiProperty({
     description: "clip 공개 여부",
     required: true,
@@ -47,6 +54,7 @@ export class CreateClipResponse {
     clipId,
     roomId,
     nickname,
+    message,
     isPublic,
     extension,
     password,
@@ -54,6 +62,7 @@ export class CreateClipResponse {
     clipId: string;
     roomId: string;
     nickname: string;
+    message: string;
     isPublic: boolean;
     extension: string;
     password: string;
@@ -61,6 +70,7 @@ export class CreateClipResponse {
     this.clipId = clipId;
     this.roomId = roomId;
     this.nickname = nickname;
+    this.message = message;
     this.isPublic = isPublic;
     this.extension = extension;
     this.password = password;

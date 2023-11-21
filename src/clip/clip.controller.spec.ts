@@ -96,7 +96,15 @@ describe("ClipController", () => {
         .mockResolvedValue(
           Promise.resolve(
             new CreateClipResponse(
-              new ClipDto(clipId, roomId, "nickName", true, "mp4", "password")
+              new ClipDto(
+                clipId,
+                roomId,
+                "nickName",
+                "message",
+                true,
+                "mp4",
+                "password"
+              )
             )
           )
         );
@@ -109,6 +117,7 @@ describe("ClipController", () => {
                   clipId,
                   roomId,
                   "nickName",
+                  "message",
                   true,
                   "mp4",
                   "password"
@@ -139,7 +148,7 @@ describe("ClipController", () => {
 
       // Act
       const result: CreateClipResponse = await controller.create(
-        new CreateClipRequest("", "", true),
+        new CreateClipRequest("", "", "", true),
         { size: 1_000_000 }
       );
 
@@ -155,7 +164,7 @@ describe("ClipController", () => {
 
       // Act & Assert
       await expect(async () => {
-        await controller.create(new CreateClipRequest("", "", true), {
+        await controller.create(new CreateClipRequest("", "", "", true), {
           size: 10_000_000,
         });
       }).rejects.toThrowError(
@@ -185,7 +194,7 @@ describe("ClipController", () => {
 
       // Act & Assert
       await expect(async () => {
-        await controller.create(new CreateClipRequest("", "", true), {
+        await controller.create(new CreateClipRequest("", "", "", true), {
           size: 20_000_000,
         });
       }).rejects.toThrowError(
@@ -215,7 +224,7 @@ describe("ClipController", () => {
 
       // Act & Assert
       try {
-        await controller.create(new CreateClipRequest("", "", true), {
+        await controller.create(new CreateClipRequest("", "", "", true), {
           size: 10_000_000,
         });
       } catch (err) {
@@ -240,6 +249,7 @@ describe("ClipController", () => {
             clipId,
             roomId,
             nickname: "nickName",
+            message: "message",
             isPublic: true,
             extension: "mp4",
             password: "password",
@@ -255,6 +265,7 @@ describe("ClipController", () => {
                   clipId,
                   roomId,
                   "nickName",
+                  "message",
                   true,
                   "mp4",
                   "password"

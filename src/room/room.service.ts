@@ -46,6 +46,7 @@ export class RoomService {
           clip._id.toString(),
           clip.roomId,
           clip.nickname,
+          clip.message,
           clip.isPublic,
           clip.extension,
           clip.password
@@ -69,6 +70,7 @@ export class RoomService {
             clip._id.toString(),
             clip.roomId,
             clip.nickname,
+            clip.message,
             clip.isPublic,
             clip.extension,
             clip.password
@@ -100,6 +102,7 @@ export class RoomService {
           clip._id.toString(),
           clip.roomId,
           clip.nickname,
+          clip.message,
           clip.isPublic,
           clip.extension,
           clip.password

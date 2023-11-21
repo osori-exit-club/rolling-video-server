@@ -2,6 +2,7 @@ export class ClipDto {
   readonly clipId: string;
   readonly roomId: string;
   readonly nickname: string;
+  readonly message: string;
   readonly isPublic: boolean;
   readonly extension: string;
   readonly password: string;
@@ -9,6 +10,7 @@ export class ClipDto {
     clipId: string,
     roomId: string,
     nickname: string,
+    message: string,
     isPublic: boolean,
     extension: string,
     password: string
@@ -16,6 +18,7 @@ export class ClipDto {
     this.clipId = clipId;
     this.roomId = roomId;
     this.nickname = nickname;
+    this.message = message;
     this.isPublic = isPublic;
     this.extension = extension;
     this.password = password;
