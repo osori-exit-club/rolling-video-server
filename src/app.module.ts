@@ -7,12 +7,14 @@ import { RoomModule } from "./room/room.module";
 import { ClipModule } from "./clip/clip.module";
 import { GatheringModule } from "./gathering/gathering.module";
 import { AuthModule } from "./auth/auth.module";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     MongooseModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
         uri: config
