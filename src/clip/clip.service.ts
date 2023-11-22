@@ -24,7 +24,7 @@ export class ClipService {
   ): Promise<CreateClipResponse> {
     const splitted = file.originalname.split(".");
     const extension = splitted[splitted.length - 1];
-    const clip = await this.clipRepository.create(
+    const createClip = await this.clipRepository.create(
       createClipDto,
       extension,
       async (clip: any) => {
@@ -46,18 +46,19 @@ export class ClipService {
         return { playtime };
       }
     );
+    await createClip.save();
 
     const clipDto = new ClipDto(
-      clip._id.toString(),
-      clip.roomId,
-      clip.nickname,
-      clip.message,
-      clip.isPublic,
-      clip.extension,
-      clip.password,
-      clip.playtime
+      createClip._id.toString(),
+      createClip.roomId,
+      createClip.nickname,
+      createClip.message,
+      createClip.isPublic,
+      createClip.extension,
+      createClip.password,
+      createClip.playtime
     );
-
+    this.roomRepository.addClip(createClipDto.roomId, clipDto);
     return new CreateClipResponse(clipDto);
   }
 
