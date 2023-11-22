@@ -12,7 +12,11 @@ export class ClipRepository {
     private readonly hashHelper: HashHelper
   ) {}
 
-  async create(createClipDto: CreateClipRequest, extension: string) {
+  async create(
+    createClipDto: CreateClipRequest,
+    extension: string,
+    decorate: (clip: any) => Promise<{ playtime: string }>
+  ) {
     const hashString: string = [
       createClipDto.roomId,
       createClipDto.nickname,
@@ -23,6 +27,9 @@ export class ClipRepository {
       Object.assign({ extension: extension, password: password }, createClipDto)
     );
     const created = await createClip.save();
+    const { playtime } = await decorate(created);
+    created.playtime = playtime;
+    await created.save();
     return created;
   }
 

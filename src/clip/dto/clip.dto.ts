@@ -6,6 +6,7 @@ export class ClipDto {
   readonly isPublic: boolean;
   readonly extension: string;
   readonly password: string;
+  readonly playtime: string | null;
   constructor(
     clipId: string,
     roomId: string,
@@ -13,7 +14,8 @@ export class ClipDto {
     message: string,
     isPublic: boolean,
     extension: string,
-    password: string
+    password: string,
+    playtime: string | null = null
   ) {
     this.clipId = clipId;
     this.roomId = roomId;
@@ -22,6 +24,7 @@ export class ClipDto {
     this.isPublic = isPublic;
     this.extension = extension;
     this.password = password;
+    this.playtime = playtime;
   }
 
   getS3Key(): string {

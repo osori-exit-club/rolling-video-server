@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
 import { getVideoDurationInSeconds } from "get-video-duration";
@@ -24,7 +24,28 @@ export class ClipService {
   ): Promise<CreateClipResponse> {
     const splitted = file.originalname.split(".");
     const extension = splitted[splitted.length - 1];
-    const clip = await this.clipRepository.create(createClipDto, extension);
+    const clip = await this.clipRepository.create(
+      createClipDto,
+      extension,
+      async (clip: any) => {
+        const clipDto = new ClipDto(
+          clip._id.toString(),
+          clip.roomId,
+          clip.nickname,
+          clip.message,
+          clip.isPublic,
+          clip.extension,
+          clip.password,
+          null
+        );
+        await this.s3Respository.uploadFile({
+          key: clipDto.getS3Key(),
+          buffer: file.buffer,
+        });
+        const playtime = await this.getPlaytime(clipDto);
+        return { playtime };
+      }
+    );
 
     const clipDto = new ClipDto(
       clip._id.toString(),
@@ -33,15 +54,9 @@ export class ClipService {
       clip.message,
       clip.isPublic,
       clip.extension,
-      clip.password
+      clip.password,
+      clip.playtime
     );
-
-    await this.s3Respository.uploadFile({
-      key: clipDto.getS3Key(),
-      buffer: file.buffer,
-    });
-
-    this.roomRepository.addClip(createClipDto.roomId, clip);
 
     return new CreateClipResponse(clipDto);
   }
@@ -69,6 +84,19 @@ export class ClipService {
         HttpStatus.NOT_FOUND
       );
     }
+    if (clip.playtime == null) {
+      const clipDto = new ClipDto(
+        clip._id.toString(),
+        clip.roomId,
+        clip.nickname,
+        clip.message,
+        clip.isPublic,
+        clip.extension,
+        clip.password
+      );
+      const playtime = await this.getPlaytime(clipDto);
+      clip.playtime = playtime;
+    }
     const clipDto = new ClipDto(
       clip._id.toString(),
       clip.roomId,
@@ -76,18 +104,13 @@ export class ClipService {
       clip.message,
       clip.isPublic,
       clip.extension,
-      clip.password
+      clip.password,
+      clip.playtime
     );
-    // TODO 업로드 하는 시점에 저장해야 할거 같은데...
     const signedUrl: string = await this.s3Respository.getPresignedUrl(
       clipDto.getS3Key()
     );
-    const duration: number = await getVideoDurationInSeconds(signedUrl);
-    const hour: string = (duration / 3600).toFixed().padStart(2, "0");
-    const minute: string = ((duration / 60) % 60).toFixed().padStart(2, "0");
-    const seconds: string = (duration % 60).toFixed().padStart(2, "0");
-    const playtime = `${hour}:${minute}:${seconds}`;
-    return new ClipResponse(clipDto, signedUrl, playtime);
+    return new ClipResponse(clipDto, signedUrl);
   }
 
   async remove(id: string, deleteClipDto: DeleteClipRequest) {
@@ -108,5 +131,16 @@ export class ClipService {
       );
     }
     return this.clipRepository.remove(id);
+  }
+
+  private async getPlaytime(clipDto: ClipDto): Promise<string> {
+    const signedUrl: string = await this.s3Respository.getPresignedUrl(
+      clipDto.getS3Key()
+    );
+    const duration: number = await getVideoDurationInSeconds(signedUrl);
+    const hour: string = (duration / 3600).toFixed().padStart(2, "0");
+    const minute: string = ((duration / 60) % 60).toFixed().padStart(2, "0");
+    const seconds: string = (duration % 60).toFixed().padStart(2, "0");
+    return `${hour}:${minute}:${seconds}`;
   }
 }

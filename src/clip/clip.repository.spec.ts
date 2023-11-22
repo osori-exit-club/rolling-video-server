@@ -102,7 +102,9 @@ describe("ClipRepository", () => {
       const input = new CreateClipRequest(roomId, "nickname", "message", true);
 
       // Act
-      const result = await repository.create(input, "mp4");
+      const result = await repository.create(input, "mp4", async (clip) => {
+        return { playtime: "00:00:10" };
+      });
 
       // Assert
       Object.keys(input).forEach((key) => {
@@ -116,7 +118,9 @@ describe("ClipRepository", () => {
       const input = new CreateClipRequest(roomId, "nickname", "message", false);
 
       // Act
-      const result = await repository.create(input, "mp4");
+      const result = await repository.create(input, "mp4", async (clip) => {
+        return { playtime: "00:00:10" };
+      });
 
       // Assert
       Object.keys(input).forEach((key) => {
