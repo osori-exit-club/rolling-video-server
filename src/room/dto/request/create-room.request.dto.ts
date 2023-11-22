@@ -5,17 +5,17 @@ export class CreateRoomRequest {
     description: "방의 이름",
     required: true,
     nullable: false,
-    example: "OO의 생일파티",
+    example: "TEST_ROOM_NAME",
   })
   readonly name: string;
   @ApiProperty({
     description: "비밀번호",
-    example: "OO의 생일파티",
+    example: "TEST_ROOM_PASSWORD",
   })
   readonly password: string | null;
   @ApiProperty({
     description: "받는 사람",
-    example: "용의자X",
+    example: "TEST_ROOM_RECIPIENT",
   })
   readonly recipient: string;
   constructor(name: string, password: string | null, recipient: string) {

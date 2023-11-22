@@ -61,19 +61,23 @@ export class ClipController {
           type: "string",
           description: "방 번호",
           nullable: false,
+          example: "TEXT_ROOM_ID",
         },
         nickname: {
           type: "string",
           description: "clip 생성자 이름",
+          example: "TEST_NICK_NAME",
         },
         message: {
           type: "string",
           description: "clip 메세지",
+          example: "TEST_MESSAGE",
         },
         isPublic: {
           type: "boolean",
           description: "클립 공개 여부",
           default: false,
+          example: "TEST_IS_PUBLIC",
         },
         file: {
           type: "string",
