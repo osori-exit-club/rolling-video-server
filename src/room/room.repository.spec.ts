@@ -17,11 +17,12 @@ describe("RoomRepository", () => {
     new CreateRoomRequest("roomName1", "1234", "target"),
     new CreateRoomRequest("roomName2", null, "target"),
     new CreateRoomRequest("roomName3", "", "target3"),
+    new CreateRoomRequest("roomNameForDelete", "", "target3"),
   ];
   let presetDataList: any[];
   let hashHelper: HashHelper;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
@@ -29,7 +30,7 @@ describe("RoomRepository", () => {
         }),
         MongooseModule.forRootAsync({
           useFactory: (config: ConfigService) => ({
-            uri: config.get("MONGODB_URL").replace("${NODE_ENV}", "test"),
+            uri: config.get("MONGODB_URL").replace("${NODE_ENV}", "test-room"),
           }),
           inject: [ConfigService],
         }),
@@ -154,7 +155,7 @@ describe("RoomRepository", () => {
   describe("방 삭제 테스트", () => {
     it("[1] 방 삭제", async () => {
       // Arrange;
-      const id = presetDataList[2]._id.toString();
+      const id = presetDataList[3]._id.toString();
       // Act
       const result = await repository.remove(id);
       // Assert;
