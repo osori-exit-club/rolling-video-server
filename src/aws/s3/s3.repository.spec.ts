@@ -30,7 +30,7 @@ describe("S3Repository", () => {
   describe("파일 다운로드 테스트", () => {
     it("[1] download normal", async () => {
       // Arrange
-      const key = "rooms/roomId/clips/6537cf6aba132621e8c041e2.mp4";
+      const key = "test/6537cf6aba132621e8c041e2.mp4";
       const outDir = path.join(os.tmpdir(), "test", "/video");
 
       // Act
@@ -45,7 +45,7 @@ describe("S3Repository", () => {
   describe("파일 유효 테스트", () => {
     it("[1] download normal", async () => {
       // Arrange
-      const key = "rooms/roomId/clips/6537cf6aba132621e8c041e2.mp4";
+      const key = "test/6537cf6aba132621e8c041e2.mp4";
 
       // Act
       const result = await s3Repository.existsInS3(key);
