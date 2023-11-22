@@ -1,4 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import * as ffmpeg from "fluent-ffmpeg";
+import * as os from "os";
+import * as path from "path";
+import * as fs from "fs";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
 import { getVideoDurationInSeconds } from "get-video-duration";
@@ -38,11 +42,12 @@ export class ClipService {
           clip.password,
           null
         );
+        const key: string = clipDto.getS3Key();
         await this.s3Respository.uploadFile({
-          key: clipDto.getS3Key(),
+          key,
           buffer: file.buffer,
         });
-        const playtime = await this.getPlaytime(clipDto);
+        const playtime: string = await this.getPlaytime(clipDto);
         return { playtime };
       }
     );
@@ -59,6 +64,47 @@ export class ClipService {
       createClip.playtime
     );
     this.roomRepository.addClip(createClipDto.roomId, clipDto);
+
+    const signedUrl = await this.s3Respository.getPresignedUrl(
+      clipDto.getS3Key()
+    );
+    ffmpeg(signedUrl)
+      .videoCodec("libvpx") //libvpx-vp9 could be used too
+      .videoBitrate(1000, true) //Outputting a constrained 1Mbit VP8 video stream
+      .outputOptions(
+        "-minrate",
+        "1000",
+        "-maxrate",
+        "1000",
+        "-threads",
+        "3", //Use number of real cores available on the computer - 1
+        "-flags",
+        "+global_header", //WebM won't love if you if you don't give it some headers
+        "-psnr"
+      ) //Show PSNR measurements in output. Anything above 40dB indicates excellent fidelity
+      .on("progress", function (progress) {
+        console.log("Processing: " + progress.percent + "% done");
+      })
+      .on("error", function (err) {
+        console.log("An error occurred: " + err.message);
+      })
+      .on("end", (err, stdout, stderr) => {
+        console.log(stdout);
+        console.log("Processing finished.");
+        var regex =
+          /LPSNR=Y:([0-9\.]+) U:([0-9\.]+) V:([0-9\.]+) \*:([0-9\.]+)/;
+        var psnr = stdout.match(regex);
+        console.log("This WebM transcode scored a PSNR of: ");
+        console.log(psnr[4] + "dB");
+
+        const fileContent = fs.readFileSync("futbol.webm");
+        this.s3Respository.uploadFile({
+          key: clipDto.getS3ThumbKey(),
+          buffer: fileContent,
+        });
+      })
+      .save("futbol.webm");
+
     return new CreateClipResponse(clipDto);
   }
 
@@ -111,7 +157,15 @@ export class ClipService {
     const signedUrl: string = await this.s3Respository.getPresignedUrl(
       clipDto.getS3Key()
     );
-    return new ClipResponse(clipDto, signedUrl);
+    let signedUrlThumb: string | null;
+    try {
+      signedUrlThumb = await this.s3Respository.getPresignedUrl(
+        clipDto.getS3ThumbKey()
+      );
+    } catch (err) {
+      signedUrlThumb = null;
+    }
+    return new ClipResponse(clipDto, signedUrl, signedUrlThumb);
   }
 
   async remove(id: string, deleteClipDto: DeleteClipRequest) {

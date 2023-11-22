@@ -30,4 +30,8 @@ export class ClipDto {
   getS3Key(): string {
     return `rooms/${this.roomId}/clips/${this.clipId}.${this.extension}`;
   }
+
+  getS3ThumbKey(): string {
+    return `rooms/${this.roomId}/clips_thumb/${this.clipId}.webm`;
+  }
 }
