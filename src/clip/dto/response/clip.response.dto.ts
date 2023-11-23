@@ -52,31 +52,19 @@ export class ClipResponse {
   })
   readonly signedVideoUrl: string;
   @ApiProperty({
-    description: "clip 영상 url(가벼운 버전)",
-    required: true,
-    nullable: false,
-    example: "",
-  })
-  readonly signedVideoUrlThumb: string;
-  @ApiProperty({
     description: "clip 영상 시간",
     required: true,
     nullable: false,
     example: "00:00:00",
   })
   readonly playtime: string;
-  constructor(
-    clipDto: ClipDto,
-    signedVideoUrl: string,
-    signedVideoUrlThumb: string
-  ) {
+  constructor(clipDto: ClipDto, signedVideoUrl: string) {
     this.clipId = clipDto.clipId;
     this.roomId = clipDto.roomId;
     this.nickname = clipDto.nickname;
     this.isPublic = clipDto.isPublic;
     this.extension = clipDto.extension;
     this.signedVideoUrl = signedVideoUrl;
-    this.signedVideoUrlThumb = signedVideoUrlThumb;
     this.playtime = clipDto.playtime;
   }
 }

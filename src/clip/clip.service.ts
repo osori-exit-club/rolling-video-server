@@ -51,7 +51,6 @@ export class ClipService {
         return { playtime };
       }
     );
-    await createClip.save();
 
     const clipDto = new ClipDto(
       createClip._id.toString(),
@@ -63,7 +62,7 @@ export class ClipService {
       createClip.password,
       createClip.playtime
     );
-    this.roomRepository.addClip(createClipDto.roomId, clipDto);
+    this.roomRepository.addClip(createClipDto.roomId, createClip);
 
     const signedUrl = await this.s3Respository.getPresignedUrl(
       clipDto.getS3Key()
@@ -154,18 +153,15 @@ export class ClipService {
       clip.password,
       clip.playtime
     );
-    const signedUrl: string = await this.s3Respository.getPresignedUrl(
-      clipDto.getS3Key()
-    );
-    let signedUrlThumb: string | null;
+    let signedUrl: string;
     try {
-      signedUrlThumb = await this.s3Respository.getPresignedUrl(
+      signedUrl = await this.s3Respository.getPresignedUrl(
         clipDto.getS3ThumbKey()
       );
     } catch (err) {
-      signedUrlThumb = null;
+      signedUrl = await this.s3Respository.getPresignedUrl(clipDto.getS3Key());
     }
-    return new ClipResponse(clipDto, signedUrl, signedUrlThumb);
+    return new ClipResponse(clipDto, signedUrl);
   }
 
   async remove(id: string, deleteClipDto: DeleteClipRequest) {
