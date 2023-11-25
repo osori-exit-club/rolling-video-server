@@ -162,9 +162,14 @@ export class ClipService {
     );
     let signedUrl: string;
     try {
-      signedUrl = await this.s3Respository.getPresignedUrl(
-        clipDto.getS3ThumbKey()
-      );
+      const thumbKey = clipDto.getS3ThumbKey();
+      if (await this.s3Respository.existsInS3(thumbKey)) {
+        signedUrl = await this.s3Respository.getPresignedUrl(thumbKey);
+      } else {
+        signedUrl = await this.s3Respository.getPresignedUrl(
+          clipDto.getS3Key()
+        );
+      }
     } catch (err) {
       signedUrl = await this.s3Respository.getPresignedUrl(clipDto.getS3Key());
     }
