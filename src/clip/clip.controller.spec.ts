@@ -256,7 +256,6 @@ describe("ClipController", () => {
             isPublic: true,
             extension: "mp4",
             password: "password",
-            playtime: "00:00:00",
           })
         )
       );

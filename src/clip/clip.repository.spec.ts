@@ -102,9 +102,7 @@ describe("ClipRepository", () => {
       const input = new CreateClipRequest(roomId, "nickname", "message", true);
 
       // Act
-      const result = await repository.create(input, "mp4", async (clip) => {
-        return { playtime: "00:00:10" };
-      });
+      const result = await repository.create(input, "mp4");
 
       // Assert
       Object.keys(input).forEach((key) => {
@@ -118,9 +116,7 @@ describe("ClipRepository", () => {
       const input = new CreateClipRequest(roomId, "nickname", "message", false);
 
       // Act
-      const result = await repository.create(input, "mp4", async (clip) => {
-        return { playtime: "00:00:10" };
-      });
+      const result = await repository.create(input, "mp4");
 
       // Assert
       Object.keys(input).forEach((key) => {
@@ -157,6 +153,20 @@ describe("ClipRepository", () => {
         (it) => it._id == id
       );
       expect(findResult.length).toEqual(0);
+    });
+  });
+
+  describe("클립 playtime 업데이트 테스트", () => {
+    it("[1] 클립 playtime 업데이트", async () => {
+      // Arrange
+      const id = presetDataList[0]._id;
+      const playtime = "00:14:00";
+
+      // Act
+      const result = await repository.updatePlaytime(id, playtime);
+
+      // Assert
+      expect(result.playtime).toEqual(playtime);
     });
   });
 });

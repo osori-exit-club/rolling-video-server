@@ -34,26 +34,7 @@ export class ClipService {
     const extension = splitted[splitted.length - 1];
     const createClip = await this.clipRepository.create(
       createClipDto,
-      extension,
-      async (clip: any) => {
-        const clipDto = new ClipDto(
-          clip._id.toString(),
-          clip.roomId,
-          clip.nickname,
-          clip.message,
-          clip.isPublic,
-          clip.extension,
-          clip.password,
-          null
-        );
-        const key: string = clipDto.getS3Key();
-        await this.s3Respository.uploadFile({
-          key,
-          buffer: file.buffer,
-        });
-        const playtime: string = await this.getPlaytime(clipDto);
-        return { playtime };
-      }
+      extension
     );
 
     const clipDto = new ClipDto(
@@ -66,22 +47,51 @@ export class ClipService {
       createClip.password,
       createClip.playtime
     );
-    this.roomRepository.addClip(createClipDto.roomId, createClip);
+    const key: string = clipDto.getS3Key();
+    await this.s3Respository
+      .uploadFile({
+        key,
+        buffer: file.buffer,
+      })
+      .catch((err) => {
+        Logger.error(`failed to uploadFile`);
+        Logger.error(err);
+      })
+      .then(() => {
+        if (createClip.playtime == null) {
+          this.getPlaytime(clipDto).then((playtime) => {
+            if (playtime) {
+              return null;
+            }
+            return this.clipRepository.updatePlaytime(clipDto.clipId, playtime);
+          });
+        }
+        return;
+      })
+      .then((_) => {
+        return this.osHepler.openTempDirectory(
+          "webm",
+          async (tempDir: string) => {
+            const outPath: string = path.join(tempDir, "output.webm");
 
-    await this.osHepler.openTempDirectory("webm", async (tempDir: string) => {
-      const outPath: string = path.join(tempDir, "output.webm");
-
-      const signedUrl = await this.s3Respository.getPresignedUrl(
-        clipDto.getS3Key()
-      );
-      await this.ffmpegService.makeWebmFile(signedUrl, outPath);
-      const fileContent = fs.readFileSync(outPath);
-      await this.s3Respository.uploadFile({
-        key: clipDto.getS3ThumbKey(),
-        buffer: fileContent,
+            const signedUrl = await this.s3Respository.getPresignedUrl(
+              clipDto.getS3Key()
+            );
+            await this.ffmpegService.makeWebmFile(signedUrl, outPath);
+            const fileContent = fs.readFileSync(outPath);
+            await this.s3Respository.uploadFile({
+              key: clipDto.getS3ThumbKey(),
+              buffer: fileContent,
+            });
+          }
+        );
+      })
+      .catch((err) => {
+        Logger.error(`failed to updatePlaytime ${clipDto.clipId}`);
+        Logger.error(err);
       });
-    });
 
+    this.roomRepository.addClip(createClipDto.roomId, createClip);
     return new CreateClipResponse(clipDto);
   }
 
@@ -120,6 +130,12 @@ export class ClipService {
       );
       const playtime = await this.getPlaytime(clipDto);
       clip.playtime = playtime;
+      this.clipRepository
+        .updatePlaytime(clipDto.clipId, playtime)
+        .then(() => {
+          Logger.debug("update playtime");
+        })
+        .catch((err) => Logger.error(err));
     }
     const clipDto = new ClipDto(
       clip._id.toString(),
