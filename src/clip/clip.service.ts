@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
-import * as ffmpeg from "fluent-ffmpeg";
+
 import * as os from "os";
 import * as path from "path";
 import * as fs from "fs";
@@ -13,13 +13,17 @@ import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
+import { FfmpegService } from "src/ffmpeg/ffmpeg.service";
+import { OsHelper } from "src/utils/os/os.helper";
 
 @Injectable()
 export class ClipService {
   constructor(
     private readonly clipRepository: ClipRepository,
     private readonly roomRepository: RoomRepository,
-    private readonly s3Respository: S3Repository
+    private readonly s3Respository: S3Repository,
+    private readonly ffmpegService: FfmpegService,
+    private readonly osHepler: OsHelper
   ) {}
 
   async create(
@@ -64,54 +68,21 @@ export class ClipService {
     );
     this.roomRepository.addClip(createClipDto.roomId, createClip);
 
-    const signedUrl = await this.s3Respository.getPresignedUrl(
-      clipDto.getS3Key()
-    );
-    return new Promise((resolve, reject) => {
-      ffmpeg(signedUrl)
-        .videoCodec("libvpx") //libvpx-vp9 could be used too
-        .videoBitrate(1000, true) //Outputting a constrained 1Mbit VP8 video stream
-        .outputOptions(
-          "-minrate",
-          "1000",
-          "-maxrate",
-          "1000",
-          "-threads",
-          "3", //Use number of real cores available on the computer - 1
-          "-flags",
-          "+global_header", //WebM won't love if you if you don't give it some headers
-          "-psnr"
-        ) //Show PSNR measurements in output. Anything above 40dB indicates excellent fidelity
-        .on("progress", function (progress) {
-          Logger.debug("Processing: " + progress.percent + "% done");
-        })
-        .on("error", function (err) {
-          Logger.error("An error occurred: " + err.message);
-          reject(err);
-        })
-        .on("end", (err, stdout, stderr) => {
-          if (err) {
-            Logger.error(stderr);
-            return reject(err);
-          }
-          Logger.debug(stdout);
-          Logger.debug("Processing finished.");
-          var regex =
-            /LPSNR=Y:([0-9\.]+) U:([0-9\.]+) V:([0-9\.]+) \*:([0-9\.]+)/;
-          var psnr = stdout.match(regex);
-          Logger.debug("This WebM transcode scored a PSNR of: ");
-          Logger.debug(psnr[4] + "dB");
+    await this.osHepler.openTempDirectory("webm", async (tempDir: string) => {
+      const outPath: string = path.join(tempDir, "output.webm");
 
-          const fileContent = fs.readFileSync("futbol.webm");
-          this.s3Respository.uploadFile({
-            key: clipDto.getS3ThumbKey(),
-            buffer: fileContent,
-          });
-
-          resolve(new CreateClipResponse(clipDto));
-        })
-        .save("futbol.webm");
+      const signedUrl = await this.s3Respository.getPresignedUrl(
+        clipDto.getS3Key()
+      );
+      await this.ffmpegService.makeWebmFile(signedUrl, outPath);
+      const fileContent = fs.readFileSync(outPath);
+      await this.s3Respository.uploadFile({
+        key: clipDto.getS3ThumbKey(),
+        buffer: fileContent,
+      });
     });
+
+    return new CreateClipResponse(clipDto);
   }
 
   async findAll(): Promise<ClipDto[]> {

@@ -25,6 +25,7 @@ import {
   ConfigurationSchema,
 } from "src/schema/configuration.schema";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { FfmpegModule } from "src/ffmpeg/ffmpeg.module";
 
 describe("ClipController", () => {
   let controller: ClipController;
@@ -56,6 +57,7 @@ describe("ClipController", () => {
             },
           },
         ]),
+        FfmpegModule,
       ],
       controllers: [ClipController],
       providers: [

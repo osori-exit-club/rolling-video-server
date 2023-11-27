@@ -11,6 +11,10 @@ import { ClipService } from "./clip.service";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
+import { FfmpegModule } from "src/ffmpeg/ffmpeg.module";
+import { FfmpegService } from "src/ffmpeg/ffmpeg.service";
+import { OsHelper } from "src/utils/os/os.helper";
+import { ConfigModule } from "@nestjs/config";
 
 describe("ClipService", () => {
   let service: ClipService;
@@ -20,9 +24,10 @@ describe("ClipService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [S3Module, HashModule],
+      imports: [S3Module, HashModule, FfmpegModule, ConfigModule],
       providers: [
         ClipService,
+        FfmpegService,
         ClipRepository,
         RoomRepository,
         {
@@ -33,6 +38,7 @@ describe("ClipService", () => {
           provide: getModelToken(Clip.name),
           useFactory: () => {},
         },
+        OsHelper,
       ],
     }).compile();
 
@@ -40,6 +46,9 @@ describe("ClipService", () => {
     clipRepository = module.get<ClipRepository>(ClipRepository);
     roomRepository = module.get<RoomRepository>(RoomRepository);
     s3Repository = module.get<S3Repository>(S3Repository);
+    const ffmpegService = module.get<FfmpegService>(FfmpegService);
+
+    jest.spyOn(ffmpegService, "makeWebmFile").mockResolvedValue();
   });
 
   it("should be defined", () => {
@@ -62,6 +71,7 @@ describe("ClipService", () => {
   });
 
   describe("클립 생성 테스트", () => {
+    // TODO updage bug
     it("[1] 클립 생성", async () => {
       // Arrange
       const roomId = "roomId";
