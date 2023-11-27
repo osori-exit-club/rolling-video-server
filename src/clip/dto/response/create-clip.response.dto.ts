@@ -63,7 +63,7 @@ export class CreateClipResponse {
     roomId: string;
     nickname: string;
     message: string;
-    isPublic: boolean;
+    isPublic: boolean | null;
     extension: string;
     password: string;
   }) {
@@ -71,7 +71,7 @@ export class CreateClipResponse {
     this.roomId = roomId;
     this.nickname = nickname;
     this.message = message;
-    this.isPublic = isPublic;
+    this.isPublic = isPublic || false;
     this.extension = extension;
     this.password = password;
   }

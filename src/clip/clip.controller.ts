@@ -77,7 +77,7 @@ export class ClipController {
           type: "boolean",
           description: "클립 공개 여부",
           default: false,
-          example: "TEST_IS_PUBLIC",
+          example: "false",
         },
         file: {
           type: "string",
@@ -85,7 +85,7 @@ export class ClipController {
           nullable: false,
         },
       },
-      required: ["roomId", "nickname", "file"],
+      required: ["roomId", "nickname", "file", "message"],
     },
   })
   @ApiOkResponse({
