@@ -1,9 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as ffmpeg from "fluent-ffmpeg";
+import * as ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
 
 @Injectable()
 export class FfmpegService {
-  constructor() {}
+  constructor() {
+    ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+  }
 
   async makeWebmFile(fileUrl: string, outPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
