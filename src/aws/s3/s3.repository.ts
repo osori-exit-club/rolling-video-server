@@ -35,7 +35,7 @@ export class S3Repository {
    */
   async getPresignedUrl(
     key: string,
-    expiresIn: number = 10
+    expiresIn: number = 60 * 60
   ): Promise<string | null> {
     const region = this.configService.get("AWS_REGION");
     const bucket = this.configService
