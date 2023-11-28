@@ -147,6 +147,8 @@ export class ClipService {
       clip.password,
       clip.playtime
     );
+    Logger.debug("!!!!!");
+    Logger.debug(JSON.stringify(clipDto));
     let signedUrl: string;
     try {
       const thumbKey = clipDto.getS3ThumbKey();

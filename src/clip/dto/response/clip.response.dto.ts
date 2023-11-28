@@ -62,6 +62,7 @@ export class ClipResponse {
     this.clipId = clipDto.clipId;
     this.roomId = clipDto.roomId;
     this.nickname = clipDto.nickname;
+    this.message = clipDto.message;
     this.isPublic = clipDto.isPublic;
     this.extension = clipDto.extension;
     this.signedVideoUrl = signedVideoUrl;
