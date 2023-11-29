@@ -6,7 +6,7 @@ export class ClipDto {
   readonly isPublic: boolean;
   readonly extension: string;
   readonly password: string;
-  readonly playtime: string | null;
+  readonly playtime: string;
   constructor(
     clipId: string,
     roomId: string,
@@ -15,7 +15,7 @@ export class ClipDto {
     isPublic: boolean,
     extension: string,
     password: string,
-    playtime: string | null = null
+    playtime: string
   ) {
     this.clipId = clipId;
     this.roomId = roomId;

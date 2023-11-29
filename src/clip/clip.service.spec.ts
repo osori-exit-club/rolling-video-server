@@ -49,6 +49,7 @@ describe("ClipService", () => {
     const ffmpegService = module.get<FfmpegService>(FfmpegService);
 
     jest.spyOn(ffmpegService, "makeWebmFile").mockResolvedValue();
+    jest.spyOn(ffmpegService, "getPlaytime").mockResolvedValue("00:00:15");
   });
 
   it("should be defined", () => {
@@ -88,6 +89,11 @@ describe("ClipService", () => {
       jest
         .spyOn(roomRepository, "addClip")
         .mockResolvedValue(Promise.resolve(mockClip));
+
+      // TODO : getPlaytime 모듈화
+      jest
+        .spyOn(service, "getPlaytime")
+        .mockResolvedValue(Promise.resolve("00:00:08"));
 
       // Act
       const result: CreateClipResponse = await service.create(input, {

@@ -49,7 +49,8 @@ export class RoomService {
           clip.message,
           clip.isPublic,
           clip.extension,
-          clip.password
+          clip.password,
+          clip.playtime
         );
       })
     );
@@ -73,7 +74,8 @@ export class RoomService {
             clip.message,
             clip.isPublic,
             clip.extension,
-            clip.password
+            clip.password,
+            clip.playtime
           );
         })
       );
@@ -105,7 +107,8 @@ export class RoomService {
           clip.message,
           clip.isPublic,
           clip.extension,
-          clip.password
+          clip.password,
+          clip.playtime
         );
       })
     );

@@ -48,4 +48,23 @@ export class FfmpegService {
         .save(outPath);
     });
   }
+
+  async getPlaytime(filePath: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      Logger.debug(filePath);
+      ffmpeg.ffprobe(filePath, function (err, metadata) {
+        if (err) {
+          return reject(err);
+        }
+
+        const duration: number = metadata.format.duration;
+        const hour: string = (duration / 3600).toFixed().padStart(2, "0");
+        const minute: string = ((duration / 60) % 60)
+          .toFixed()
+          .padStart(2, "0");
+        const seconds: string = (duration % 60).toFixed().padStart(2, "0");
+        resolve(`${hour}:${minute}:${seconds}`);
+      });
+    });
+  }
 }

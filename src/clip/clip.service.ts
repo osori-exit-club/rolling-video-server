@@ -1,11 +1,9 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 
-import * as os from "os";
 import * as path from "path";
 import * as fs from "fs";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
-import { getVideoDurationInSeconds } from "get-video-duration";
 import { ClipRepository } from "./clip.repository";
 import { ClipDto } from "./dto/clip.dto";
 import { ClipResponse } from "./dto/response/clip.response.dto";
@@ -32,11 +30,16 @@ export class ClipService {
   ): Promise<CreateClipResponse> {
     const splitted = file.originalname.split(".");
     const extension = splitted[splitted.length - 1];
+    if (!createClipDto.playtime) {
+      createClipDto.playtime = await this.getPlaytime(file);
+      Logger.debug(`update playtime as ${createClipDto.playtime}`);
+    }
+
     const createClip = await this.clipRepository.create(
       createClipDto,
       extension
     );
-
+    this.roomRepository.addClip(createClipDto.roomId, createClip);
     const clipDto = new ClipDto(
       createClip._id.toString(),
       createClip.roomId,
@@ -48,6 +51,7 @@ export class ClipService {
       createClip.playtime
     );
     const key: string = clipDto.getS3Key();
+
     await this.s3Respository
       .uploadFile({
         key,
@@ -56,17 +60,6 @@ export class ClipService {
       .catch((err) => {
         Logger.error(`failed to uploadFile`);
         Logger.error(err);
-      })
-      .then(() => {
-        if (createClip.playtime == null) {
-          this.getPlaytime(clipDto).then((playtime) => {
-            if (playtime) {
-              return null;
-            }
-            return this.clipRepository.updatePlaytime(clipDto.clipId, playtime);
-          });
-        }
-        return;
       })
       .then((_) => {
         return this.osHepler.openTempDirectory(
@@ -90,8 +83,6 @@ export class ClipService {
         Logger.error(`failed to updatePlaytime ${clipDto.clipId}`);
         Logger.error(err);
       });
-
-    this.roomRepository.addClip(createClipDto.roomId, createClip);
     return new CreateClipResponse(clipDto);
   }
 
@@ -105,7 +96,8 @@ export class ClipService {
         clip.message,
         clip.isPublic,
         clip.extension,
-        clip.password
+        clip.password,
+        clip.playtime
       );
     });
   }
@@ -118,25 +110,6 @@ export class ClipService {
         HttpStatus.NOT_FOUND
       );
     }
-    if (clip.playtime == null) {
-      const clipDto = new ClipDto(
-        clip._id.toString(),
-        clip.roomId,
-        clip.nickname,
-        clip.message,
-        clip.isPublic,
-        clip.extension,
-        clip.password
-      );
-      const playtime = await this.getPlaytime(clipDto);
-      clip.playtime = playtime;
-      this.clipRepository
-        .updatePlaytime(clipDto.clipId, playtime)
-        .then(() => {
-          Logger.debug("update playtime");
-        })
-        .catch((err) => Logger.error(err));
-    }
     const clipDto = new ClipDto(
       clip._id.toString(),
       clip.roomId,
@@ -147,8 +120,6 @@ export class ClipService {
       clip.password,
       clip.playtime
     );
-    Logger.debug("!!!!!");
-    Logger.debug(JSON.stringify(clipDto));
     let signedUrl: string;
     try {
       const thumbKey = clipDto.getS3ThumbKey();
@@ -185,14 +156,23 @@ export class ClipService {
     return this.clipRepository.remove(id);
   }
 
-  private async getPlaytime(clipDto: ClipDto): Promise<string> {
-    const signedUrl: string = await this.s3Respository.getPresignedUrl(
-      clipDto.getS3Key()
-    );
-    const duration: number = await getVideoDurationInSeconds(signedUrl);
-    const hour: string = (duration / 3600).toFixed().padStart(2, "0");
-    const minute: string = ((duration / 60) % 60).toFixed().padStart(2, "0");
-    const seconds: string = (duration % 60).toFixed().padStart(2, "0");
-    return `${hour}:${minute}:${seconds}`;
+  getPlaytime(file: any): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.osHepler
+        .openTempDirectory("get-video-url", async (tempDir: string) => {
+          const tempFilePath = path.join(tempDir, file.originalname);
+          const stream = fs.createWriteStream(tempFilePath);
+          stream.write(file.buffer);
+          stream.end();
+
+          const playtime: string = await this.ffmpegService.getPlaytime(
+            tempFilePath
+          );
+          resolve(playtime);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
   }
 }

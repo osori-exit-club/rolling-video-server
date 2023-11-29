@@ -105,7 +105,8 @@ describe("ClipController", () => {
                 "message",
                 true,
                 "mp4",
-                "password"
+                "password",
+                "00:00:15"
               )
             )
           )
@@ -256,6 +257,7 @@ describe("ClipController", () => {
             isPublic: true,
             extension: "mp4",
             password: "password",
+            playtime: "00:00:00",
           })
         )
       );

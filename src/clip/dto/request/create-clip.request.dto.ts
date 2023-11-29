@@ -6,34 +6,43 @@ export class CreateClipRequest {
     required: true,
     nullable: false,
   })
-  roomId: string;
+  readonly roomId: string;
   @ApiProperty({
     description: "clip을 생성한 사람의 닉네임",
     required: true,
     nullable: false,
   })
-  nickname: string;
+  readonly nickname: string;
   @ApiProperty({
     description: "clip 메세지",
     required: true,
     nullable: false,
   })
-  message: string;
+  readonly message: string;
   @ApiProperty({
     description: "clip 공개 여부",
     required: true,
     nullable: false,
   })
-  isPublic: boolean;
+  readonly isPublic: boolean;
+  @ApiProperty({
+    description: "영상 재생 시간",
+    required: false,
+    nullable: true,
+    example: "00:00:15",
+  })
+  playtime: string | null;
   constructor(
     roomId: string,
     nickname: string,
     message: string,
-    isPublic: boolean
+    isPublic: boolean,
+    playtime: string | null = null
   ) {
     this.roomId = roomId;
     this.nickname = nickname;
     this.message = message;
     this.isPublic = isPublic;
+    this.playtime = playtime;
   }
 }
