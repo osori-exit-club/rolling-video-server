@@ -12,12 +12,12 @@ export class FfmpegService {
     return new Promise((resolve, reject) => {
       ffmpeg(fileUrl)
         .videoCodec("libvpx") //libvpx-vp9 could be used too
-        .videoBitrate(1000, true) //Outputting a constrained 1Mbit VP8 video stream
+        .videoBitrate(400) //Outputting a constrained 1Mbit(1000=1Mbit) VP8 video stream
         .outputOptions(
           "-minrate",
-          "1000",
+          "400",
           "-maxrate",
-          "1000",
+          "400",
           "-threads",
           "3", //Use number of real cores available on the computer - 1
           "-flags",
@@ -51,7 +51,6 @@ export class FfmpegService {
 
   async getPlaytime(filePath: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      Logger.debug(filePath);
       ffmpeg.ffprobe(filePath, function (err, metadata) {
         if (err) {
           return reject(err);
