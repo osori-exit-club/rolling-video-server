@@ -4,7 +4,7 @@ if ! command -v nvm &> /dev/null; then
     echo "nvm could not be found"
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
     sh ~/.nvm/nvm.sh
-    nvm install 1
+    nvm install 18
     nvm alias default 18
 else
     echo "[PASS] nvm installed"
