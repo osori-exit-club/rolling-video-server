@@ -24,4 +24,11 @@ else
     echo "[PASS] nest installed"
 fi
 
+if ! command -v ffmpeg &> /dev/null; then
+    echo "ffmpeg could not be found"
+    apt install ffmpeg
+else
+    echo "[PASS] ffmpeg installed"
+fi
+
 export NODE_OPTIONS=--max_old_space_size=4096
