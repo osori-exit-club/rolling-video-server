@@ -193,23 +193,13 @@ export class ClipController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 15_000_000 }),
+          // new MaxFileSizeValidator({ maxSize: 15_000_000 }),
           new FileTypeValidator({ fileType: "video/*" }),
         ],
       })
     )
     file
   ): Promise<CreateClipResponse> {
-    // TODO : remove below error code because it will be unreachable by UploadedFile validator
-    const sizeMB = file.size / 1_000_000;
-    if (sizeMB > 15) {
-      Logger.debug(sizeMB);
-      throw new HttpException(
-        ResponseMessage.CLIP_CREATE_FAIL_SIZE_LIMIT("15MB"),
-        HttpStatus.BAD_REQUEST
-      );
-    }
-
     const room: RoomDto | null = await this.roomService.findOne(
       createClipDto.roomId
     );
