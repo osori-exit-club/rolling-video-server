@@ -43,3 +43,11 @@ build.sh do below jobs
 1. install dependencies from package.json
 2. do npm run build
 3. reload pm2 through ecosystem.json
+
+## make third-party-licenses.txt
+
+licenses file is created by [generate-license-file](https://github.com/TobyAndToby/generate-license-file)
+
+```
+npx generate-license-file --input package.json --output third-party-licenses.txt --overwrite
+```
