@@ -42,14 +42,19 @@ describe("ClipService", () => {
       ],
     }).compile();
 
-    service = module.get<ClipService>(ClipService);
     clipRepository = module.get<ClipRepository>(ClipRepository);
     roomRepository = module.get<RoomRepository>(RoomRepository);
     s3Repository = module.get<S3Repository>(S3Repository);
     const ffmpegService = module.get<FfmpegService>(FfmpegService);
 
-    jest.spyOn(ffmpegService, "makeWebmFile").mockResolvedValue();
-    jest.spyOn(ffmpegService, "getPlaytime").mockResolvedValue("00:00:15");
+    jest
+      .spyOn(ffmpegService, "makeWebmFile")
+      .mockResolvedValue(Promise.resolve(true));
+    jest
+      .spyOn(ffmpegService, "getPlaytime")
+      .mockResolvedValue(Promise.resolve("00:00:15"));
+
+    service = module.get<ClipService>(ClipService);
   });
 
   it("should be defined", () => {
@@ -72,7 +77,7 @@ describe("ClipService", () => {
   });
 
   describe("클립 생성 테스트", () => {
-    // TODO updage bug
+    // TODO update bug
     it("[1] 클립 생성", async () => {
       // Arrange
       const roomId = "roomId";
@@ -82,6 +87,9 @@ describe("ClipService", () => {
       mockClip.save = () => {};
       jest
         .spyOn(s3Repository, "uploadFile")
+        .mockResolvedValue(Promise.resolve("video_url"));
+      jest
+        .spyOn(s3Repository, "getPresignedUrl")
         .mockResolvedValue(Promise.resolve("video_url"));
       jest
         .spyOn(clipRepository, "create")
@@ -112,7 +120,6 @@ describe("ClipService", () => {
       const clipId = "clipId";
       const password = "password";
       const input = new DeleteClipRequest(password);
-      const repoResult: any = {};
 
       jest.spyOn(clipRepository, "findOne").mockImplementation((id) => {
         return id == clipId
@@ -122,13 +129,13 @@ describe("ClipService", () => {
 
       jest
         .spyOn(clipRepository, "remove")
-        .mockResolvedValue(Promise.resolve(repoResult));
+        .mockResolvedValue(Promise.resolve(true));
 
       // Act
       const result = await service.remove(clipId, input);
 
       // Assert
-      expect(result).toEqual(repoResult);
+      expect(result).toBeTruthy();
     });
   });
 });

@@ -39,7 +39,18 @@ export class ClipRepository {
     return this.clipModel.findById(id).exec();
   }
 
-  remove(id: string) {
-    return this.clipModel.findByIdAndRemove(id).exec();
+  async remove(id: string): Promise<boolean> {
+    try {
+      const result = await this.clipModel.findByIdAndDelete(id).exec();
+      if (result == null) {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      if (err.__proto__.toString() != "CastError") {
+        Logger.error(err);
+      }
+      return false;
+    }
   }
 }

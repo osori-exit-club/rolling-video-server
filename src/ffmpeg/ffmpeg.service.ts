@@ -8,7 +8,7 @@ export class FfmpegService {
     ffmpeg.setFfmpegPath(ffmpegInstaller.path);
   }
 
-  async makeWebmFile(fileUrl: string, outPath: string): Promise<void> {
+  async makeWebmFile(fileUrl: string, outPath: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       ffmpeg(fileUrl)
         .videoCodec("libvpx") //libvpx-vp9 could be used too
@@ -43,7 +43,7 @@ export class FfmpegService {
           var psnr = stdout.match(regex);
           Logger.debug("This WebM transcode scored a PSNR of: ");
           Logger.debug(psnr[4] + "dB");
-          resolve();
+          resolve(true);
         })
         .save(outPath);
     });

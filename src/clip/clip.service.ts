@@ -136,7 +136,7 @@ export class ClipService {
     return new ClipResponse(clipDto, signedUrl);
   }
 
-  async remove(id: string, deleteClipDto: DeleteClipRequest) {
+  async remove(id: string, deleteClipDto: DeleteClipRequest): Promise<boolean> {
     let clip = null;
     try {
       clip = await this.clipRepository.findOne(id);

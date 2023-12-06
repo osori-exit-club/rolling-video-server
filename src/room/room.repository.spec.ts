@@ -9,6 +9,7 @@ import { HashHelper } from "src/utils/hash/hash.helper";
 import { HashModule } from "src/utils/hash/hash.module";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { RoomRepository } from "./room.repository";
+import { Logger } from "@nestjs/common";
 
 describe("RoomRepository", () => {
   let repository: RoomRepository;
@@ -158,6 +159,8 @@ describe("RoomRepository", () => {
       const id = presetDataList[3]._id.toString();
       // Act
       const result = await repository.remove(id);
+      Logger.debug("???");
+      Logger.debug(result);
       // Assert;
       expect(result).toBeTruthy();
       const findResult = (await repository.findAll()).filter(

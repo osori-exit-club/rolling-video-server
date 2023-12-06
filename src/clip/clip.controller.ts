@@ -375,8 +375,7 @@ export class ClipController {
     @Param("id") id: string,
     @Body() deleteClipDto: DeleteClipRequest
   ) {
-    const result = await this.clipService.remove(id, deleteClipDto);
-    const isSuccess = result._id.toString() == id;
+    const isSuccess = await this.clipService.remove(id, deleteClipDto);
     if (isSuccess == false) {
       return new SimpleResponseDto(ResponseMessage.CLIP_REMOVE_FAIL);
     }

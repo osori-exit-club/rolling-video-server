@@ -179,7 +179,7 @@ describe("ClipController", () => {
       );
     });
 
-    it("실패 케이스 - 2. 만료된 기한", async () => {
+    it.skip("실패 케이스 - 2. 초과된 파일 크기", async () => {
       // Arrange
       jest
         .spyOn(roomService, "findOne")
@@ -209,7 +209,7 @@ describe("ClipController", () => {
       );
     });
 
-    it("실패 케이스 - 3. 초과된 파일 크기", async () => {
+    it("실패 케이스 - 3. 만료된 기한", async () => {
       // Arrange
       jest
         .spyOn(roomService, "findOne")

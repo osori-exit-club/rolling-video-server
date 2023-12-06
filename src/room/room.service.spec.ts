@@ -97,8 +97,8 @@ describe("RoomService", () => {
         });
       jest
         .spyOn(repository, "remove")
-        .mockImplementation(async (id: string): Promise<string | null> => {
-          return id == roomId ? roomId : null;
+        .mockImplementation(async (id: string): Promise<boolean> => {
+          return id == roomId;
         });
     });
 

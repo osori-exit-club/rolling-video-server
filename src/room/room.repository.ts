@@ -46,18 +46,18 @@ export class RoomRepository {
    *
    * @return objectId if room exists else null
    */
-  async remove(id: string): Promise<string | null> {
+  async remove(id: string): Promise<boolean> {
     try {
-      const result = await this.roomModel.findByIdAndRemove(id).exec();
+      const result = await this.roomModel.findByIdAndDelete(id).exec();
       if (result == null) {
-        return null;
+        return false;
       }
-      return result._id.toString();
+      return true;
     } catch (err) {
       if (err.__proto__.toString() != "CastError") {
         Logger.error(err);
       }
-      return null;
+      return false;
     }
   }
 }
