@@ -31,7 +31,7 @@ export function setupSwagger(app: INestApplication): void {
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
-  app.setGlobalPrefix("api");
+  // app.setGlobalPrefix("api");
 
   setupSwagger(app);
 
