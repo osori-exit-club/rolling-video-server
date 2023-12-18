@@ -10,9 +10,7 @@ import {
   HttpException,
   HttpStatus,
   ParseFilePipe,
-  MaxFileSizeValidator,
   FileTypeValidator,
-  Logger,
   UseGuards,
 } from "@nestjs/common";
 import { ClipService } from "./clip.service";
@@ -186,6 +184,44 @@ export class ClipController {
           },
         },
       },
+      "영상 업로드에 실패": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.INTERNAL_SERVER_ERROR,
+            },
+            message: {
+              type: "string",
+              example: ResponseMessage.CLIP_CREATE_FAIL_UPLOAD_VIDEO,
+            },
+            error: {
+              type: "string",
+              example: "Bad Request",
+            },
+          },
+        },
+      },
+      "클립 생성에 실패": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.INTERNAL_SERVER_ERROR,
+            },
+            message: {
+              type: "string",
+              example: ResponseMessage.CLIP_CREATE_FAIL_CREATE_CLIP,
+            },
+            error: {
+              type: "string",
+              example: "Bad Request",
+            },
+          },
+        },
+      },
     },
   })
   async create(
@@ -220,7 +256,22 @@ export class ClipController {
       );
     }
 
-    return this.clipService.create(createClipDto, file);
+    try {
+      const result = await this.clipService.create(createClipDto, file);
+      return result;
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw new HttpException(
+          ResponseMessage.CLIP_CREATE_FAIL_UPLOAD_VIDEO,
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        throw new HttpException(
+          ResponseMessage.CLIP_CREATE_FAIL_CREATE_CLIP,
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      }
+    }
   }
 
   // TODO: password는 생성 시에만 보내주고, get에서는 보내주면 안됨.
@@ -305,7 +356,7 @@ export class ClipController {
     type: DeleteClipRequest,
   })
   @ApiOkResponse({
-    description: "삭제 겅공 여부",
+    description: "삭제 성공 여부",
     schema: {
       type: "object",
       properties: {

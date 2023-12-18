@@ -39,7 +39,6 @@ export class ClipService {
       createClipDto,
       extension
     );
-    this.roomRepository.addClip(createClipDto.roomId, createClip);
     const clipDto = new ClipDto(
       createClip._id.toString(),
       createClip.roomId,
@@ -60,6 +59,11 @@ export class ClipService {
       .catch((err) => {
         Logger.error(`failed to uploadFile`);
         Logger.error(err);
+        this.clipRepository.remove(clipDto.clipId);
+        throw new HttpException(
+          ResponseMessage.CLIP_CREATE_FAIL_UPLOAD_VIDEO,
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
       })
       .then((_) => {
         return this.osHepler.openTempDirectory(
@@ -82,7 +86,9 @@ export class ClipService {
       .catch((err) => {
         Logger.error(`failed to updatePlaytime ${clipDto.clipId}`);
         Logger.error(err);
+        throw err;
       });
+    this.roomRepository.addClip(createClipDto.roomId, createClip);
     return new CreateClipResponse(clipDto);
   }
 

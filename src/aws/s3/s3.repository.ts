@@ -88,7 +88,6 @@ export class S3Repository {
         Body: buffer,
       };
       const data = await this.s3.upload(params).promise();
-
       return data.Location;
     } catch (error) {
       throw new InternalServerErrorException(error);
