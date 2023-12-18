@@ -1,4 +1,12 @@
-import { Controller, Get } from "@nestjs/common";
+import {
+  All,
+  Controller,
+  Get,
+  Logger,
+  Redirect,
+  Req,
+  Res,
+} from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
 import { AppService } from "./app.service";
 
@@ -10,5 +18,13 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
+  }
+
+  // TODO remove after enabling use global prefix
+  @All("api/**")
+  redirect(@Req() req, @Res() res) {
+    Logger.debug(req.path);
+    const delegateEndPoint = req.path.replace(/\/api/g, "");
+    return res.redirect(delegateEndPoint);
   }
 }
