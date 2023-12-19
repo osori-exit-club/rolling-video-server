@@ -86,7 +86,6 @@ export class ClipService {
       .catch((err) => {
         Logger.error(`failed to updatePlaytime ${clipDto.clipId}`);
         Logger.error(err);
-        throw err;
       });
     this.roomRepository.addClip(createClipDto.roomId, createClip);
     return new CreateClipResponse(clipDto);
