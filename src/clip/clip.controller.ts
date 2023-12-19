@@ -261,7 +261,7 @@ export class ClipController {
       Logger.debug(
         `[ClipController/create] request info = ${JSON.stringify(
           createClipDto
-        )} ${JSON.stringify(file)}`
+        )} name: ${file.name}(${file.size})`
       );
       const result = await this.clipService.create(createClipDto, file);
       Logger.debug(
