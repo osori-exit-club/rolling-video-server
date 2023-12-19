@@ -72,34 +72,37 @@ export class ClipService {
   }
 
   async createCompactedVideo(clipDto: ClipDto) {
-    return this.osHepler.openTempDirectory("webm", async (tempDir: string) => {
-      Logger.debug(`[compact process] create temp dir ${tempDir}`);
-      const outPath: string = path.join(
-        tempDir,
-        `${clipDto.clipId}_compacted.webm`
-      );
-      const inputFolderPath: string = path.join(
-        tempDir,
-        `${clipDto.clipId}_original`
-      );
+    return await this.osHepler.openTempDirectory(
+      "webm",
+      async (tempDir: string) => {
+        Logger.debug(`[compact process] create temp dir ${tempDir}`);
+        const outPath: string = path.join(
+          tempDir,
+          `${clipDto.clipId}_compacted.webm`
+        );
+        const inputFolderPath: string = path.join(
+          tempDir,
+          `${clipDto.clipId}_original`
+        );
 
-      Logger.debug(
-        `[compact process] download ${clipDto.getS3Key()} on ${inputFolderPath}`
-      );
-      const inputPath = await this.s3Respository.download(
-        clipDto.getS3Key(),
-        inputFolderPath
-      );
+        Logger.debug(
+          `[compact process] download ${clipDto.getS3Key()} on ${inputFolderPath}`
+        );
+        const inputPath = await this.s3Respository.download(
+          clipDto.getS3Key(),
+          inputFolderPath
+        );
 
-      await this.ffmpegService.makeWebmFile(inputPath, outPath);
-      Logger.debug(`[compact process] made webmFile`);
-      const fileContent = fs.readFileSync(outPath);
-      await this.s3Respository.uploadFile({
-        key: clipDto.getS3ThumbKey(),
-        buffer: fileContent,
-      });
-      Logger.debug(`[compact process] upload webmFile`);
-    });
+        await this.ffmpegService.makeWebmFile(inputPath, outPath);
+        Logger.debug(`[compact process] made webmFile`);
+        const fileContent = fs.readFileSync(outPath);
+        await this.s3Respository.uploadFile({
+          key: clipDto.getS3ThumbKey(),
+          buffer: fileContent,
+        });
+        Logger.debug(`[compact process] upload webmFile`);
+      }
+    );
   }
 
   async findAll(): Promise<ClipDto[]> {
@@ -140,9 +143,14 @@ export class ClipService {
       if (await this.s3Respository.existsInS3(thumbKey)) {
         signedUrl = await this.s3Respository.getPresignedUrl(thumbKey);
       } else {
-        this.createCompactedVideo(clipDto).then((it) => {
-          Logger.debug("[ClipService/findOne] finish compact video");
-        });
+        this.createCompactedVideo(clipDto)
+          .then((it) => {
+            Logger.debug("[ClipService/findOne] finish compact video");
+          })
+          .catch((err) => {
+            Logger.error(`failed to create compacted video ${clipDto.clipId}`);
+            Logger.error(err);
+          });
         signedUrl = await this.s3Respository.getPresignedUrl(
           clipDto.getS3Key()
         );
