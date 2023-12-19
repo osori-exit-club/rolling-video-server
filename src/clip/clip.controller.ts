@@ -269,6 +269,7 @@ export class ClipController {
       );
       return result;
     } catch (err) {
+      Logger.error(`[ClipController/create] fail with ${err.message}`);
       if (err instanceof HttpException) {
         throw new HttpException(
           ResponseMessage.CLIP_CREATE_FAIL_UPLOAD_VIDEO,
