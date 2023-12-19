@@ -12,6 +12,7 @@ import {
   ParseFilePipe,
   FileTypeValidator,
   UseGuards,
+  Logger,
 } from "@nestjs/common";
 import { ClipService } from "./clip.service";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
@@ -257,7 +258,15 @@ export class ClipController {
     }
 
     try {
+      Logger.debug(
+        `[ClipController/create] request info = ${JSON.stringify(
+          createClipDto
+        )} ${JSON.stringify(file)}`
+      );
       const result = await this.clipService.create(createClipDto, file);
+      Logger.debug(
+        `[ClipController/create] response info = ${JSON.stringify(result)}`
+      );
       return result;
     } catch (err) {
       if (err instanceof HttpException) {
