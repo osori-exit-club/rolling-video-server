@@ -66,8 +66,13 @@ export class FfmpegService {
 
   async getPlaytime(filePath: string): Promise<string> {
     return new Promise((resolve, reject) => {
+      Logger.debug(`[FfmpegService/getPlaytime] filePath = ${filePath} `);
       ffmpeg.ffprobe(filePath, function (err, metadata) {
+        Logger.debug(
+          `[FfmpegService/getPlaytime] metadata = ${JSON.stringify(metadata)} `
+        );
         if (err) {
+          Logger.error(`[FfmpegService/getPlaytime] error = ${err.message} `);
           return reject(err);
         }
 
@@ -77,6 +82,10 @@ export class FfmpegService {
           .toFixed()
           .padStart(2, "0");
         const seconds: string = (duration % 60).toFixed().padStart(2, "0");
+
+        Logger.debug(
+          `[FfmpegService/getPlaytime] playtime = ${hour}:${minute}:${seconds}`
+        );
         resolve(`${hour}:${minute}:${seconds}`);
       });
     });
