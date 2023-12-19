@@ -5,6 +5,9 @@ import * as ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
 @Injectable()
 export class FfmpegService {
   constructor() {
+    Logger.debug(
+      `[FfmpegService/constructor] ffmpegInstallPath ${ffmpegInstaller.path}`
+    );
     ffmpeg.setFfmpegPath(ffmpegInstaller.path);
   }
 
@@ -25,13 +28,19 @@ export class FfmpegService {
           "-psnr"
         ) //Show PSNR measurements in output. Anything above 40dB indicates excellent fidelity
         .on("start", (cmdline) =>
-          Logger.debug("[FfmpegService/makeWebmFile]: " + cmdline)
+          Logger.debug("[FfmpegService/makeWebmFile] cmdline = " + cmdline)
         )
         .on("progress", function (progress) {
-          Logger.debug("Processing: " + progress.percent + "% done");
+          Logger.debug(
+            "[FfmpegService/makeWebmFile] Processing: " +
+              progress.percent +
+              "% done"
+          );
         })
         .on("error", function (err) {
-          Logger.error("An error occurred: " + err.message);
+          Logger.error(
+            "[FfmpegService/makeWebmFile] An error occurred: " + err.message
+          );
           Logger.error(err);
           reject(err);
         })
@@ -41,11 +50,13 @@ export class FfmpegService {
             return reject(err);
           }
           Logger.debug(stdout);
-          Logger.debug("Processing finished.");
+          Logger.debug("[FfmpegService/makeWebmFile] Processing finished.");
           var regex =
             /LPSNR=Y:([0-9\.]+) U:([0-9\.]+) V:([0-9\.]+) \*:([0-9\.]+)/;
           var psnr = stdout.match(regex);
-          Logger.debug("This WebM transcode scored a PSNR of: ");
+          Logger.debug(
+            "[FfmpegService/makeWebmFile] This WebM transcode scored a PSNR of: "
+          );
           Logger.debug(psnr[4] + "dB");
           resolve(true);
         })
