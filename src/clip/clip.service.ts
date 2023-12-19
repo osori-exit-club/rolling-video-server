@@ -69,17 +69,21 @@ export class ClipService {
         return this.osHepler.openTempDirectory(
           "webm",
           async (tempDir: string) => {
+            Logger.debug(`[compact process] create temp dir ${tempDir}`);
             const outPath: string = path.join(tempDir, "output.webm");
 
             const signedUrl = await this.s3Respository.getPresignedUrl(
               clipDto.getS3Key()
             );
+            Logger.debug(`[compact process] signed url ${signedUrl}`);
             await this.ffmpegService.makeWebmFile(signedUrl, outPath);
+            Logger.debug(`[compact process] made webmFile`);
             const fileContent = fs.readFileSync(outPath);
             await this.s3Respository.uploadFile({
               key: clipDto.getS3ThumbKey(),
               buffer: fileContent,
             });
+            Logger.debug(`[compact process] upload webmFile`);
           }
         );
       })
