@@ -67,14 +67,22 @@ export class ClipService {
             Logger.debug(`[compact process] create temp dir ${tempDir}`);
             const outPath: string = path.join(
               tempDir,
-              `${clipDto.clipId}_compacted.web`
+              `${clipDto.clipId}_compacted.webm`
+            );
+            const inputFolderPath: string = path.join(
+              tempDir,
+              `${clipDto.clipId}_original`
             );
 
-            const signedUrl = await this.s3Respository.getPresignedUrl(
-              clipDto.getS3Key()
+            Logger.debug(
+              `[compact process] download ${clipDto.getS3Key()} on ${inputFolderPath}`
             );
-            Logger.debug(`[compact process] signed url ${signedUrl}`);
-            await this.ffmpegService.makeWebmFile(signedUrl, outPath);
+            const inputPath = await this.s3Respository.download(
+              clipDto.getS3Key(),
+              inputFolderPath
+            );
+
+            await this.ffmpegService.makeWebmFile(inputPath, outPath);
             Logger.debug(`[compact process] made webmFile`);
             const fileContent = fs.readFileSync(outPath);
             await this.s3Respository.uploadFile({

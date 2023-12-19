@@ -141,8 +141,9 @@ export class S3Repository {
       if (!fs.existsSync(outDir)) {
         fs.mkdirSync(outDir, { recursive: true });
       }
+      const outPath: string = `${outDir}/${fileName}`;
       const writeStream = fs
-        .createWriteStream(`${outDir}/${fileName}`)
+        .createWriteStream(outPath)
         .on("error", (err) => console.error(err));
 
       let rangeAndLength = { start: -1, end: -1, length: -1 };
@@ -162,6 +163,7 @@ export class S3Repository {
 
         writeStream.write(await Body.transformToByteArray());
         rangeAndLength = getRangeAndLength(ContentRange);
+        return outPath;
       }
       Logger.debug(`Downloading Done ${key}`);
     };

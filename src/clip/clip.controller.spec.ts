@@ -105,8 +105,7 @@ describe("ClipController", () => {
                 "message",
                 true,
                 "mp4",
-                "password",
-                "00:00:15"
+                "password"
               )
             )
           )
@@ -123,8 +122,7 @@ describe("ClipController", () => {
                   "message",
                   true,
                   "mp4",
-                  "password",
-                  "00:00:00"
+                  "password"
                 ),
                 "signedUrl"
               )
@@ -272,8 +270,7 @@ describe("ClipController", () => {
                   "message",
                   true,
                   "mp4",
-                  "password",
-                  "00:00:00"
+                  "password"
                 ),
                 "signedUrl"
               )

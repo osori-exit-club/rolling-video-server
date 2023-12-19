@@ -11,9 +11,12 @@ export class FfmpegService {
     ffmpeg.setFfmpegPath(ffmpegInstaller.path);
   }
 
-  async makeWebmFile(fileUrl: string, outPath: string): Promise<boolean> {
+  async makeWebmFile(inputPath: string, outPath: string): Promise<boolean> {
+    Logger.debug(
+      `[FfmpegService/makeWebmFile] inputPath = ${inputPath} | outPath = ${outPath}`
+    );
     return new Promise((resolve, reject) => {
-      ffmpeg(fileUrl)
+      ffmpeg(inputPath)
         .videoCodec("libvpx") //libvpx-vp9 could be used too
         .videoBitrate(400) //Outputting a constrained 1Mbit(1000=1Mbit) VP8 video stream
         .outputOptions(
