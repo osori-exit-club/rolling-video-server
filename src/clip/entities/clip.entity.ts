@@ -8,7 +8,6 @@ export class Clip {
   readonly createAt: string;
   readonly updatedAt: string;
   readonly password: string;
-  readonly playtime: string;
   constructor(
     _id: string,
     roomId: string,
@@ -18,8 +17,7 @@ export class Clip {
     extension: string,
     createAt: string,
     updatedAt: string,
-    password: string,
-    playtime: string
+    password: string
   ) {
     this._id = _id;
     this.roomId = roomId;
@@ -30,6 +28,5 @@ export class Clip {
     this.createAt = createAt;
     this.updatedAt = updatedAt;
     this.password = password;
-    this.playtime = playtime;
   }
 }

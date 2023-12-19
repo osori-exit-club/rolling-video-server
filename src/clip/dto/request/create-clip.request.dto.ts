@@ -25,24 +25,15 @@ export class CreateClipRequest {
     nullable: false,
   })
   readonly isPublic: boolean;
-  @ApiProperty({
-    description: "영상 재생 시간",
-    required: false,
-    nullable: true,
-    example: "00:00:15",
-  })
-  playtime: string | null;
   constructor(
     roomId: string,
     nickname: string,
     message: string,
-    isPublic: boolean,
-    playtime: string | null = null
+    isPublic: boolean
   ) {
     this.roomId = roomId;
     this.nickname = nickname;
     this.message = message;
     this.isPublic = isPublic;
-    this.playtime = playtime;
   }
 }

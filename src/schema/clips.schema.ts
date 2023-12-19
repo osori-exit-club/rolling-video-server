@@ -22,9 +22,6 @@ export class Clip {
 
   @Prop({ require: true })
   password: string;
-
-  @Prop({ require: false })
-  playtime: string;
 }
 
 export const ClipScheme = SchemaFactory.createForClass(Clip);

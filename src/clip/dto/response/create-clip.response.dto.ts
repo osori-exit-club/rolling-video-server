@@ -50,13 +50,6 @@ export class CreateClipResponse {
     example: "$2b$10$7PGL5xUa/1RutkG7ZX2.euxACTiyGc1s6v/sx/JVk/wUcVwAAwUsO",
   })
   readonly password: string;
-  @ApiProperty({
-    description: "clip 영상 시간",
-    required: true,
-    nullable: false,
-    example: "00:00:00",
-  })
-  readonly playtime: string;
   constructor({
     clipId,
     roomId,
@@ -65,7 +58,6 @@ export class CreateClipResponse {
     isPublic,
     extension,
     password,
-    playtime,
   }: {
     clipId: string;
     roomId: string;
@@ -74,7 +66,6 @@ export class CreateClipResponse {
     isPublic: boolean | null;
     extension: string;
     password: string;
-    playtime: string;
   }) {
     this.clipId = clipId;
     this.roomId = roomId;
@@ -83,6 +74,5 @@ export class CreateClipResponse {
     this.isPublic = isPublic || false;
     this.extension = extension;
     this.password = password;
-    this.playtime = playtime;
   }
 }

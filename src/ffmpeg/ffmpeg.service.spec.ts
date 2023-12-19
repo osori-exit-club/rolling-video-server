@@ -46,12 +46,4 @@ describe("GatheringService", () => {
       );
     }, 30_000);
   });
-
-  describe("getPlaytime 테스트", () => {
-    it("[1] getPlaytime", async () => {
-      const path = "test/input/webmTempFile.webm";
-      const playtime = await service.getPlaytime(path);
-      expect(playtime).toEqual("00:00:15");
-    });
-  });
 });

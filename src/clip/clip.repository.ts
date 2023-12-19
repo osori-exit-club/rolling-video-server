@@ -25,12 +25,6 @@ export class ClipRepository {
     return createClip.save();
   }
 
-  async updatePlaytime(clipId: string, playtime: string): Promise<any> {
-    const clip = await this.clipModel.findById(clipId);
-    clip.playtime = playtime;
-    return clip.save();
-  }
-
   findAll() {
     return this.clipModel.find().exec();
   }

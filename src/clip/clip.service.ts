@@ -30,18 +30,6 @@ export class ClipService {
   ): Promise<CreateClipResponse> {
     const splitted = file.originalname.split(".");
     const extension = splitted[splitted.length - 1];
-    if (!createClipDto.playtime) {
-      try {
-        createClipDto.playtime = await this.getPlaytime(file);
-        Logger.debug(
-          `[ClipService/create] update playtime as ${createClipDto.playtime}`
-        );
-      } catch (err) {
-        Logger.error(
-          `[ClipService/create] failed to get playtime ${err.message}`
-        );
-      }
-    }
 
     const createClip = await this.clipRepository.create(
       createClipDto,
@@ -54,8 +42,7 @@ export class ClipService {
       createClip.message,
       createClip.isPublic,
       createClip.extension,
-      createClip.password,
-      createClip.playtime
+      createClip.password
     );
     const key: string = clipDto.getS3Key();
 
@@ -113,8 +100,7 @@ export class ClipService {
         clip.message,
         clip.isPublic,
         clip.extension,
-        clip.password,
-        clip.playtime
+        clip.password
       );
     });
   }
@@ -134,8 +120,7 @@ export class ClipService {
       clip.message,
       clip.isPublic,
       clip.extension,
-      clip.password,
-      clip.playtime
+      clip.password
     );
     let signedUrl: string;
     try {
@@ -171,32 +156,5 @@ export class ClipService {
       );
     }
     return this.clipRepository.remove(id);
-  }
-
-  getPlaytime(file: any): Promise<string> {
-    return new Promise((resolve, reject) => {
-      this.osHepler
-        .openTempDirectory("get-video-url", async (tempDir: string) => {
-          Logger.debug(
-            `[ClipService/getPlaytime] start with ${file.originalname} in ${tempDir}`
-          );
-          const tempFilePath = path.join(tempDir, file.originalname);
-          const stream = fs.createWriteStream(tempFilePath);
-          stream.write(file.buffer);
-          stream.end();
-
-          const playtime: string = await this.ffmpegService.getPlaytime(
-            tempFilePath
-          );
-          Logger.debug(`[ClipService/getPlaytime] playtime is ${playtime}`);
-          resolve(playtime);
-        })
-        .catch((err) => {
-          Logger.error(
-            `[ClipService/getPlaytime] fail to get playtime ${err.message}`
-          );
-          reject(err);
-        });
-    });
   }
 }
