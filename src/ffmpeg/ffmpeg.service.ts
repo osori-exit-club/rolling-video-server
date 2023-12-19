@@ -24,6 +24,9 @@ export class FfmpegService {
           "+global_header", //WebM won't love if you if you don't give it some headers
           "-psnr"
         ) //Show PSNR measurements in output. Anything above 40dB indicates excellent fidelity
+        .on("start", (cmdline) =>
+          Logger.debug("[FfmpegService/makeWebmFile]: " + cmdline)
+        )
         .on("progress", function (progress) {
           Logger.debug("Processing: " + progress.percent + "% done");
         })
