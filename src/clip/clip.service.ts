@@ -31,8 +31,16 @@ export class ClipService {
     const splitted = file.originalname.split(".");
     const extension = splitted[splitted.length - 1];
     if (!createClipDto.playtime) {
-      createClipDto.playtime = await this.getPlaytime(file);
-      Logger.debug(`update playtime as ${createClipDto.playtime}`);
+      try {
+        createClipDto.playtime = await this.getPlaytime(file);
+        Logger.debug(
+          `[ClipService/create] update playtime as ${createClipDto.playtime}`
+        );
+      } catch (err) {
+        Logger.error(
+          `[ClipService/create] failed to get playtime ${err.message}`
+        );
+      }
     }
 
     const createClip = await this.clipRepository.create(
@@ -169,6 +177,9 @@ export class ClipService {
     return new Promise((resolve, reject) => {
       this.osHepler
         .openTempDirectory("get-video-url", async (tempDir: string) => {
+          Logger.debug(
+            `[ClipService/getPlaytime] start with ${file.originalname} in ${tempDir}`
+          );
           const tempFilePath = path.join(tempDir, file.originalname);
           const stream = fs.createWriteStream(tempFilePath);
           stream.write(file.buffer);
@@ -177,9 +188,13 @@ export class ClipService {
           const playtime: string = await this.ffmpegService.getPlaytime(
             tempFilePath
           );
+          Logger.debug(`[ClipService/getPlaytime] playtime is ${playtime}`);
           resolve(playtime);
         })
         .catch((err) => {
+          Logger.error(
+            `[ClipService/getPlaytime] fail to get playtime ${err.message}`
+          );
           reject(err);
         });
     });

@@ -23,6 +23,8 @@ export class OsHelper {
     }
     try {
       await callback(targetDir);
+    } catch (err) {
+      throw err;
     } finally {
       fs.unlink(targetDir, () => {});
     }
