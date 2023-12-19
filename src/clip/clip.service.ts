@@ -143,14 +143,6 @@ export class ClipService {
       if (await this.s3Respository.existsInS3(thumbKey)) {
         signedUrl = await this.s3Respository.getPresignedUrl(thumbKey);
       } else {
-        this.createCompactedVideo(clipDto)
-          .then((it) => {
-            Logger.debug("[ClipService/findOne] finish compact video");
-          })
-          .catch((err) => {
-            Logger.error(`failed to create compacted video ${clipDto.clipId}`);
-            Logger.error(err);
-          });
         signedUrl = await this.s3Respository.getPresignedUrl(
           clipDto.getS3Key()
         );
