@@ -29,6 +29,7 @@ export class FfmpegService {
         })
         .on("error", function (err) {
           Logger.error("An error occurred: " + err.message);
+          Logger.error(err);
           reject(err);
         })
         .on("end", (err, stdout, stderr) => {
