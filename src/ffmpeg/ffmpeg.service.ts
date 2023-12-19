@@ -69,7 +69,7 @@ export class FfmpegService {
       Logger.debug(`[FfmpegService/getPlaytime] filePath = ${filePath} `);
       ffmpeg.ffprobe(filePath, function (err, metadata) {
         Logger.debug(
-          `[FfmpegService/getPlaytime] metadata = ${JSON.stringify(metadata)} `
+          `[FfmpegService/getPlaytime]  metadata.format.duration = ${metadata?.format?.duration} `
         );
         if (err) {
           Logger.error(`[FfmpegService/getPlaytime] error = ${err.message} `);
