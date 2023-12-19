@@ -84,7 +84,7 @@ export class ClipService {
         );
       })
       .catch((err) => {
-        Logger.error(`failed to updatePlaytime ${clipDto.clipId}`);
+        Logger.error(`failed to create compacted video ${clipDto.clipId}`);
         Logger.error(err);
       });
     this.roomRepository.addClip(createClipDto.roomId, createClip);
