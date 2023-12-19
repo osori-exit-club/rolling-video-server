@@ -65,7 +65,10 @@ export class ClipService {
           "webm",
           async (tempDir: string) => {
             Logger.debug(`[compact process] create temp dir ${tempDir}`);
-            const outPath: string = path.join(tempDir, "output.webm");
+            const outPath: string = path.join(
+              tempDir,
+              `${clipDto.clipId}_compacted.web`
+            );
 
             const signedUrl = await this.s3Respository.getPresignedUrl(
               clipDto.getS3Key()
