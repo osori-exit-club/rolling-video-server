@@ -59,14 +59,15 @@ export class ClipService {
           ResponseMessage.CLIP_CREATE_FAIL_UPLOAD_VIDEO,
           HttpStatus.INTERNAL_SERVER_ERROR
         );
-      })
-      .then((_) => {
-        return this.createCompactedVideo(clipDto);
-      })
-      .catch((err) => {
-        Logger.error(`failed to create compacted video ${clipDto.clipId}`);
-        Logger.error(err);
       });
+    // 압축 로직이 서버 부하를 일으키는 것으로 추정하여 잠시 disabled
+    // .then((_) => {
+    //   return this.createCompactedVideo(clipDto);
+    // })
+    // .catch((err) => {
+    //   Logger.error(`failed to create compacted video ${clipDto.clipId}`);
+    //   Logger.error(err);
+    // });
     this.roomRepository.addClip(createClipDto.roomId, createClip);
     return new CreateClipResponse(clipDto);
   }
