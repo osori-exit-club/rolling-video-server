@@ -150,7 +150,7 @@ describe("ClipRepository", () => {
       // Assert;
       expect(result).toBeTruthy();
       const findResult = (await repository.findAll()).filter(
-        (it) => it._id == id
+        (it) => it.clipId == id
       );
       expect(findResult.length).toEqual(0);
     });

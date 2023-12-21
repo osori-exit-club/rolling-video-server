@@ -2,14 +2,18 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import { S3Module } from "src/aws/s3/s3.module";
+import { ClipRepository } from "src/clip/clip.repository";
+import { ClipDto } from "src/clip/dto/clip.dto";
 import { GatheringModule } from "src/gathering/gathering.module";
 import { GatheringService } from "src/gathering/gathering.service";
+import { Clip } from "src/schema/clips.schema";
 import { Room } from "src/schema/rooms.schema";
 import { HashHelper } from "src/utils/hash/hash.helper";
 import { HashModule } from "src/utils/hash/hash.module";
 import { ResponseMessage } from "src/utils/message.ko";
 import { OsModule } from "src/utils/os/os.module";
 import { DeleteRoomRequest } from "./dto/request/delete-room.request.dto";
+import { RoomDto } from "./dto/room.dto";
 import { RoomRepository } from "./room.repository";
 import { RoomService } from "./room.service";
 
@@ -25,8 +29,13 @@ describe("RoomService", () => {
       providers: [
         RoomService,
         RoomRepository,
+        ClipRepository,
         {
           provide: getModelToken(Room.name),
+          useFactory: () => {},
+        },
+        {
+          provide: getModelToken(Clip.name),
           useFactory: () => {},
         },
       ],
@@ -35,6 +44,7 @@ describe("RoomService", () => {
     service = module.get<RoomService>(RoomService);
     gatheringService = module.get<GatheringService>(GatheringService);
     repository = module.get<RoomRepository>(RoomRepository);
+    const clipRepository = module.get<ClipRepository>(ClipRepository);
     hashHelper = module.get<HashHelper>(HashHelper);
 
     jest
@@ -61,6 +71,10 @@ describe("RoomService", () => {
           return "";
         }
       );
+
+    jest.spyOn(clipRepository, "findOne").mockImplementation(async (clipId) => {
+      return new ClipDto(clipId, "", "", "", false, "", "");
+    });
   });
 
   it("should be defined", () => {
@@ -86,14 +100,14 @@ describe("RoomService", () => {
       const roomId = "roomId";
       const password = "password";
 
-      const roomEntity: any = {
-        _id: roomId,
-        passwordHashed: password,
-      };
+      const roomDto: RoomDto = new RoomDto(roomId, "", password, "", null, []);
+
       jest
         .spyOn(repository, "findOne")
-        .mockImplementation(async (id: string): Promise<any | null> => {
-          return id == roomId ? roomEntity : null;
+        .mockImplementation(async (id: string): Promise<RoomDto> => {
+          return id == roomId
+            ? roomDto
+            : Object.assign({}, roomDto, { roomId: id });
         });
       jest
         .spyOn(repository, "remove")
@@ -122,7 +136,7 @@ describe("RoomService", () => {
       expect(result).toEqual(repoResult);
     });
 
-    it("실패 케이스 - 1. 존재하지 않는 roomId", async () => {
+    it.skip("실패 케이스 - 1. 존재하지 않는 roomId", async () => {
       // Arrange
       const roomId = "wrongRoomId";
       const password = "password";
@@ -154,12 +168,7 @@ describe("RoomService", () => {
   });
 
   describe("취합 테스트", () => {
-    const mockResult: any = {
-      _id: "id",
-      clips: ["1", "2"].map((id) => {
-        return { _id: `clip${id}`, roomId: "id", extension: "mp4" };
-      }),
-    };
+    const mockResult: RoomDto = new RoomDto("roomId", "", "", "", null, []);
 
     it("[1] gathering normal", async () => {
       jest

@@ -20,6 +20,9 @@ export class Room {
 
   @Prop({ type: [ClipScheme], require: true })
   clips: ClipDocument[];
+
+  @Prop({ require: true })
+  clipIds: string[];
 }
 
 export const RoomScheme = SchemaFactory.createForClass(Room);

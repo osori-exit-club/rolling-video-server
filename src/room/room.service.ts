@@ -13,10 +13,12 @@ import { GatherRoomResponse } from "./dto/response/gather-room.response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { Constants } from "src/utils/constants";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
+import { ClipRepository } from "src/clip/clip.repository";
 
 @Injectable()
 export class RoomService {
   constructor(
+    private readonly clipRepository: ClipRepository,
     private readonly roomRepository: RoomRepository,
     private readonly s3Repository: S3Repository,
     private readonly hashHelper: HashHelper,
@@ -36,101 +38,22 @@ export class RoomService {
       Object.assign({ dueDate }, createRoomDto)
     );
 
-    return new RoomDto(
-      room._id.toString(),
-      room.name,
-      room.passwordHashed,
-      room.recipient,
-      new Date(+room.dueDate),
-      room.clips.map((clip) => {
-        return new ClipDto(
-          clip._id.toString(),
-          clip.roomId,
-          clip.nickname,
-          clip.message,
-          clip.isPublic,
-          clip.extension,
-          clip.password
-        );
-      })
-    );
+    return room;
   }
 
   async findAll(): Promise<RoomDto[]> {
-    const result = await this.roomRepository.findAll();
-
-    return result.map((room) => {
-      return new RoomDto(
-        room._id.toString(),
-        room.name,
-        room.passwordHashed,
-        room.recipient,
-        new Date(+room.dueDate),
-        room.clips.map((clip) => {
-          return new ClipDto(
-            clip._id.toString(),
-            clip.roomId,
-            clip.nickname,
-            clip.message,
-            clip.isPublic,
-            clip.extension,
-            clip.password
-          );
-        })
-      );
-    });
+    return await this.roomRepository.findAll();
   }
 
   async findOne(id: string): Promise<RoomDto | null> {
-    let room: any;
-    try {
-      room = await this.roomRepository.findOne(id);
-      if (room == null) {
-        return null;
-      }
-    } catch (e) {
-      return null;
-    }
-
-    return new RoomDto(
-      id,
-      room.name,
-      room.passwordHashed,
-      room.recipient,
-      room.dueDate,
-      room.clips.map((clip) => {
-        return new ClipDto(
-          clip._id.toString(),
-          clip.roomId,
-          clip.nickname,
-          clip.message,
-          clip.isPublic,
-          clip.extension,
-          clip.password
-        );
-      })
-    );
+    return await this.roomRepository.findOne(id);
   }
 
   async remove(id: string, deleteRoomDto: DeleteRoomRequest): Promise<any> {
-    let room;
-    try {
-      room = await this.roomRepository.findOne(id);
-    } catch (err) {
-      throw new HttpException(
-        ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
-        HttpStatus.NOT_FOUND
-      );
-    }
-    if (room == null) {
-      throw new HttpException(
-        ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
-        HttpStatus.NOT_FOUND
-      );
-    }
+    const roomDto = await this.roomRepository.findOne(id);
     const isMatched = await this.hashHelper.isMatch(
       deleteRoomDto.password,
-      room.passwordHashed
+      roomDto.passwordHashed
     );
     if (isMatched == false) {
       throw new HttpException(
@@ -186,8 +109,10 @@ export class RoomService {
       );
     }
     const keyList = await Promise.all(
-      room.clipList.map((it: ClipDto) => it.getS3Key())
-    );
+      room.clipIds.map((clipId) => {
+        return this.clipRepository.findOne(clipId);
+      })
+    ).then((result) => result.map((it: ClipDto) => it.getS3Key()));
 
     const key = path.join(RoomDto.getS3key(roomId), "gathered.zip");
 

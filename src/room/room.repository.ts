@@ -1,9 +1,9 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { ClipDto } from "src/clip/dto/clip.dto";
 import { Room, RoomDocument } from "src/schema/rooms.schema";
 import { HashHelper } from "src/utils/hash/hash.helper";
+import { ResponseMessage } from "src/utils/message.ko";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { RoomDto } from "./dto/room.dto";
@@ -15,7 +15,7 @@ export class RoomRepository {
     private hashHelper: HashHelper
   ) {}
 
-  async create(createRoomDto: CreateRoomRequest) {
+  async create(createRoomDto: CreateRoomRequest): Promise<RoomDto> {
     let obj: any = createRoomDto;
     if (createRoomDto.password) {
       const passwordHahed = await this.hashHelper.createHash(
@@ -24,25 +24,75 @@ export class RoomRepository {
       obj["passwordHashed"] = passwordHahed;
       delete obj.password;
     }
-    const createdRoom = new this.roomModel(obj);
-    return createdRoom.save();
-  }
-
-  async addClip(roomId: string, clip: any) {
-    const room = await this.roomModel.findById(roomId);
-    if (room == null) {
-      throw `Room(${roomId}) is not existed`;
+    const room = await new this.roomModel(obj).save();
+    if (!room.clipIds) {
+      room.clipIds = room.clips.map((it) => it._id.toString());
     }
-    room.clips.push(clip);
-    return await room.save();
+    return new RoomDto(
+      room._id.toString(),
+      room.name,
+      room.passwordHashed,
+      room.recipient,
+      new Date(+room.dueDate),
+      room.clipIds
+    );
   }
 
-  findAll() {
-    return this.roomModel.find().exec();
+  async addClip(roomId: string, clipId: string): Promise<RoomDto> {
+    const result = await this.roomModel.findById(roomId);
+    if (result == null) {
+      throw new HttpException(
+        ResponseMessage.ROOM_READ_FAIL_WRONG_ID,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    result.clipIds.push(clipId);
+    const room = await result.save();
+
+    return new RoomDto(
+      room._id.toString(),
+      room.name,
+      room.passwordHashed,
+      room.recipient,
+      new Date(+room.dueDate),
+      room.clipIds
+    );
   }
 
-  findOne(id: string) {
-    return this.roomModel.findById(id).exec();
+  async findAll(): Promise<RoomDto[]> {
+    const result = await this.roomModel.find().exec();
+    return result.map((room) => {
+      if (room.clipIds.length == 0) {
+        room.clipIds = room.clips.map((it) => it._id.toString());
+      }
+      return new RoomDto(
+        room._id.toString(),
+        room.name,
+        room.passwordHashed,
+        room.recipient,
+        new Date(+room.dueDate),
+        room.clipIds
+      );
+    });
+  }
+
+  async findOne(id: string): Promise<RoomDto> {
+    const room = await this.roomModel.findById(id).exec();
+    if (room == null) {
+      throw new HttpException(
+        ResponseMessage.ROOM_READ_FAIL_WRONG_ID,
+        HttpStatus.NOT_FOUND
+      );
+    }
+
+    return new RoomDto(
+      room._id.toString(),
+      room.name,
+      room.passwordHashed,
+      room.recipient,
+      new Date(+room.dueDate),
+      room.clipIds
+    );
   }
 
   async update(
@@ -67,17 +117,7 @@ export class RoomRepository {
       room.passwordHashed,
       room.recipient,
       new Date(+room.dueDate),
-      room.clips.map((clip) => {
-        return new ClipDto(
-          clip._id.toString(),
-          clip.roomId,
-          clip.nickname,
-          clip.message,
-          clip.isPublic,
-          clip.extension,
-          clip.password
-        );
-      })
+      room.clipIds
     );
     return roomDto;
   }

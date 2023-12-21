@@ -126,7 +126,7 @@ export class RoomController {
         roomDto.name,
         roomDto.recipient,
         roomDto.dueDate,
-        roomDto.clipList.map((it) => it.clipId)
+        roomDto.clipIds
       );
     });
   }
@@ -198,7 +198,7 @@ export class RoomController {
       roomDto.name,
       roomDto.recipient,
       new Date(+roomDto.dueDate),
-      roomDto.clipList.map((it) => it.clipId)
+      roomDto.clipIds
     );
   }
 

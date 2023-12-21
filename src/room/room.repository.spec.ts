@@ -10,6 +10,9 @@ import { HashModule } from "src/utils/hash/hash.module";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { RoomRepository } from "./room.repository";
 import { Logger } from "@nestjs/common";
+import { ClipRepository } from "src/clip/clip.repository";
+import { ClipModule } from "src/clip/clip.module";
+import { Clip, ClipScheme } from "src/schema/clips.schema";
 
 describe("RoomRepository", () => {
   let repository: RoomRepository;
@@ -42,11 +45,18 @@ describe("RoomRepository", () => {
               return RoomScheme;
             },
           },
+          {
+            name: Clip.name,
+            useFactory: () => {
+              return ClipScheme;
+            },
+          },
         ]),
+        ClipModule,
         HashModule,
         S3Module,
       ],
-      providers: [RoomRepository, S3Repository],
+      providers: [RoomRepository, S3Repository, ClipRepository],
     }).compile();
 
     repository = module.get<RoomRepository>(RoomRepository);
@@ -159,12 +169,10 @@ describe("RoomRepository", () => {
       const id = presetDataList[3]._id.toString();
       // Act
       const result = await repository.remove(id);
-      Logger.debug("???");
-      Logger.debug(result);
       // Assert;
       expect(result).toBeTruthy();
       const findResult = (await repository.findAll()).filter(
-        (it) => it._id == id
+        (it) => it.clipIds.indexOf(id) > 0
       );
       expect(findResult.length).toEqual(0);
     });
@@ -174,12 +182,11 @@ describe("RoomRepository", () => {
     it("클립 추가 ", async () => {
       // Arrange
       const roomId = presetDataList[0]._id.toString();
-      const clip = { roomId, clip: "clip" };
       // Act
-      const result = await repository.addClip(roomId, clip);
+      const result = await repository.addClip(roomId, "clipId");
       // Assert
-      const lastClip = result.clips[result.clips.length - 1];
-      expect(lastClip.roomId).toEqual(roomId.toString());
+      const lastClipId = result.clipIds[result.clipIds.length - 1];
+      expect(lastClipId).toEqual("clipId");
     });
   });
 });

@@ -9,10 +9,18 @@ import { GatheringModule } from "src/gathering/gathering.module";
 import { OsModule } from "src/utils/os/os.module";
 import { S3Module } from "src/aws/s3/s3.module";
 import { AuthModule } from "src/auth/auth.module";
+import { ClipRepository } from "src/clip/clip.repository";
+import { Clip, ClipScheme } from "src/schema/clips.schema";
 
 @Module({
   imports: [
     MongooseModule.forFeatureAsync([
+      {
+        name: Clip.name,
+        useFactory: () => {
+          return ClipScheme;
+        },
+      },
       {
         name: Room.name,
         useFactory: () => {
@@ -27,7 +35,7 @@ import { AuthModule } from "src/auth/auth.module";
     AuthModule,
   ],
   controllers: [RoomController],
-  providers: [RoomService, RoomRepository],
+  providers: [RoomService, RoomRepository, ClipRepository],
   exports: [RoomService, RoomRepository],
 })
 export class RoomModule {}

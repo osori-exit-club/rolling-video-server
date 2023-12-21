@@ -22,6 +22,8 @@ import {
   Configuration,
   ConfigurationSchema,
 } from "src/schema/configuration.schema";
+import { Clip } from "src/schema/clips.schema";
+import { ClipRepository } from "src/clip/clip.repository";
 
 describe("RoomController", () => {
   let controller: RoomController;
@@ -58,8 +60,13 @@ describe("RoomController", () => {
       providers: [
         RoomService,
         RoomRepository,
+        ClipRepository,
         {
           provide: getModelToken(Room.name),
+          useFactory: () => {},
+        },
+        {
+          provide: getModelToken(Clip.name),
           useFactory: () => {},
         },
       ],

@@ -15,6 +15,8 @@ import { FfmpegModule } from "src/ffmpeg/ffmpeg.module";
 import { FfmpegService } from "src/ffmpeg/ffmpeg.service";
 import { OsHelper } from "src/utils/os/os.helper";
 import { ConfigModule } from "@nestjs/config";
+import { ClipDto } from "./dto/clip.dto";
+import { RoomDto } from "src/room/dto/room.dto";
 
 describe("ClipService", () => {
   let service: ClipService;
@@ -80,8 +82,15 @@ describe("ClipService", () => {
       const roomId = "roomId";
       const input = new CreateClipRequest(roomId, "nickname", "message", true);
       // TODO clipRepository의 리턴 타입은 무엇이고 mock 객체 못만드나?
-      const mockClip: any = { _id: "testId", extension: "mp4" };
-      mockClip.save = () => {};
+      const mockClipDto: ClipDto = new ClipDto(
+        "testId",
+        "",
+        "",
+        "",
+        false,
+        "mp4",
+        ""
+      );
       jest
         .spyOn(s3Repository, "uploadFile")
         .mockResolvedValue(Promise.resolve("video_url"));
@@ -90,10 +99,12 @@ describe("ClipService", () => {
         .mockResolvedValue(Promise.resolve("video_url"));
       jest
         .spyOn(clipRepository, "create")
-        .mockResolvedValue(Promise.resolve(mockClip));
+        .mockResolvedValue(Promise.resolve(mockClipDto));
       jest
         .spyOn(roomRepository, "addClip")
-        .mockResolvedValue(Promise.resolve(mockClip));
+        .mockResolvedValue(
+          Promise.resolve(new RoomDto("", "", "", "", null, []))
+        );
 
       // Act
       const result: CreateClipResponse = await service.create(input, {

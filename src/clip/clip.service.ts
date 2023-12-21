@@ -31,18 +31,9 @@ export class ClipService {
     const splitted = file.originalname.split(".");
     const extension = splitted[splitted.length - 1];
 
-    const createClip = await this.clipRepository.create(
+    const clipDto: ClipDto = await this.clipRepository.create(
       createClipDto,
       extension
-    );
-    const clipDto = new ClipDto(
-      createClip._id.toString(),
-      createClip.roomId,
-      createClip.nickname,
-      createClip.message,
-      createClip.isPublic,
-      createClip.extension,
-      createClip.password
     );
     const key: string = clipDto.getS3Key();
 
@@ -68,7 +59,7 @@ export class ClipService {
     //   Logger.error(`failed to create compacted video ${clipDto.clipId}`);
     //   Logger.error(err);
     // });
-    this.roomRepository.addClip(createClipDto.roomId, createClip);
+    this.roomRepository.addClip(createClipDto.roomId, clipDto.clipId);
     return new CreateClipResponse(clipDto);
   }
 
@@ -107,37 +98,11 @@ export class ClipService {
   }
 
   async findAll(): Promise<ClipDto[]> {
-    const result = await this.clipRepository.findAll();
-    return result.map((clip) => {
-      return new ClipDto(
-        clip._id.toString(),
-        clip.roomId,
-        clip.nickname,
-        clip.message,
-        clip.isPublic,
-        clip.extension,
-        clip.password
-      );
-    });
+    return await this.clipRepository.findAll();
   }
 
   async findOne(id: string): Promise<ClipResponse> {
-    const clip = await this.clipRepository.findOne(id);
-    if (clip == null) {
-      throw new HttpException(
-        ResponseMessage.CLIP_READ_FAIL_WRONG_ID,
-        HttpStatus.NOT_FOUND
-      );
-    }
-    const clipDto = new ClipDto(
-      clip._id.toString(),
-      clip.roomId,
-      clip.nickname,
-      clip.message,
-      clip.isPublic,
-      clip.extension,
-      clip.password
-    );
+    const clipDto = await this.clipRepository.findOne(id);
     let signedUrl: string;
     try {
       const thumbKey = clipDto.getS3ThumbKey();
