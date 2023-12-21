@@ -9,6 +9,7 @@ import {
   HttpStatus,
   UseGuards,
   Patch,
+  Logger,
 } from "@nestjs/common";
 import { RoomService } from "./room.service";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
@@ -33,6 +34,8 @@ import { RoomResponse } from "./dto/response/room.response.dto";
 import { ApiKeyGuard } from "src/auth/apikeyguard";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { UpdateRoomResponse } from "./dto/response/update-room.response.dto";
+import { ResponseDto } from "src/common/dto/response.dto";
+import { MESSAGES } from "@nestjs/core/constants";
 
 @Controller("room")
 @ApiTags("Room API")
@@ -339,13 +342,23 @@ export class RoomController {
   async update(
     @Param("id") id: string,
     @Body() request: UpdateRoomRequest
-  ): Promise<UpdateRoomResponse> {
-    const roomDto: RoomDto = await this.roomService.update(id, request);
-    return new UpdateRoomResponse(
-      roomDto.roomId,
-      roomDto.name,
-      roomDto.recipient
-    );
+  ): Promise<ResponseDto<UpdateRoomResponse>> {
+    try {
+      const roomDto: RoomDto = await this.roomService.update(id, request);
+      const response = new UpdateRoomResponse(
+        roomDto.roomId,
+        roomDto.name,
+        roomDto.recipient
+      );
+      return new ResponseDto(ResponseMessage.ROOM_UPDATE_SUCCESS, response);
+    } catch (err) {
+      Logger.error("[RoomController/update] " + err.message);
+      throw new HttpException(
+        ResponseMessage.ROOM_UPDATE_FAIL,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return;
   }
 
   @Post(":id/gather")
