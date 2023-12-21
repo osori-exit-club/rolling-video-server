@@ -286,7 +286,7 @@ export class RoomController {
     @Body() deleteRoomDto: DeleteRoomRequest
   ): Promise<SimpleResponseDto> {
     const result = await this.roomService.remove(id, deleteRoomDto);
-    if (result && result._id && id == result._id + "") {
+    if (result || result._id || id == result._id + "") {
       return new SimpleResponseDto(ResponseMessage.ROOM_REMOVE_SUCCESS);
     }
     return new SimpleResponseDto(ResponseMessage.ROOM_REMOVE_FAIL);
