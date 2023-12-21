@@ -12,6 +12,7 @@ import { S3Repository } from "src/aws/s3/s3.repository";
 import { GatherRoomResponse } from "./dto/response/gather-room.response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { Constants } from "src/utils/constants";
+import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 
 @Injectable()
 export class RoomService {
@@ -138,6 +139,17 @@ export class RoomService {
       );
     }
     return await this.roomRepository.remove(id);
+  }
+
+  async update(
+    roomId: string,
+    updateRoomDto: UpdateRoomRequest
+  ): Promise<RoomDto> {
+    const roomDto: RoomDto = await this.roomRepository.update(
+      roomId,
+      updateRoomDto
+    );
+    return roomDto;
   }
 
   async gather(roomId: string, outPath?: string): Promise<GatherRoomResponse> {

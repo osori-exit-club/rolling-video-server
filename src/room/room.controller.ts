@@ -8,6 +8,7 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  Patch,
 } from "@nestjs/common";
 import { RoomService } from "./room.service";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
@@ -30,6 +31,8 @@ import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { RoomResponse } from "./dto/response/room.response.dto";
 import { ApiKeyGuard } from "src/auth/apikeyguard";
+import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
+import { UpdateRoomResponse } from "./dto/response/update-room.response.dto";
 
 @Controller("room")
 @ApiTags("Room API")
@@ -290,6 +293,59 @@ export class RoomController {
       return new SimpleResponseDto(ResponseMessage.ROOM_REMOVE_SUCCESS);
     }
     return new SimpleResponseDto(ResponseMessage.ROOM_REMOVE_FAIL);
+  }
+
+  @Patch(":id")
+  @UseGuards(ApiKeyGuard)
+  @ApiBearerAuth("X-API-KEY")
+  @ApiOperation({
+    summary: "방 수정 API",
+    description: "방 수정 API",
+  })
+  @ApiParam({
+    name: "id",
+    type: "string",
+    description: "room id",
+    example: "651c1bc85130dd8a0abf7727",
+  })
+  @ApiBody({
+    description: "방 정보",
+    type: CreateRoomRequest,
+  })
+  @ApiOkResponse({
+    description: "수정된 Room 객체",
+    type: CreateRoomResponse,
+  })
+  @ApiForbiddenResponse({
+    description: "잘못된 API KEY",
+    schema: {
+      type: "object",
+      properties: {
+        message: {
+          type: "string",
+          example: "Forbidden resource",
+        },
+        error: {
+          type: "string",
+          example: "Forbidden",
+        },
+        statusCode: {
+          type: "number",
+          example: HttpStatus.FORBIDDEN,
+        },
+      },
+    },
+  })
+  async update(
+    @Param("id") id: string,
+    @Body() request: UpdateRoomRequest
+  ): Promise<UpdateRoomResponse> {
+    const roomDto: RoomDto = await this.roomService.update(id, request);
+    return new UpdateRoomResponse(
+      roomDto.roomId,
+      roomDto.name,
+      roomDto.recipient
+    );
   }
 
   @Post(":id/gather")
