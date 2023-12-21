@@ -150,13 +150,13 @@ export class RoomService {
       room = await this.roomRepository.findOne(roomId);
     } catch (err) {
       throw new HttpException(
-        ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
+        ResponseMessage.ROOM_UPDATE_FAIL_WRONG_ID,
         HttpStatus.NOT_FOUND
       );
     }
     if (room == null) {
       throw new HttpException(
-        ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
+        ResponseMessage.ROOM_UPDATE_FAIL_WRONG_ID,
         HttpStatus.NOT_FOUND
       );
     }
@@ -166,7 +166,7 @@ export class RoomService {
     );
     if (isMatched == false) {
       throw new HttpException(
-        ResponseMessage.ROOM_REMOVE_FAIL_WONG_PASSWORD,
+        ResponseMessage.ROOM_UPDATE_FAIL_WONG_PASSWORD,
         HttpStatus.BAD_REQUEST
       );
     }

@@ -34,8 +34,6 @@ import { RoomResponse } from "./dto/response/room.response.dto";
 import { ApiKeyGuard } from "src/auth/apikeyguard";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { UpdateRoomResponse } from "./dto/response/update-room.response.dto";
-import { ResponseDto } from "src/common/dto/response.dto";
-import { MESSAGES } from "@nestjs/core/constants";
 
 @Controller("room")
 @ApiTags("Room API")
@@ -317,7 +315,7 @@ export class RoomController {
   })
   @ApiOkResponse({
     description: "수정된 Room 객체",
-    type: ResponseDto<UpdateRoomResponse>,
+    type: UpdateRoomResponse,
   })
   @ApiForbiddenResponse({
     description: "잘못된 API KEY",
@@ -339,10 +337,45 @@ export class RoomController {
       },
     },
   })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    content: {
+      "잘못된 id를 전송한 경우": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.BAD_REQUEST,
+            },
+            message: {
+              type: "string",
+              example: ResponseMessage.ROOM_UPDATE_FAIL_WRONG_ID,
+            },
+          },
+        },
+      },
+      "잘못된 password를 전송한 경우": {
+        schema: {
+          type: "object",
+          properties: {
+            statusCode: {
+              type: "number",
+              example: HttpStatus.BAD_REQUEST,
+            },
+            message: {
+              type: "string",
+              example: ResponseMessage.ROOM_UPDATE_FAIL_WONG_PASSWORD,
+            },
+          },
+        },
+      },
+    },
+  })
   async update(
     @Param("id") id: string,
     @Body() request: UpdateRoomRequest
-  ): Promise<ResponseDto<UpdateRoomResponse>> {
+  ): Promise<UpdateRoomResponse> {
     try {
       const roomDto: RoomDto = await this.roomService.update(id, request);
       const response = new UpdateRoomResponse(
@@ -350,8 +383,11 @@ export class RoomController {
         roomDto.name,
         roomDto.recipient
       );
-      return new ResponseDto(ResponseMessage.ROOM_UPDATE_SUCCESS, response);
+      return response;
     } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
       Logger.error("[RoomController/update] " + err.message);
       throw new HttpException(
         ResponseMessage.ROOM_UPDATE_FAIL,
