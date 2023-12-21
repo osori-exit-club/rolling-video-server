@@ -317,7 +317,7 @@ export class RoomController {
   })
   @ApiOkResponse({
     description: "수정된 Room 객체",
-    type: CreateRoomResponse,
+    type: ResponseDto<UpdateRoomResponse>,
   })
   @ApiForbiddenResponse({
     description: "잘못된 API KEY",
@@ -358,7 +358,6 @@ export class RoomController {
         HttpStatus.BAD_REQUEST
       );
     }
-    return;
   }
 
   @Post(":id/gather")

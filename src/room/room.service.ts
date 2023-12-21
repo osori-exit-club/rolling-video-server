@@ -145,6 +145,31 @@ export class RoomService {
     roomId: string,
     updateRoomDto: UpdateRoomRequest
   ): Promise<RoomDto> {
+    let room;
+    try {
+      room = await this.roomRepository.findOne(roomId);
+    } catch (err) {
+      throw new HttpException(
+        ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    if (room == null) {
+      throw new HttpException(
+        ResponseMessage.ROOM_REMOVE_FAIL_WRONG_ID,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    const isMatched = await this.hashHelper.isMatch(
+      updateRoomDto.password,
+      room.passwordHashed
+    );
+    if (isMatched == false) {
+      throw new HttpException(
+        ResponseMessage.ROOM_REMOVE_FAIL_WONG_PASSWORD,
+        HttpStatus.BAD_REQUEST
+      );
+    }
     const roomDto: RoomDto = await this.roomRepository.update(
       roomId,
       updateRoomDto
