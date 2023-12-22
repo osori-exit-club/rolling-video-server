@@ -1,12 +1,12 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { MongooseModule } from "@nestjs/mongoose";
+import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { RoomModule } from "./domain/room/room.module";
 import { ClipModule } from "./domain/clip/clip.module";
-import { AuthModule } from "./shared/auth/auth.module";
 import { ScheduleModule } from "@nestjs/schedule";
+import { SharedModule } from "./shared/shared.module";
+import { MongodbModule } from "./model/mongodb/mongodb.module";
 
 @Module({
   imports: [
@@ -14,17 +14,10 @@ import { ScheduleModule } from "@nestjs/schedule";
       isGlobal: true,
     }),
     ScheduleModule.forRoot(),
-    MongooseModule.forRootAsync({
-      useFactory: (config: ConfigService) => ({
-        uri: config
-          .get("MONGODB_URL")
-          .replace("${NODE_ENV}", config.getOrThrow("NODE_ENV")),
-      }),
-      inject: [ConfigService],
-    }),
+    MongodbModule,
     RoomModule,
     ClipModule,
-    AuthModule,
+    SharedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
