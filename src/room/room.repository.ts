@@ -24,8 +24,8 @@ export class RoomRepository {
       obj["passwordHashed"] = passwordHahed;
       delete obj.password;
     }
-    const room = await new this.roomModel(obj).save();
-    if (!room.clipIds) {
+    const room: any = await this.roomModel.create(obj);
+    if (room.clipIds && room.clipIds.length == 0) {
       room.clipIds = room.clips.map((it) => it._id.toString());
     }
     return new RoomDto(
@@ -46,6 +46,8 @@ export class RoomRepository {
         HttpStatus.NOT_FOUND
       );
     }
+    console.log(result);
+    console.log("==========");
     result.clipIds.push(clipId);
     const room = await result.save();
 

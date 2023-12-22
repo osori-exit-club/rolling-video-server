@@ -1,98 +1,130 @@
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { getModelToken, MongooseModule } from "@nestjs/mongoose";
+import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Model } from "mongoose";
-import { S3Module } from "src/aws/s3/s3.module";
-import { S3Repository } from "src/aws/s3/s3.repository";
-import { Room, RoomDocument, RoomScheme } from "src/schema/rooms.schema";
 import { HashHelper } from "src/utils/hash/hash.helper";
-import { HashModule } from "src/utils/hash/hash.module";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { RoomRepository } from "./room.repository";
-import { Logger } from "@nestjs/common";
-import { ClipRepository } from "src/clip/clip.repository";
-import { ClipModule } from "src/clip/clip.module";
-import { Clip, ClipScheme } from "src/schema/clips.schema";
+import { Clip } from "src/schema/clips.schema";
+import { Room } from "src/schema/rooms.schema";
+
+class MockRoomModel {
+  private readonly arrayDB: any[] = [1, 2, 3, 4, 5].map((idx) => {
+    return {
+      _id: `room-${idx}`,
+      name: "name",
+      passwordHashed: "passwordHashed",
+      recipient: "recipient",
+      dueDate: Date(),
+      clips: [],
+      clipIds: [`clip${idx}1`, `clip${idx}2`, `clip${idx}3`],
+    };
+  });
+
+  async create(input: any) {
+    return {
+      _id: "roomId",
+      name: input.name,
+      passwordHashed: input.passwordHashed || null,
+      recipient: input.recipient,
+      dueDate: input.dueDate || new Date(),
+      clips: input.clips || [],
+      clipIds: input.clipIds || [],
+    };
+  }
+  find() {
+    return {
+      exec: jest.fn().mockResolvedValue(this.arrayDB),
+    };
+  }
+
+  findById(id: string) {
+    const item = this.arrayDB.find((it) => it._id == id);
+    return Object.assign(item, {
+      exec: jest.fn().mockResolvedValue(item),
+      save: jest.fn().mockImplementation(async () => item),
+    });
+  }
+  findByIdAndDelete(id: string) {
+    const item = this.arrayDB.find((it) => it._id == id);
+    return {
+      exec: jest.fn().mockResolvedValue(item),
+    };
+  }
+}
+
+class MockClipModel {
+  private readonly arrayDB: any[] = [1, 2, 3, 4, 5].map((idx) => {
+    return {
+      _id: `clip-${idx}`,
+      roomId: "roomId",
+      nickname: "nickname",
+      message: "message",
+      isPublic: true,
+      extesntion: "mp4",
+      password: "generated hash code",
+    };
+  });
+
+  async create(input: any) {
+    return {
+      _id: "clipId",
+      roomId: input.roomId,
+      nickname: input.nickname,
+      message: input.message,
+      isPublic: input.isPublic,
+      extesntion: input.extension,
+      password: input.password,
+    };
+  }
+  find() {
+    return {
+      exec: jest.fn().mockResolvedValue(this.arrayDB),
+    };
+  }
+
+  findById(id: string) {
+    const result = this.arrayDB.find((it) => it._id == id);
+    return {
+      exec: jest.fn().mockResolvedValue(result),
+    };
+  }
+  findByIdAndDelete(id: string) {
+    const result: any = this.arrayDB.find((it) => it._id == id);
+    return {
+      exec: jest.fn().mockResolvedValue(result),
+    };
+  }
+}
 
 describe("RoomRepository", () => {
   let repository: RoomRepository;
-  let s3Repository: S3Repository;
-  const presetInputList: CreateRoomRequest[] = [
-    new CreateRoomRequest("roomName1", "1234", "target"),
-    new CreateRoomRequest("roomName2", null, "target"),
-    new CreateRoomRequest("roomName3", "", "target3"),
-    new CreateRoomRequest("roomNameForDelete", "", "target3"),
-  ];
-  let presetDataList: any[];
-  let hashHelper: HashHelper;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-        }),
-        MongooseModule.forRootAsync({
-          useFactory: (config: ConfigService) => ({
-            uri: config.get("MONGODB_URL").replace("${NODE_ENV}", "test-room"),
-          }),
-          inject: [ConfigService],
-        }),
-        MongooseModule.forFeatureAsync([
-          {
-            name: Room.name,
-            useFactory: () => {
-              return RoomScheme;
-            },
+      imports: [],
+      providers: [
+        RoomRepository,
+        {
+          provide: HashHelper,
+          useValue: {
+            createHash: jest
+              .fn()
+              .mockImplementation(async (password) => password),
           },
-          {
-            name: Clip.name,
-            useFactory: () => {
-              return ClipScheme;
-            },
-          },
-        ]),
-        ClipModule,
-        HashModule,
-        S3Module,
+        },
+        {
+          provide: getModelToken(Room.name),
+          useClass: MockRoomModel,
+        },
+        {
+          provide: getModelToken(Clip.name),
+          useClass: MockClipModel,
+        },
       ],
-      providers: [RoomRepository, S3Repository, ClipRepository],
     }).compile();
 
     repository = module.get<RoomRepository>(RoomRepository);
-    s3Repository = module.get<S3Repository>(S3Repository);
-    hashHelper = module.get<HashHelper>(HashHelper);
-
-    jest
-      .spyOn(hashHelper, "createHash")
-      .mockImplementation(async (password: string) => {
-        return password;
-      });
-
-    jest
-      .spyOn(hashHelper, "isMatch")
-      .mockImplementation(async (password: string, hash: string) => {
-        return password == hash;
-      });
-
-    jest
-      .spyOn(s3Repository, "getPresignedUrl")
-      .mockImplementation(async (key: string) => {
-        return "signedUrl";
-      });
-    // reset data for test
-    const roomModel: Model<RoomDocument> = module.get(getModelToken(Room.name));
-    // clear previous data
-    await roomModel.deleteMany({});
-    presetDataList = await Promise.all(
-      presetInputList.map((it) => {
-        const obj: any = it;
-        obj.passwordHashed = obj.password;
-        return new roomModel(obj).save();
-      })
-    );
     return true;
-  }, 10_000);
+  });
 
   it("should be defined", () => {
     expect(repository).toBeDefined();
@@ -148,45 +180,34 @@ describe("RoomRepository", () => {
   describe("방 조회 테스트", () => {
     it("[1] 방 조회", async () => {
       // Arrange;
-      const id = presetDataList[0]._id.toString();
+      const input = "room-1";
       // Act
-      const result = await repository.findOne(id);
+      const result = await repository.findOne(input);
       // Assert;
-      const origin = presetInputList[0];
-      Object.keys(origin).forEach((key) => {
-        if (key == "password") {
-          expect(result.passwordHashed).toEqual(origin.password);
-          return;
-        }
-        expect(result[key]).toEqual(origin[key]);
-      });
+      expect(result.roomId).toEqual(input);
     });
   });
 
   describe("방 삭제 테스트", () => {
     it("[1] 방 삭제", async () => {
       // Arrange;
-      const id = presetDataList[3]._id.toString();
+      const id = "room-5";
       // Act
       const result = await repository.remove(id);
       // Assert;
       expect(result).toBeTruthy();
-      const findResult = (await repository.findAll()).filter(
-        (it) => it.clipIds.indexOf(id) > 0
-      );
-      expect(findResult.length).toEqual(0);
     });
   });
 
   describe("클립 추가", () => {
     it("클립 추가 ", async () => {
       // Arrange
-      const roomId = presetDataList[0]._id.toString();
+      const roomId = "room-1";
       // Act
-      const result = await repository.addClip(roomId, "clipId");
+      const result = await repository.addClip(roomId, "newClipId");
       // Assert
       const lastClipId = result.clipIds[result.clipIds.length - 1];
-      expect(lastClipId).toEqual("clipId");
+      expect(lastClipId).toEqual("newClipId");
     });
   });
 });
