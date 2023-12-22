@@ -10,8 +10,8 @@ import { RoomRepository } from "./room.repository";
 import { OsHelper } from "src/shared/os/os.helper";
 import { S3Repository } from "src/shared/aws/s3/s3.repository";
 import { GatherRoomResponse } from "./dto/response/gather-room.response.dto";
-import { ResponseMessage } from "src/utils/message.ko";
-import { Constants } from "src/utils/constants";
+import { ResponseMessage } from "src/resources/message.ko";
+import { Constants } from "src/resources/constants";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { ClipRepository } from "src/domain/clip/clip.repository";
 

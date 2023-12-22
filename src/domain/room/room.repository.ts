@@ -3,7 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Room, RoomDocument } from "src/model/schema/rooms.schema";
 import { HashHelper } from "src/shared/hash/hash.helper";
-import { ResponseMessage } from "src/utils/message.ko";
+import { ResponseMessage } from "src/resources/message.ko";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { RoomDto } from "./dto/room.dto";

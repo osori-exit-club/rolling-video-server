@@ -2,7 +2,7 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { RoomDto } from "src/domain/room/dto/room.dto";
 import { RoomService } from "src/domain/room/room.service";
-import { ResponseMessage } from "src/utils/message.ko";
+import { ResponseMessage } from "src/resources/message.ko";
 import { ClipController } from "./clip.controller";
 import { ClipService } from "./clip.service";
 import { ClipResponse } from "./dto/response/clip.response.dto";

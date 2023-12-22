@@ -3,7 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Clip, ClipDocument } from "src/model/schema/clips.schema";
 import { HashHelper } from "src/shared/hash/hash.helper";
-import { ResponseMessage } from "src/utils/message.ko";
+import { ResponseMessage } from "src/resources/message.ko";
 import { ClipDto } from "./dto/clip.dto";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 
