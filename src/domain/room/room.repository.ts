@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Room, RoomDocument } from "src/model/mongodb/schema/rooms.schema";
+import { Room, RoomDocument } from "src/shared/mongodb/schema/rooms.schema";
 import { HashHelper } from "src/shared/hash/hash.helper";
 import { ResponseMessage } from "src/resources/message.ko";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";

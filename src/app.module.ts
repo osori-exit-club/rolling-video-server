@@ -6,7 +6,7 @@ import { RoomModule } from "./domain/room/room.module";
 import { ClipModule } from "./domain/clip/clip.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { SharedModule } from "./shared/shared.module";
-import { MongodbModule } from "./model/mongodb/mongodb.module";
+import { MongodbModule } from "./shared/mongodb/mongodb.module";
 
 @Module({
   imports: [

@@ -4,7 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import {
   Configuration,
   ConfigurationSchema,
-} from "src/model/mongodb/schema/configuration.schema";
+} from "src/shared/mongodb/schema/configuration.schema";
 import { ApiKeyGuard } from "./apikeyguard";
 import { AuthService } from "./auth.service";
 

@@ -3,7 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import {
   Configuration,
   ConfigurationDocument,
-} from "src/model/mongodb/schema/configuration.schema";
+} from "src/shared/mongodb/schema/configuration.schema";
 import { Model } from "mongoose";
 
 @Injectable()

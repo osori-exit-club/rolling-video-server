@@ -1,6 +1,6 @@
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Clip } from "src/model/mongodb/schema/clips.schema";
+import { Clip } from "src/shared/mongodb/schema/clips.schema";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { ClipRepository } from "./clip.repository";
 import { HashHelper } from "src/shared/hash/hash.helper";

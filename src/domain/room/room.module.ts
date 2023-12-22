@@ -3,14 +3,14 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { RoomService } from "./room.service";
 import { RoomController } from "./room.controller";
 import { RoomRepository } from "./room.repository";
-import { Room, RoomScheme } from "src/model/mongodb/schema/rooms.schema";
+import { Room, RoomScheme } from "src/shared/mongodb/schema/rooms.schema";
 import { HashModule } from "src/shared/hash/hash.module";
 import { GatheringModule } from "src/domain/room/feature/gathering/gathering.module";
 import { OsModule } from "src/shared/os/os.module";
 import { S3Module } from "src/shared/aws/s3/s3.module";
 import { AuthModule } from "src/shared/auth/auth.module";
 import { ClipRepository } from "src/domain/clip/clip.repository";
-import { Clip, ClipScheme } from "src/model/mongodb/schema/clips.schema";
+import { Clip, ClipScheme } from "src/shared/mongodb/schema/clips.schema";
 
 @Module({
   imports: [

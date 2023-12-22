@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import {
   Configuration,
   ConfigurationSchema,
-} from "src/model/mongodb/schema/configuration.schema";
+} from "src/shared/mongodb/schema/configuration.schema";
 import { AuthService } from "./auth.service";
 import { Logger } from "@nestjs/common";
 

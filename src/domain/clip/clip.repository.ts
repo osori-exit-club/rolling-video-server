@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Clip, ClipDocument } from "src/model/mongodb/schema/clips.schema";
+import { Clip, ClipDocument } from "src/shared/mongodb/schema/clips.schema";
 import { HashHelper } from "src/shared/hash/hash.helper";
 import { ResponseMessage } from "src/resources/message.ko";
 import { ClipDto } from "./dto/clip.dto";
