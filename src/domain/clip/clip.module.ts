@@ -7,7 +7,7 @@ import { Clip, ClipScheme } from "src/schema/clips.schema";
 import { ClipRepository } from "./clip.repository";
 import { S3Module } from "src/shared/aws/s3/s3.module";
 import { HashModule } from "src/shared/hash/hash.module";
-import { RoomModule } from "src/room/room.module";
+import { RoomModule } from "src/domain/room/room.module";
 import { AuthModule } from "src/shared/auth/auth.module";
 import { FfmpegModule } from "src/ffmpeg/ffmpeg.module";
 import { OsModule } from "src/shared/os/os.module";

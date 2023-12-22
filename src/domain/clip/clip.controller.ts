@@ -29,8 +29,8 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
-import { RoomService } from "src/room/room.service";
-import { RoomDto } from "src/room/dto/room.dto";
+import { RoomService } from "src/domain/room/room.service";
+import { RoomDto } from "src/domain/room/dto/room.dto";
 import { ClipResponse } from "./dto/response/clip.response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";

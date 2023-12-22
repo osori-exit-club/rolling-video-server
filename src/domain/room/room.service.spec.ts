@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { S3Repository } from "src/shared/aws/s3/s3.repository";
-import { ClipRepository } from "src/clip/clip.repository";
-import { ClipDto } from "src/clip/dto/clip.dto";
-import { GatheringService } from "src/room/feature/gathering/gathering.service";
+import { ClipRepository } from "src/domain/clip/clip.repository";
+import { ClipDto } from "src/domain/clip/dto/clip.dto";
+import { GatheringService } from "src/domain/room/feature/gathering/gathering.service";
 import { HashHelper } from "src/shared/hash/hash.helper";
 import { ResponseMessage } from "src/utils/message.ko";
 import { OsModule } from "src/shared/os/os.module";

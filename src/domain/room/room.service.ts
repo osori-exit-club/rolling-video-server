@@ -1,7 +1,7 @@
 import * as path from "path";
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { ClipDto } from "src/clip/dto/clip.dto";
-import { GatheringService } from "src/room/feature/gathering/gathering.service";
+import { ClipDto } from "src/domain/clip/dto/clip.dto";
+import { GatheringService } from "src/domain/room/feature/gathering/gathering.service";
 import { HashHelper } from "src/shared/hash/hash.helper";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { DeleteRoomRequest } from "./dto/request/delete-room.request.dto";
@@ -13,7 +13,7 @@ import { GatherRoomResponse } from "./dto/response/gather-room.response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { Constants } from "src/utils/constants";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
-import { ClipRepository } from "src/clip/clip.repository";
+import { ClipRepository } from "src/domain/clip/clip.repository";
 
 @Injectable()
 export class RoomService {
