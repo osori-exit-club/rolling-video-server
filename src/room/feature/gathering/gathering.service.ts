@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { Injectable } from "@nestjs/common";
 import { S3Repository } from "src/common/aws/s3/s3.repository";
-import { CompressHelper } from "src/compress/comporess.helper";
+import { CompressHelper } from "src/room/feature/compress/comporess.helper";
 
 @Injectable()
 export class GatheringService {
