@@ -28,7 +28,7 @@ import { RoomDto } from "./dto/room.dto";
 import { DeleteRoomRequest } from "./dto/request/delete-room.request.dto";
 import { GatherRoomResponse } from "./dto/response/gather-room.response.dto";
 import { CreateRoomResponse } from "./dto/response/create-room.response.dto";
-import { SimpleResponseDto } from "src/shared/dto/simple-response.dto";
+import { SimpleResponseDto } from "src/model/dto/simple-response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { RoomResponse } from "./dto/response/room.response.dto";
 import { ApiKeyGuard } from "src/shared/auth/apikeyguard";

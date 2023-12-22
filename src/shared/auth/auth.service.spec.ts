@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import {
   Configuration,
   ConfigurationSchema,
-} from "src/schema/configuration.schema";
+} from "src/model/schema/configuration.schema";
 import { AuthService } from "./auth.service";
 import { Logger } from "@nestjs/common";
 

@@ -3,8 +3,8 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { HashHelper } from "src/shared/hash/hash.helper";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { RoomRepository } from "./room.repository";
-import { Clip } from "src/schema/clips.schema";
-import { Room } from "src/schema/rooms.schema";
+import { Clip } from "src/model/schema/clips.schema";
+import { Room } from "src/model/schema/rooms.schema";
 
 class MockRoomModel {
   private readonly arrayDB: any[] = [1, 2, 3, 4, 5].map((idx) => {
