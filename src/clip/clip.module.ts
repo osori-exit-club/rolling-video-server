@@ -5,7 +5,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { Room, RoomScheme } from "src/schema/rooms.schema";
 import { Clip, ClipScheme } from "src/schema/clips.schema";
 import { ClipRepository } from "./clip.repository";
-import { S3Module } from "src/aws/s3/s3.module";
+import { S3Module } from "src/common/aws/s3/s3.module";
 import { HashModule } from "src/utils/hash/hash.module";
 import { RoomModule } from "src/room/room.module";
 import { AuthModule } from "src/common/auth/auth.module";

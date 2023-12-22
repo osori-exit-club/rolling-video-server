@@ -1,4 +1,4 @@
-import { S3Repository } from "src/aws/s3/s3.repository";
+import { S3Repository } from "src/common/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
 import { ClipRepository } from "./clip.repository";
 import { ClipService } from "./clip.service";

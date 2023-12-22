@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { S3Repository } from "src/aws/s3/s3.repository";
+import { S3Repository } from "src/common/aws/s3/s3.repository";
 import { ClipRepository } from "src/clip/clip.repository";
 import { ClipDto } from "src/clip/dto/clip.dto";
 import { GatheringService } from "src/room/feature/gathering/gathering.service";
