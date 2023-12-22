@@ -13,9 +13,15 @@ import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
 import { FfmpegService } from "src/domain/clip/feature/ffmpeg/ffmpeg.service";
 import { OsHelper } from "src/shared/os/os.helper";
+import { Cron } from "@nestjs/schedule";
+import { Mutex } from "async-mutex";
 
 @Injectable()
 export class ClipService {
+  readonly pendlingClipList: ClipDto[] = [];
+  readonly failedClipIdSet = new Set();
+
+  private mutex = new Mutex();
   constructor(
     private readonly clipRepository: ClipRepository,
     private readonly roomRepository: RoomRepository,
@@ -55,16 +61,14 @@ export class ClipService {
           HttpStatus.INTERNAL_SERVER_ERROR
         );
       });
-    // 압축 로직이 서버 부하를 일으키는 것으로 추정하여 잠시 disabled
-    // .then((_) => {
-    //   return this.createCompactedVideo(clipDto);
-    // })
-    // .catch((err) => {
-    //   Logger.error(`failed to create compacted video ${clipDto.clipId}`);
-    //   Logger.error(err);
-    // });
     const clipDto = await Promise.all([createClipPromise, uploadPromise])
       .then(([clipDto, _]) => {
+        this.pendlingClipList.push(clipDto);
+        Logger.debug(
+          `[ClipService/create] add ${clipDto.clipId} to ${this.pendlingClipList
+            .map((it) => it.clipId)
+            .join(", ")})`
+        );
         return clipDto;
       })
       .catch((err) => {
@@ -80,40 +84,6 @@ export class ClipService {
       });
 
     return new CreateClipResponse(clipDto);
-  }
-
-  async createCompactedVideo(clipDto: ClipDto) {
-    return await this.osHepler.openTempDirectory(
-      "webm",
-      async (tempDir: string) => {
-        Logger.debug(`[compact process] create temp dir ${tempDir}`);
-        const outPath: string = path.join(
-          tempDir,
-          `${clipDto.clipId}_compacted.webm`
-        );
-        const inputFolderPath: string = path.join(
-          tempDir,
-          `${clipDto.clipId}_original`
-        );
-
-        Logger.debug(
-          `[compact process] download ${clipDto.videoS3Key} on ${inputFolderPath}`
-        );
-        const inputPath = await this.s3Respository.download(
-          clipDto.videoS3Key,
-          inputFolderPath
-        );
-
-        await this.ffmpegService.makeWebmFile(inputPath, outPath);
-        Logger.debug(`[compact process] made webmFile`);
-        const fileContent = fs.readFileSync(outPath);
-        await this.s3Respository.uploadFile({
-          key: clipDto.videoS3Key,
-          buffer: fileContent,
-        });
-        Logger.debug(`[compact process] upload webmFile`);
-      }
-    );
   }
 
   async findAll(): Promise<ClipDto[]> {
@@ -156,6 +126,85 @@ export class ClipService {
       );
     }
     return this.clipRepository.remove(id);
+  }
+
+  @Cron("*/15 * * * * *") // 초, 분, 시간, 일, 월, 요일 순서입니다.
+  private async scheduleForCompacting() {
+    if (this.mutex.isLocked) {
+      return;
+    }
+    const release = await this.mutex.acquire();
+    Logger.debug(
+      `[ClipService/doCompat] start this.pendlinClipList size = ${this.pendlingClipList.length}`
+    );
+    let target: ClipDto = null;
+    if (this.pendlingClipList.length > 0) {
+      target = this.pendlingClipList.pop();
+    } else {
+      const clips = await this.findAll();
+      target = clips
+        .filter((it) => it.compactedVideoS3Key == null)
+        .filter((it) => !this.failedClipIdSet.has(it))[0];
+      Logger.debug(`[ClipService/doCompat] get empty clip ${target.clipId})`);
+    }
+    if (target != null) {
+      Logger.debug(`[ClipService/doCompat] target = ${target.clipId}`);
+      await this.createCompactedVideo(target)
+        .then((it) => {
+          return;
+        })
+        .catch((err) => {
+          this.failedClipIdSet.add(target.clipId);
+          Logger.error(
+            `[ClipService/doCompat] failed to create compacted video ${target.clipId}`
+          );
+          Logger.error(err);
+        });
+    }
+    release();
+    return;
+  }
+
+  private async createCompactedVideo(clipDto: ClipDto) {
+    return await this.osHepler.openTempDirectory(
+      "webm",
+      async (tempDir: string) => {
+        Logger.debug(`[compact process] create temp dir ${tempDir}`);
+        const outPath: string = path.join(
+          tempDir,
+          `${clipDto.clipId}_compacted.webm`
+        );
+        const inputFolderPath: string = path.join(
+          tempDir,
+          `${clipDto.clipId}_original`
+        );
+
+        Logger.debug(
+          `[compact process] download ${clipDto.videoS3Key} on ${inputFolderPath}`
+        );
+        const inputPath = await this.s3Respository.download(
+          clipDto.videoS3Key,
+          inputFolderPath
+        );
+
+        await this.ffmpegService.makeWebmFile(inputPath, outPath);
+        Logger.debug(`[compact process] made webmFile`);
+        const fileContent = fs.readFileSync(outPath);
+
+        const compactedVideoS3Key: string = `videos/${
+          clipDto.roomId
+        }/compacted/${this.generateCurrentWithRandom()}.webm`;
+
+        await this.s3Respository.uploadFile({
+          key: compactedVideoS3Key,
+          buffer: fileContent,
+        });
+        Logger.debug(`[compact process] upload webmFile`);
+        await this.clipRepository.update(clipDto.clipId, {
+          compactedVideoS3Key,
+        });
+      }
+    );
   }
 
   private generateCurrentWithRandom(): string {

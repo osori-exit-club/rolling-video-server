@@ -80,6 +80,42 @@ export class ClipRepository {
     return clipDto;
   }
 
+  async update(clipId: string, input: Partial<ClipDto>): Promise<ClipDto> {
+    const clip: any = await this.clipModel.findById(clipId);
+    if (clip == null) {
+      throw `Clip(${clipId}) is not existed`;
+    }
+    if (input.nickname != null) {
+      clip.compactedVideoS3Key = input.nickname;
+    }
+    if (input.message != null) {
+      clip.compactedVideoS3Key = input.message;
+    }
+    if (input.extension != null) {
+      clip.compactedVideoS3Key = input.extension;
+    }
+    if (input.compactedVideoS3Key != null) {
+      clip.compactedVideoS3Key = input.compactedVideoS3Key;
+    }
+    if (input.videoS3Key != null) {
+      clip.compactedVideoS3Key = input.videoS3Key;
+    }
+    const result = await clip.save();
+
+    const clipDto = new ClipDto(
+      result._id.toString(),
+      result.roomId,
+      result.nickname,
+      result.message,
+      result.isPublic,
+      result.extension,
+      result.password,
+      result.videoS3Key,
+      result.compactedVideoS3Key
+    );
+    return clipDto;
+  }
+
   async remove(id: string): Promise<boolean> {
     try {
       const result = await this.clipModel.findByIdAndDelete(id).exec();
