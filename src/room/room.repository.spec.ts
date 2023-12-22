@@ -1,6 +1,6 @@
 import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
-import { HashHelper } from "src/utils/hash/hash.helper";
+import { HashHelper } from "src/common/hash/hash.helper";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { RoomRepository } from "./room.repository";
 import { Clip } from "src/schema/clips.schema";
