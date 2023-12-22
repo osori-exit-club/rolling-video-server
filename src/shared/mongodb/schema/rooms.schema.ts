@@ -18,9 +18,6 @@ export class Room {
   @Prop({ type: Date, default: new Date() })
   dueDate: Date;
 
-  @Prop({ type: [ClipScheme], require: true })
-  clips: ClipDocument[];
-
   @Prop({ require: true })
   clipIds: string[];
 }

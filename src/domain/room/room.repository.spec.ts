@@ -14,7 +14,6 @@ class MockRoomModel {
       passwordHashed: "passwordHashed",
       recipient: "recipient",
       dueDate: Date(),
-      clips: [],
       clipIds: [`clip${idx}1`, `clip${idx}2`, `clip${idx}3`],
     };
   });
@@ -26,7 +25,6 @@ class MockRoomModel {
       passwordHashed: input.passwordHashed || null,
       recipient: input.recipient,
       dueDate: input.dueDate || new Date(),
-      clips: input.clips || [],
       clipIds: input.clipIds || [],
     };
   }

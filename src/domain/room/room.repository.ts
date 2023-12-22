@@ -25,9 +25,6 @@ export class RoomRepository {
       delete obj.password;
     }
     const room: any = await this.roomModel.create(obj);
-    if (room.clipIds && room.clipIds.length == 0) {
-      room.clipIds = room.clips.map((it) => it._id.toString());
-    }
     return new RoomDto(
       room._id.toString(),
       room.name,
@@ -62,9 +59,6 @@ export class RoomRepository {
   async findAll(): Promise<RoomDto[]> {
     const result = await this.roomModel.find().exec();
     return result.map((room) => {
-      if (room.clipIds.length == 0) {
-        room.clipIds = room.clips.map((it) => it._id.toString());
-      }
       return new RoomDto(
         room._id.toString(),
         room.name,
