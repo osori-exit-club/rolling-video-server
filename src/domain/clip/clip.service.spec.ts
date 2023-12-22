@@ -97,7 +97,9 @@ describe("ClipService", () => {
         "",
         false,
         "mp4",
-        ""
+        "",
+        "",
+        null
       );
       jest
         .spyOn(mockClipRepository, "create")

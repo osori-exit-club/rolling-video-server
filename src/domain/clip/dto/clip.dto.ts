@@ -6,6 +6,8 @@ export class ClipDto {
   readonly isPublic: boolean;
   readonly extension: string;
   readonly password: string;
+  readonly videoS3Key: string;
+  readonly compactedVideoS3Key: string | null;
   constructor(
     clipId: string,
     roomId: string,
@@ -13,7 +15,9 @@ export class ClipDto {
     message: string,
     isPublic: boolean,
     extension: string,
-    password: string
+    password: string,
+    videoS3Key: string,
+    compactedVideoS3Key: string | null
   ) {
     this.clipId = clipId;
     this.roomId = roomId;
@@ -22,13 +26,7 @@ export class ClipDto {
     this.isPublic = isPublic;
     this.extension = extension;
     this.password = password;
-  }
-
-  getS3Key(): string {
-    return `rooms/${this.roomId}/clips/${this.clipId}.${this.extension}`;
-  }
-
-  getS3ThumbKey(): string {
-    return `rooms/${this.roomId}/clips_thumb/${this.clipId}.webm`;
+    this.videoS3Key = videoS3Key;
+    this.compactedVideoS3Key = compactedVideoS3Key;
   }
 }

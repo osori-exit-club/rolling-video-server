@@ -22,6 +22,12 @@ export class Clip {
 
   @Prop({ require: true })
   password: string;
+
+  @Prop({ require: true })
+  videoS3Key: string;
+
+  @Prop({ require: true, nullable: true })
+  compactedVideoS3Key: string;
 }
 
 export const ClipScheme = SchemaFactory.createForClass(Clip);

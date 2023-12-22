@@ -31,21 +31,25 @@ export class ClipService {
     const splitted = file.originalname.split(".");
     const extension = splitted[splitted.length - 1];
 
-    const clipDto: ClipDto = await this.clipRepository.create(
-      createClipDto,
-      extension
-    );
-    const key: string = clipDto.getS3Key();
+    const videoS3Key: string = `videos/${
+      createClipDto.roomId
+    }/${this.generateCurrentWithRandom()}.${extension}`;
 
-    await this.s3Respository
+    const createClipPromise: Promise<ClipDto> = this.clipRepository
+      .create(createClipDto, extension, videoS3Key)
+      .then(async (clipDto) => {
+        await this.roomRepository.addClip(createClipDto.roomId, clipDto.clipId);
+        return clipDto;
+      });
+
+    const uploadPromise: Promise<any> = this.s3Respository
       .uploadFile({
-        key,
+        key: videoS3Key,
         buffer: file.buffer,
       })
       .catch((err) => {
         Logger.error(`failed to uploadFile`);
         Logger.error(err);
-        this.clipRepository.remove(clipDto.clipId);
         throw new HttpException(
           ResponseMessage.CLIP_CREATE_FAIL_UPLOAD_VIDEO,
           HttpStatus.INTERNAL_SERVER_ERROR
@@ -59,7 +63,22 @@ export class ClipService {
     //   Logger.error(`failed to create compacted video ${clipDto.clipId}`);
     //   Logger.error(err);
     // });
-    this.roomRepository.addClip(createClipDto.roomId, clipDto.clipId);
+    const clipDto = await Promise.all([createClipPromise, uploadPromise])
+      .then(([clipDto, _]) => {
+        return clipDto;
+      })
+      .catch((err) => {
+        this.clipRepository.remove(clipDto.clipId);
+        if (err instanceof HttpException) {
+          throw err;
+        }
+        Logger.error(err);
+        throw new HttpException(
+          ResponseMessage.CLIP_CREATE_FAIL_CREATE_CLIP,
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      });
+
     return new CreateClipResponse(clipDto);
   }
 
@@ -78,10 +97,10 @@ export class ClipService {
         );
 
         Logger.debug(
-          `[compact process] download ${clipDto.getS3Key()} on ${inputFolderPath}`
+          `[compact process] download ${clipDto.videoS3Key} on ${inputFolderPath}`
         );
         const inputPath = await this.s3Respository.download(
-          clipDto.getS3Key(),
+          clipDto.videoS3Key,
           inputFolderPath
         );
 
@@ -89,7 +108,7 @@ export class ClipService {
         Logger.debug(`[compact process] made webmFile`);
         const fileContent = fs.readFileSync(outPath);
         await this.s3Respository.uploadFile({
-          key: clipDto.getS3ThumbKey(),
+          key: clipDto.videoS3Key,
           buffer: fileContent,
         });
         Logger.debug(`[compact process] upload webmFile`);
@@ -105,16 +124,16 @@ export class ClipService {
     const clipDto = await this.clipRepository.findOne(id);
     let signedUrl: string;
     try {
-      const thumbKey = clipDto.getS3ThumbKey();
+      const thumbKey = clipDto.compactedVideoS3Key;
       if (await this.s3Respository.existsInS3(thumbKey)) {
         signedUrl = await this.s3Respository.getPresignedUrl(thumbKey);
       } else {
         signedUrl = await this.s3Respository.getPresignedUrl(
-          clipDto.getS3Key()
+          clipDto.videoS3Key
         );
       }
     } catch (err) {
-      signedUrl = await this.s3Respository.getPresignedUrl(clipDto.getS3Key());
+      signedUrl = await this.s3Respository.getPresignedUrl(clipDto.videoS3Key);
     }
     return new ClipResponse(clipDto, signedUrl);
   }
@@ -137,5 +156,18 @@ export class ClipService {
       );
     }
     return this.clipRepository.remove(id);
+  }
+
+  private generateCurrentWithRandom(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+    const random = Math.floor(Math.random() * 1000);
+
+    return `${year}_${month}_${day}_${hours}_${minutes}_${seconds}_${random}`;
   }
 }

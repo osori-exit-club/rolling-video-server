@@ -120,7 +120,7 @@ export class RoomService {
         return this.clipRepository.findOne(clipId);
       })
     )
-      .then((result) => result.map((it: ClipDto) => it.getS3Key()))
+      .then((result) => result.map((it: ClipDto) => it.videoS3Key))
       .catch((err) => {
         throw err;
       });

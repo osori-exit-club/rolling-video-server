@@ -34,7 +34,17 @@ describe("RoomService", () => {
             create: jest.fn(),
             findAll: jest.fn(),
             findOne: jest.fn().mockImplementation(async (clipId) => {
-              return new ClipDto(clipId, "roomId", "", "", false, "mp4", "");
+              return new ClipDto(
+                clipId,
+                "roomId",
+                "",
+                "",
+                false,
+                "mp4",
+                "",
+                "",
+                null
+              );
             }),
             remove: jest.fn(),
           },

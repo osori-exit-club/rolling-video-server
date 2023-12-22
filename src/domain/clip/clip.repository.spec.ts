@@ -103,7 +103,7 @@ describe("ClipRepository", () => {
       );
 
       // Act
-      const result = await repository.create(input, "mp4");
+      const result = await repository.create(input, "mp4", "videoS3Key");
 
       // Assert
       Object.keys(input).forEach((key) => {
@@ -122,7 +122,7 @@ describe("ClipRepository", () => {
       );
 
       // Act
-      const result = await repository.create(input, "mp4");
+      const result = await repository.create(input, "mp4", "videoS3Key");
 
       // Assert
       Object.keys(input).forEach((key) => {

@@ -16,7 +16,8 @@ export class ClipRepository {
 
   async create(
     createClipDto: CreateClipRequest,
-    extension: string
+    extension: string,
+    videoS3Key
   ): Promise<ClipDto> {
     const hashString: string = [
       createClipDto.roomId,
@@ -25,7 +26,7 @@ export class ClipRepository {
     const password = await this.hashHelper.createHash(hashString, 10);
 
     const createClip: any = await this.clipModel.create(
-      Object.assign({ extension: extension, password: password }, createClipDto)
+      Object.assign({ extension, password, videoS3Key }, createClipDto)
     );
     return new ClipDto(
       createClip._id.toString(),
@@ -34,13 +35,15 @@ export class ClipRepository {
       createClip.message,
       createClip.isPublic,
       createClip.extension,
-      createClip.password
+      createClip.password,
+      createClip.videoS3Key || this.getS3Key(createClip),
+      createClip.compactedVideoS3Key
     );
   }
 
   async findAll(): Promise<ClipDto[]> {
     const result = await this.clipModel.find().exec();
-    return result.map((clip) => {
+    return result.map((clip: any) => {
       return new ClipDto(
         clip._id.toString(),
         clip.roomId,
@@ -48,13 +51,15 @@ export class ClipRepository {
         clip.message,
         clip.isPublic,
         clip.extension,
-        clip.password
+        clip.password,
+        clip.videoS3Key || this.getS3Key(clip),
+        clip.compactedVideoS3Key
       );
     });
   }
 
   async findOne(id: string): Promise<ClipDto> {
-    const clip = await this.clipModel.findById(id).exec();
+    const clip: any = await this.clipModel.findById(id).exec();
     if (clip == null) {
       throw new HttpException(
         ResponseMessage.CLIP_READ_FAIL_WRONG_ID,
@@ -68,7 +73,9 @@ export class ClipRepository {
       clip.message,
       clip.isPublic,
       clip.extension,
-      clip.password
+      clip.password,
+      clip.videoS3Key || this.getS3Key(clip),
+      clip.compactedVideoS3Key
     );
     return clipDto;
   }
@@ -86,5 +93,17 @@ export class ClipRepository {
       }
       return false;
     }
+  }
+
+  getS3Key({
+    roomId,
+    clipId,
+    extension,
+  }: {
+    roomId: string;
+    clipId: string;
+    extension: string;
+  }): string {
+    return `rooms/${roomId}/clips/${clipId}.${extension}`;
   }
 }

@@ -77,7 +77,9 @@ describe("ClipController", () => {
                 "message",
                 true,
                 "mp4",
-                "password"
+                "password",
+                "videoS3Key",
+                null
               )
             )
           )
@@ -94,7 +96,9 @@ describe("ClipController", () => {
                   "message",
                   true,
                   "mp4",
-                  "password"
+                  "password",
+                  "videoS3Key",
+                  null
                 ),
                 "signedUrl"
               )
@@ -241,7 +245,9 @@ describe("ClipController", () => {
                   "message",
                   true,
                   "mp4",
-                  "password"
+                  "password",
+                  "videoS3Key",
+                  null
                 ),
                 "signedUrl"
               )
