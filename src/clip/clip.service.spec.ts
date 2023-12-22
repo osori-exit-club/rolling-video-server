@@ -5,7 +5,7 @@ import { ClipService } from "./clip.service";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
-import { FfmpegService } from "src/ffmpeg/ffmpeg.service";
+import { FfmpegService } from "src/clip/feature/ffmpeg/ffmpeg.service";
 import { ClipDto } from "./dto/clip.dto";
 import { RoomDto } from "src/room/dto/room.dto";
 import { OsModule } from "src/utils/os/os.module";
