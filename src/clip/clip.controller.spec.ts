@@ -1,87 +1,59 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { getModelToken, MongooseModule } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
-import { S3Module } from "src/aws/s3/s3.module";
-import { GatheringModule } from "src/gathering/gathering.module";
 import { RoomDto } from "src/room/dto/room.dto";
-import { RoomRepository } from "src/room/room.repository";
 import { RoomService } from "src/room/room.service";
-import { Clip } from "src/schema/clips.schema";
-import { Room } from "src/schema/rooms.schema";
-import { HashModule } from "src/utils/hash/hash.module";
 import { ResponseMessage } from "src/utils/message.ko";
-import { OsModule } from "src/utils/os/os.module";
 import { ClipController } from "./clip.controller";
-import { ClipRepository } from "./clip.repository";
 import { ClipService } from "./clip.service";
 import { ClipResponse } from "./dto/response/clip.response.dto";
 import { ClipDto } from "./dto/clip.dto";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
-import { AuthModule } from "src/auth/auth.module";
 import { AuthService } from "src/auth/auth.service";
-import {
-  Configuration,
-  ConfigurationSchema,
-} from "src/schema/configuration.schema";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { FfmpegModule } from "src/ffmpeg/ffmpeg.module";
 
 describe("ClipController", () => {
   let controller: ClipController;
-  let service: ClipService;
-  let roomService: RoomService;
+
+  const mockClipService: any = {
+    create: jest.fn(),
+    createCompactedVideo: jest.fn(),
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+    remove: jest.fn(),
+  };
+
+  const mockRoomService: any = {
+    create: jest.fn(),
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+    remove: jest.fn(),
+    update: jest.fn(),
+    gather: jest.fn(),
+  };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-        }),
-        S3Module,
-        HashModule,
-        OsModule,
-        GatheringModule,
-        AuthModule,
-        MongooseModule.forRootAsync({
-          useFactory: (config: ConfigService) => ({
-            uri: config.get("MONGODB_URL").replace("${NODE_ENV}", "test"),
-          }),
-          inject: [ConfigService],
-        }),
-        MongooseModule.forFeatureAsync([
-          {
-            name: Configuration.name,
-            useFactory: () => {
-              return ConfigurationSchema;
-            },
-          },
-        ]),
-        FfmpegModule,
-      ],
+      imports: [],
       controllers: [ClipController],
       providers: [
-        ClipService,
-        ClipRepository,
-        RoomService,
-        RoomRepository,
         {
-          provide: getModelToken(Room.name),
-          useFactory: () => {},
+          provide: ClipService,
+          useValue: mockClipService,
         },
         {
-          provide: getModelToken(Clip.name),
-          useFactory: () => {},
+          provide: RoomService,
+          useValue: mockRoomService,
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            iskeyValid: jest.fn().mockResolvedValue(true),
+          },
         },
       ],
     }).compile();
 
     controller = module.get<ClipController>(ClipController);
-    service = module.get<ClipService>(ClipService);
-    roomService = module.get<RoomService>(RoomService);
-    const authService: AuthService = module.get<AuthService>(AuthService);
-
-    jest.spyOn(authService, "isKeyValid").mockResolvedValue(true);
   });
 
   it("should be defined", () => {
@@ -94,7 +66,7 @@ describe("ClipController", () => {
       const password = "password";
 
       jest
-        .spyOn(service, "create")
+        .spyOn(mockClipService, "create")
         .mockResolvedValue(
           Promise.resolve(
             new CreateClipResponse(
@@ -111,7 +83,7 @@ describe("ClipController", () => {
           )
         );
 
-      jest.spyOn(service, "findOne").mockImplementation((id) => {
+      jest.spyOn(mockClipService, "findOne").mockImplementation((id) => {
         return Promise.resolve(
           id == clipId
             ? new ClipResponse(
@@ -134,7 +106,7 @@ describe("ClipController", () => {
     it("성공 케이스 ", async () => {
       // Arrange
       jest
-        .spyOn(roomService, "findOne")
+        .spyOn(mockRoomService, "findOne")
         .mockResolvedValue(
           Promise.resolve(
             new RoomDto(
@@ -161,7 +133,7 @@ describe("ClipController", () => {
     it("실패 케이스 - 1. 존재하지 않는 roomId", async () => {
       // Arrange
       jest
-        .spyOn(roomService, "findOne")
+        .spyOn(mockRoomService, "findOne")
         .mockResolvedValue(Promise.resolve(null));
 
       // Act & Assert
@@ -180,7 +152,7 @@ describe("ClipController", () => {
     it.skip("실패 케이스 - 2. 초과된 파일 크기", async () => {
       // Arrange
       jest
-        .spyOn(roomService, "findOne")
+        .spyOn(mockRoomService, "findOne")
         .mockResolvedValue(
           Promise.resolve(
             new RoomDto(
@@ -210,7 +182,7 @@ describe("ClipController", () => {
     it("실패 케이스 - 3. 만료된 기한", async () => {
       // Arrange
       jest
-        .spyOn(roomService, "findOne")
+        .spyOn(mockRoomService, "findOne")
         .mockResolvedValue(
           Promise.resolve(
             new RoomDto(
@@ -243,9 +215,8 @@ describe("ClipController", () => {
     beforeEach(async () => {
       const roomId = "roomId";
       const clipId = "clipId";
-      const password = "password";
 
-      jest.spyOn(service, "create").mockResolvedValue(
+      jest.spyOn(mockClipService, "create").mockResolvedValue(
         Promise.resolve(
           new CreateClipResponse({
             clipId,
@@ -259,7 +230,7 @@ describe("ClipController", () => {
         )
       );
 
-      jest.spyOn(service, "findOne").mockImplementation((id) => {
+      jest.spyOn(mockClipService, "findOne").mockImplementation((id) => {
         return Promise.resolve(
           id == clipId
             ? new ClipResponse(
