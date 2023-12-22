@@ -9,6 +9,23 @@
 | pm2        |               |
 | ffmpeg     |               |
 
+## Modules
+
+![modules](./files/images/modules.drawio.png)
+
+| depth-1 | depth-2 | depth-3   | depth-4 | description    |
+| :------ | :------ | :-------- | :------ | :------------- |
+| domain  | room    |           |         | 영상 방 관련   |
+|         |         | gathering |         | 영상 취합      |
+|         |         | compresss |         | 파일 압축      |
+|         | clip    |           |         | 영상 클립 관련 |
+|         |         | ffmpeg    |         | 영상 변환      |
+| shared  | os      |           |         | OS 커맨드 관련 |
+| shared  | auth    |           |         | 인증 관련      |
+| shared  | aws     | s3        |         | AWS S3 제어    |
+| shared  | hash    |           |         | 해시 관련      |
+| shared  | mongodv |           |         | mongodb 제어   |
+
 ## How to build
 
 1. clone project
