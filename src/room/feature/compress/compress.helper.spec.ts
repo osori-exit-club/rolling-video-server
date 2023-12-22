@@ -3,8 +3,8 @@ import * as path from "path";
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { CompressHelper } from "./comporess.helper";
-import { OsModule } from "src/utils/os/os.module";
-import { OsHelper } from "src/utils/os/os.helper";
+import { OsModule } from "src/common/os/os.module";
+import { OsHelper } from "src/common/os/os.helper";
 
 describe("CompressHelper", () => {
   let compressHelper: CompressHelper;

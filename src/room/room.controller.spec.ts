@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ResponseMessage } from "src/utils/message.ko";
-import { OsModule } from "src/utils/os/os.module";
+import { OsModule } from "src/common/os/os.module";
 import { CreateRoomResponse } from "./dto/response/create-room.response.dto";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { RoomResponse } from "./dto/response/room.response.dto";

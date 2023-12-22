@@ -6,7 +6,7 @@ import { RoomRepository } from "./room.repository";
 import { Room, RoomScheme } from "src/schema/rooms.schema";
 import { HashModule } from "src/common/hash/hash.module";
 import { GatheringModule } from "src/room/feature/gathering/gathering.module";
-import { OsModule } from "src/utils/os/os.module";
+import { OsModule } from "src/common/os/os.module";
 import { S3Module } from "src/common/aws/s3/s3.module";
 import { AuthModule } from "src/common/auth/auth.module";
 import { ClipRepository } from "src/clip/clip.repository";

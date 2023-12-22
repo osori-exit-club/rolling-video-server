@@ -5,8 +5,8 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { S3Repository } from "src/common/aws/s3/s3.repository";
 import { GatheringService } from "./gathering.service";
 import { CompressHelper } from "src/room/feature/compress/comporess.helper";
-import { OsHelper } from "src/utils/os/os.helper";
-import { OsModule } from "src/utils/os/os.module";
+import { OsHelper } from "src/common/os/os.helper";
+import { OsModule } from "src/common/os/os.module";
 
 describe("GatheringService", () => {
   let service: GatheringService;

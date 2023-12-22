@@ -6,7 +6,7 @@ import { ClipDto } from "src/clip/dto/clip.dto";
 import { GatheringService } from "src/room/feature/gathering/gathering.service";
 import { HashHelper } from "src/common/hash/hash.helper";
 import { ResponseMessage } from "src/utils/message.ko";
-import { OsModule } from "src/utils/os/os.module";
+import { OsModule } from "src/common/os/os.module";
 import { DeleteRoomRequest } from "./dto/request/delete-room.request.dto";
 import { RoomDto } from "./dto/room.dto";
 import { RoomRepository } from "./room.repository";

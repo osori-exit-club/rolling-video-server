@@ -10,7 +10,7 @@ import { HashModule } from "src/common/hash/hash.module";
 import { RoomModule } from "src/room/room.module";
 import { AuthModule } from "src/common/auth/auth.module";
 import { FfmpegModule } from "src/ffmpeg/ffmpeg.module";
-import { OsModule } from "src/utils/os/os.module";
+import { OsModule } from "src/common/os/os.module";
 
 @Module({
   imports: [

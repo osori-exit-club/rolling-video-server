@@ -12,7 +12,7 @@ import { ResponseMessage } from "src/utils/message.ko";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
 import { FfmpegService } from "src/clip/feature/ffmpeg/ffmpeg.service";
-import { OsHelper } from "src/utils/os/os.helper";
+import { OsHelper } from "src/common/os/os.helper";
 
 @Injectable()
 export class ClipService {

@@ -7,7 +7,7 @@ import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { DeleteRoomRequest } from "./dto/request/delete-room.request.dto";
 import { RoomDto } from "./dto/room.dto";
 import { RoomRepository } from "./room.repository";
-import { OsHelper } from "src/utils/os/os.helper";
+import { OsHelper } from "src/common/os/os.helper";
 import { S3Repository } from "src/common/aws/s3/s3.repository";
 import { GatherRoomResponse } from "./dto/response/gather-room.response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
