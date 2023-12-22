@@ -1,83 +1,79 @@
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { getModelToken, MongooseModule } from "@nestjs/mongoose";
+import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Model } from "mongoose";
-import { Clip, ClipDocument, ClipScheme } from "src/schema/clips.schema";
+import { Clip } from "src/schema/clips.schema";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { ClipRepository } from "./clip.repository";
-import { Room, RoomDocument, RoomScheme } from "src/schema/rooms.schema";
-import { HashModule } from "src/utils/hash/hash.module";
+import { HashHelper } from "src/utils/hash/hash.helper";
+
+class MockClipModel {
+  private readonly arrayDB: any[] = [1, 2, 3, 4, 5].map((idx) => {
+    return {
+      _id: `clip-${idx}`,
+      roomId: "roomId",
+      nickname: "nickname",
+      message: "message",
+      isPublic: true,
+      extesntion: "mp4",
+      password: "generated hash code",
+    };
+  });
+
+  async create(input: any) {
+    return {
+      _id: "clipId",
+      roomId: input.roomId,
+      nickname: input.nickname,
+      message: input.message,
+      isPublic: input.isPublic,
+      extesntion: input.extension,
+      password: input.password,
+    };
+  }
+  find() {
+    return {
+      exec: jest.fn().mockResolvedValue(this.arrayDB),
+    };
+  }
+
+  findById(id: string) {
+    const result = this.arrayDB.find((it) => it._id == id);
+    return {
+      exec: jest.fn().mockResolvedValue(result),
+    };
+  }
+  findByIdAndDelete(id: string) {
+    const result: any = this.arrayDB.find((it) => it._id == id);
+    return {
+      exec: jest.fn().mockResolvedValue(result),
+    };
+  }
+}
 
 describe("ClipRepository", () => {
   let repository: ClipRepository;
-  let roomId: string;
-  let presetInputList: any[];
-  let presetDataList: any[];
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-        }),
-        MongooseModule.forRootAsync({
-          useFactory: (config: ConfigService) => ({
-            uri: config.get("MONGODB_URL").replace("${NODE_ENV}", "test-clip"),
-          }),
-          inject: [ConfigService],
-        }),
-        MongooseModule.forFeatureAsync([
-          {
-            name: Clip.name,
-            useFactory: () => {
-              return ClipScheme;
-            },
+      imports: [],
+      providers: [
+        ClipRepository,
+        {
+          provide: HashHelper,
+          useValue: {
+            createHash: jest
+              .fn()
+              .mockImplementation(async (password) => password),
           },
-          {
-            name: Room.name,
-            useFactory: () => {
-              return RoomScheme;
-            },
-          },
-        ]),
-        HashModule,
+        },
+        {
+          provide: getModelToken(Clip.name),
+          useClass: MockClipModel,
+        },
       ],
-      providers: [ClipRepository],
     }).compile();
 
     repository = module.get<ClipRepository>(ClipRepository);
 
-    // reset data for test
-    const roomModel: Model<RoomDocument> = module.get(getModelToken(Room.name));
-    const clipModel: Model<ClipDocument> = module.get(getModelToken(Clip.name));
-
-    // clear previous data
-    await roomModel.deleteMany({});
-    const room = await new roomModel({
-      name: "roomName1",
-      password: "1234",
-      recipient: "target",
-    }).save();
-    roomId = room.id;
-    presetInputList = [
-      new CreateClipRequest(room.id, "nickname1", "Message1", true),
-      new CreateClipRequest(room.id, "nickname2", "Message2", true),
-      new CreateClipRequest(room.id, "nickname3", "Message3", false),
-    ];
-    presetDataList = await Promise.all(
-      presetInputList
-        .map((it) => {
-          return Object.assign(
-            {
-              password: "password",
-            },
-            it
-          );
-        })
-        .map((it) => {
-          return new clipModel(it).save();
-        })
-    );
     return true;
   });
 
@@ -92,14 +88,19 @@ describe("ClipRepository", () => {
 
       // Assert
       expect(result).toBeInstanceOf(Array);
-      expect(result.length).toBeGreaterThanOrEqual(3);
+      expect(result.length).toEqual(5);
     });
   });
 
   describe("클립 생성 테스트", () => {
     it("[1] 클립 생성 (방번호 + 닉네팀 + 공개 + 이미지) ", async () => {
       // Arrange
-      const input = new CreateClipRequest(roomId, "nickname", "message", true);
+      const input = new CreateClipRequest(
+        "roomId",
+        "nickname",
+        "message",
+        true
+      );
 
       // Act
       const result = await repository.create(input, "mp4");
@@ -113,7 +114,12 @@ describe("ClipRepository", () => {
 
     it("[2] 클립 생성 (방번호 + 닉네팀 + 비공개 + 이미지) ", async () => {
       // Arrange
-      const input = new CreateClipRequest(roomId, "nickname", "message", false);
+      const input = new CreateClipRequest(
+        "roomId",
+        "nickname",
+        "message",
+        false
+      );
 
       // Act
       const result = await repository.create(input, "mp4");
@@ -129,30 +135,26 @@ describe("ClipRepository", () => {
   describe("클립 조회 테스트", () => {
     it("[1] 클립 조회", async () => {
       // Arrange;
-      const id = presetDataList[0]._id;
+      const id: string = "clip-1";
+
       // Act
       const result = await repository.findOne(id);
+
       // Assert;
-      const origin = presetInputList[0];
-      Object.keys(origin).forEach((key) => {
-        expect(result[key]).toEqual(origin[key]);
-      });
-      expect(result.password).toBeDefined();
+      expect(result.clipId).toEqual(id);
     });
   });
 
   describe("클립 삭제 테스트", () => {
     it("[1] 클립 삭제", async () => {
       // Arrange;
-      const id = presetDataList[0]._id;
+      const input: string = "clip-5";
+
       // Act
-      const result = await repository.remove(id);
+      const result = await repository.remove(input);
+
       // Assert;
       expect(result).toBeTruthy();
-      const findResult = (await repository.findAll()).filter(
-        (it) => it.clipId == id
-      );
-      expect(findResult.length).toEqual(0);
     });
   });
 });

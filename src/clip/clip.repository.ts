@@ -24,9 +24,9 @@ export class ClipRepository {
     ].join("/");
     const password = await this.hashHelper.createHash(hashString, 10);
 
-    const createClip = await new this.clipModel(
+    const createClip: any = await this.clipModel.create(
       Object.assign({ extension: extension, password: password }, createClipDto)
-    ).save();
+    );
     return new ClipDto(
       createClip._id.toString(),
       createClip.roomId,
