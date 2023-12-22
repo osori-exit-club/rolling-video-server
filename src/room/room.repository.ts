@@ -46,8 +46,6 @@ export class RoomRepository {
         HttpStatus.NOT_FOUND
       );
     }
-    console.log(result);
-    console.log("==========");
     result.clipIds.push(clipId);
     const room = await result.save();
 

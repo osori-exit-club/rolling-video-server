@@ -1,15 +1,10 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { getModelToken } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
-import { S3Module } from "src/aws/s3/s3.module";
+import { S3Repository } from "src/aws/s3/s3.repository";
 import { ClipRepository } from "src/clip/clip.repository";
 import { ClipDto } from "src/clip/dto/clip.dto";
-import { GatheringModule } from "src/gathering/gathering.module";
 import { GatheringService } from "src/gathering/gathering.service";
-import { Clip } from "src/schema/clips.schema";
-import { Room } from "src/schema/rooms.schema";
 import { HashHelper } from "src/utils/hash/hash.helper";
-import { HashModule } from "src/utils/hash/hash.module";
 import { ResponseMessage } from "src/utils/message.ko";
 import { OsModule } from "src/utils/os/os.module";
 import { DeleteRoomRequest } from "./dto/request/delete-room.request.dto";
@@ -19,62 +14,80 @@ import { RoomService } from "./room.service";
 
 describe("RoomService", () => {
   let service: RoomService;
-  let gatheringService: GatheringService;
-  let repository: RoomRepository;
-  let hashHelper: HashHelper;
+
+  const mockRoomRepository: any = {
+    create: jest.fn(),
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+    remove: jest.fn(),
+    addClip: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [HashModule, OsModule, GatheringModule, S3Module],
+      imports: [OsModule],
       providers: [
         RoomService,
-        RoomRepository,
-        ClipRepository,
         {
-          provide: getModelToken(Room.name),
-          useFactory: () => {},
+          provide: ClipRepository,
+          useValue: {
+            create: jest.fn(),
+            findAll: jest.fn(),
+            findOne: jest.fn().mockImplementation(async (clipId) => {
+              return new ClipDto(clipId, "roomId", "", "", false, "mp4", "");
+            }),
+            remove: jest.fn(),
+          },
         },
         {
-          provide: getModelToken(Clip.name),
-          useFactory: () => {},
+          provide: RoomRepository,
+          useValue: mockRoomRepository,
+        },
+        {
+          provide: S3Repository,
+          useValue: {
+            existsInS3: jest.fn().mockResolvedValue(true),
+            getPresignedUrl: jest
+              .fn()
+              .mockResolvedValue(Promise.resolve("video_url")),
+          },
+        },
+        {
+          provide: HashHelper,
+          useValue: {
+            createHash: jest
+              .fn()
+              .mockImplementation(async (password: string) => {
+                return password;
+              }),
+            isMatch: jest
+              .fn()
+              .mockImplementation(async (password: string, hash: string) => {
+                return password == hash;
+              }),
+          },
+        },
+        {
+          provide: GatheringService,
+          useValue: {
+            gather: jest
+              .fn()
+              .mockImplementation(
+                async (
+                  key: string,
+                  s3PathList: string[],
+                  downloadDir?: string,
+                  outFilePath?: string
+                ) => {
+                  return "";
+                }
+              ),
+          },
         },
       ],
     }).compile();
 
     service = module.get<RoomService>(RoomService);
-    gatheringService = module.get<GatheringService>(GatheringService);
-    repository = module.get<RoomRepository>(RoomRepository);
-    const clipRepository = module.get<ClipRepository>(ClipRepository);
-    hashHelper = module.get<HashHelper>(HashHelper);
-
-    jest
-      .spyOn(hashHelper, "createHash")
-      .mockImplementation(async (password: string) => {
-        return password;
-      });
-
-    jest
-      .spyOn(hashHelper, "isMatch")
-      .mockImplementation(async (password: string, hash: string) => {
-        return password == hash;
-      });
-
-    jest
-      .spyOn(gatheringService, "gather")
-      .mockImplementation(
-        async (
-          key: string,
-          s3PathList: string[],
-          downloadDir?: string,
-          outFilePath?: string
-        ) => {
-          return "";
-        }
-      );
-
-    jest.spyOn(clipRepository, "findOne").mockImplementation(async (clipId) => {
-      return new ClipDto(clipId, "", "", "", false, "", "");
-    });
   });
 
   it("should be defined", () => {
@@ -84,7 +97,9 @@ describe("RoomService", () => {
   describe("방 정보 전체 조회", () => {
     it("조회된 데이터는 array 타입 ", async () => {
       // Arrange
-      jest.spyOn(repository, "findAll").mockResolvedValue(Promise.resolve([]));
+      jest
+        .spyOn(mockRoomRepository, "findAll")
+        .mockResolvedValue(Promise.resolve([]));
 
       // Act
       const result = await service.findAll();
@@ -103,14 +118,14 @@ describe("RoomService", () => {
       const roomDto: RoomDto = new RoomDto(roomId, "", password, "", null, []);
 
       jest
-        .spyOn(repository, "findOne")
+        .spyOn(mockRoomRepository, "findOne")
         .mockImplementation(async (id: string): Promise<RoomDto> => {
           return id == roomId
             ? roomDto
             : Object.assign({}, roomDto, { roomId: id });
         });
       jest
-        .spyOn(repository, "remove")
+        .spyOn(mockRoomRepository, "remove")
         .mockImplementation(async (id: string): Promise<boolean> => {
           return id == roomId;
         });
@@ -123,7 +138,7 @@ describe("RoomService", () => {
 
       const repoResult: any = {};
       jest
-        .spyOn(repository, "remove")
+        .spyOn(mockRoomRepository, "remove")
         .mockResolvedValue(Promise.resolve(repoResult));
 
       // Act
@@ -168,12 +183,13 @@ describe("RoomService", () => {
   });
 
   describe("취합 테스트", () => {
-    const mockResult: RoomDto = new RoomDto("roomId", "", "", "", null, []);
+    const mockResult: RoomDto = new RoomDto("roomId", "", "", "", null, [
+      "clipId1",
+      "clipId2",
+    ]);
 
     it("[1] gathering normal", async () => {
-      jest
-        .spyOn(repository, "findOne")
-        .mockResolvedValue(Promise.resolve(mockResult));
+      jest.spyOn(mockRoomRepository, "findOne").mockResolvedValue(mockResult);
 
       await service.gather("id");
     });

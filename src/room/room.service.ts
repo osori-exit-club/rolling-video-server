@@ -102,21 +102,33 @@ export class RoomService {
 
   async gather(roomId: string, outPath?: string): Promise<GatherRoomResponse> {
     const room: RoomDto | null = await this.findOne(roomId);
+
     if (room == null) {
       throw new HttpException(
         ResponseMessage.ROOM_GATHER_FAIL_WRONG_ID,
         HttpStatus.NOT_FOUND
       );
     }
+    if (room.clipIds.length == 0) {
+      throw new HttpException(
+        ResponseMessage.ROOM_GATHER_FAIL_EMPTY_CLIP,
+        HttpStatus.BAD_REQUEST
+      );
+    }
     const keyList = await Promise.all(
       room.clipIds.map((clipId) => {
         return this.clipRepository.findOne(clipId);
       })
-    ).then((result) => result.map((it: ClipDto) => it.getS3Key()));
+    )
+      .then((result) => result.map((it: ClipDto) => it.getS3Key()))
+      .catch((err) => {
+        throw err;
+      });
 
     const key = path.join(RoomDto.getS3key(roomId), "gathered.zip");
 
     const existsInS3 = await this.s3Repository.existsInS3(key);
+
     if (!existsInS3) {
       Logger.debug(`There is no gathered.zip (key: ${key}`);
       await this.osHelper.openTempDirectory(
