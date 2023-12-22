@@ -2,11 +2,11 @@ import * as fs from "fs";
 import * as path from "path";
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-import { S3Repository } from "src/common/aws/s3/s3.repository";
+import { S3Repository } from "src/shared/aws/s3/s3.repository";
 import { GatheringService } from "./gathering.service";
 import { CompressHelper } from "src/room/feature/compress/comporess.helper";
-import { OsHelper } from "src/common/os/os.helper";
-import { OsModule } from "src/common/os/os.module";
+import { OsHelper } from "src/shared/os/os.helper";
+import { OsModule } from "src/shared/os/os.module";
 
 describe("GatheringService", () => {
   let service: GatheringService;

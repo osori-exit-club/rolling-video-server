@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 
 import * as path from "path";
 import * as fs from "fs";
-import { S3Repository } from "src/common/aws/s3/s3.repository";
+import { S3Repository } from "src/shared/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
 import { ClipRepository } from "./clip.repository";
 import { ClipDto } from "./dto/clip.dto";
@@ -12,7 +12,7 @@ import { ResponseMessage } from "src/utils/message.ko";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
 import { FfmpegService } from "src/clip/feature/ffmpeg/ffmpeg.service";
-import { OsHelper } from "src/common/os/os.helper";
+import { OsHelper } from "src/shared/os/os.helper";
 
 @Injectable()
 export class ClipService {

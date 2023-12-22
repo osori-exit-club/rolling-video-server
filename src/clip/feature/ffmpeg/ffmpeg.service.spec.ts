@@ -2,8 +2,8 @@ import * as path from "path";
 import * as fs from "fs";
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-import { OsHelper } from "src/common/os/os.helper";
-import { OsModule } from "src/common/os/os.module";
+import { OsHelper } from "src/shared/os/os.helper";
+import { OsModule } from "src/shared/os/os.module";
 import { FfmpegModule } from "./ffmpeg.module";
 import { FfmpegService } from "./ffmpeg.service";
 

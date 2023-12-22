@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { S3Repository } from "src/common/aws/s3/s3.repository";
+import { S3Repository } from "src/shared/aws/s3/s3.repository";
 import { ClipRepository } from "src/clip/clip.repository";
 import { ClipDto } from "src/clip/dto/clip.dto";
 import { GatheringService } from "src/room/feature/gathering/gathering.service";
-import { HashHelper } from "src/common/hash/hash.helper";
+import { HashHelper } from "src/shared/hash/hash.helper";
 import { ResponseMessage } from "src/utils/message.ko";
-import { OsModule } from "src/common/os/os.module";
+import { OsModule } from "src/shared/os/os.module";
 import { DeleteRoomRequest } from "./dto/request/delete-room.request.dto";
 import { RoomDto } from "./dto/room.dto";
 import { RoomRepository } from "./room.repository";

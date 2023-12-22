@@ -1,14 +1,14 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ResponseMessage } from "src/utils/message.ko";
-import { OsModule } from "src/common/os/os.module";
+import { OsModule } from "src/shared/os/os.module";
 import { CreateRoomResponse } from "./dto/response/create-room.response.dto";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { RoomResponse } from "./dto/response/room.response.dto";
 import { RoomDto } from "./dto/room.dto";
 import { RoomController } from "./room.controller";
 import { RoomService } from "./room.service";
-import { AuthService } from "src/common/auth/auth.service";
+import { AuthService } from "src/shared/auth/auth.service";
 
 describe("RoomController", () => {
   let controller: RoomController;

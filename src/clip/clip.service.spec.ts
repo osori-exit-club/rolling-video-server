@@ -1,4 +1,4 @@
-import { S3Repository } from "src/common/aws/s3/s3.repository";
+import { S3Repository } from "src/shared/aws/s3/s3.repository";
 import { RoomRepository } from "src/room/room.repository";
 import { ClipRepository } from "./clip.repository";
 import { ClipService } from "./clip.service";
@@ -8,7 +8,7 @@ import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
 import { FfmpegService } from "src/clip/feature/ffmpeg/ffmpeg.service";
 import { ClipDto } from "./dto/clip.dto";
 import { RoomDto } from "src/room/dto/room.dto";
-import { OsModule } from "src/common/os/os.module";
+import { OsModule } from "src/shared/os/os.module";
 import { Test, TestingModule } from "@nestjs/testing";
 
 describe("ClipService", () => {

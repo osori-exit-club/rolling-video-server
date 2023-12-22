@@ -3,7 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { Clip } from "src/schema/clips.schema";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { ClipRepository } from "./clip.repository";
-import { HashHelper } from "src/common/hash/hash.helper";
+import { HashHelper } from "src/shared/hash/hash.helper";
 
 class MockClipModel {
   private readonly arrayDB: any[] = [1, 2, 3, 4, 5].map((idx) => {

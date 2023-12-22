@@ -34,9 +34,9 @@ import { RoomDto } from "src/room/dto/room.dto";
 import { ClipResponse } from "./dto/response/clip.response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
-import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
+import { SimpleResponseDto } from "src/shared/dto/simple-response.dto";
 import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
-import { ApiKeyGuard } from "src/common/auth/apikeyguard";
+import { ApiKeyGuard } from "src/shared/auth/apikeyguard";
 
 @Controller("clip")
 @ApiTags("Clip API")
