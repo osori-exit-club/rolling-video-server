@@ -36,7 +36,7 @@ export class ClipRepository {
       createClip.isPublic,
       createClip.extension,
       createClip.password,
-      createClip.videoS3Key || this.getS3Key(createClip),
+      createClip.videoS3Key,
       createClip.compactedVideoS3Key
     );
   }
@@ -52,7 +52,7 @@ export class ClipRepository {
         clip.isPublic,
         clip.extension,
         clip.password,
-        clip.videoS3Key || this.getS3Key(clip),
+        clip.videoS3Key,
         clip.compactedVideoS3Key
       );
     });
@@ -74,7 +74,7 @@ export class ClipRepository {
       clip.isPublic,
       clip.extension,
       clip.password,
-      clip.videoS3Key || this.getS3Key(clip),
+      clip.videoS3Key,
       clip.compactedVideoS3Key
     );
     return clipDto;
@@ -93,17 +93,5 @@ export class ClipRepository {
       }
       return false;
     }
-  }
-
-  getS3Key({
-    roomId,
-    clipId,
-    extension,
-  }: {
-    roomId: string;
-    clipId: string;
-    extension: string;
-  }): string {
-    return `rooms/${roomId}/clips/${clipId}.${extension}`;
   }
 }
