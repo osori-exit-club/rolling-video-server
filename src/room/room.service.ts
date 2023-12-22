@@ -1,7 +1,7 @@
 import * as path from "path";
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { ClipDto } from "src/clip/dto/clip.dto";
-import { GatheringService } from "src/gathering/gathering.service";
+import { GatheringService } from "src/room/feature/gathering/gathering.service";
 import { HashHelper } from "src/utils/hash/hash.helper";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { DeleteRoomRequest } from "./dto/request/delete-room.request.dto";

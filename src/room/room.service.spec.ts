@@ -3,7 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { S3Repository } from "src/aws/s3/s3.repository";
 import { ClipRepository } from "src/clip/clip.repository";
 import { ClipDto } from "src/clip/dto/clip.dto";
-import { GatheringService } from "src/gathering/gathering.service";
+import { GatheringService } from "src/room/feature/gathering/gathering.service";
 import { HashHelper } from "src/utils/hash/hash.helper";
 import { ResponseMessage } from "src/utils/message.ko";
 import { OsModule } from "src/utils/os/os.module";

@@ -5,7 +5,6 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { RoomModule } from "./room/room.module";
 import { ClipModule } from "./clip/clip.module";
-import { GatheringModule } from "./gathering/gathering.module";
 import { AuthModule } from "./auth/auth.module";
 import { ScheduleModule } from "@nestjs/schedule";
 
@@ -25,7 +24,6 @@ import { ScheduleModule } from "@nestjs/schedule";
     }),
     RoomModule,
     ClipModule,
-    GatheringModule,
     AuthModule,
   ],
   controllers: [AppController],

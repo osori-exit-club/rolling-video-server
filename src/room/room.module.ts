@@ -5,7 +5,7 @@ import { RoomController } from "./room.controller";
 import { RoomRepository } from "./room.repository";
 import { Room, RoomScheme } from "src/schema/rooms.schema";
 import { HashModule } from "src/utils/hash/hash.module";
-import { GatheringModule } from "src/gathering/gathering.module";
+import { GatheringModule } from "src/room/feature/gathering/gathering.module";
 import { OsModule } from "src/utils/os/os.module";
 import { S3Module } from "src/aws/s3/s3.module";
 import { AuthModule } from "src/auth/auth.module";
