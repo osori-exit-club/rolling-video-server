@@ -8,7 +8,7 @@ import { ClipRepository } from "./clip.repository";
 import { S3Module } from "src/aws/s3/s3.module";
 import { HashModule } from "src/utils/hash/hash.module";
 import { RoomModule } from "src/room/room.module";
-import { AuthModule } from "src/auth/auth.module";
+import { AuthModule } from "src/common/auth/auth.module";
 import { FfmpegModule } from "src/ffmpeg/ffmpeg.module";
 import { OsModule } from "src/utils/os/os.module";
 

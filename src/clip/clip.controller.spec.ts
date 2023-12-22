@@ -9,7 +9,7 @@ import { ClipResponse } from "./dto/response/clip.response.dto";
 import { ClipDto } from "./dto/clip.dto";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
-import { AuthService } from "src/auth/auth.service";
+import { AuthService } from "src/common/auth/auth.service";
 
 describe("ClipController", () => {
   let controller: ClipController;

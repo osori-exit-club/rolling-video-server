@@ -31,7 +31,7 @@ import { CreateRoomResponse } from "./dto/response/create-room.response.dto";
 import { SimpleResponseDto } from "src/common/dto/simple-response.dto";
 import { ResponseMessage } from "src/utils/message.ko";
 import { RoomResponse } from "./dto/response/room.response.dto";
-import { ApiKeyGuard } from "src/auth/apikeyguard";
+import { ApiKeyGuard } from "src/common/auth/apikeyguard";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { UpdateRoomResponse } from "./dto/response/update-room.response.dto";
 

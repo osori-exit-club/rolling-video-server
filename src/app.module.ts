@@ -5,7 +5,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { RoomModule } from "./room/room.module";
 import { ClipModule } from "./clip/clip.module";
-import { AuthModule } from "./auth/auth.module";
+import { AuthModule } from "./common/auth/auth.module";
 import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({

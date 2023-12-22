@@ -8,7 +8,7 @@ import { RoomResponse } from "./dto/response/room.response.dto";
 import { RoomDto } from "./dto/room.dto";
 import { RoomController } from "./room.controller";
 import { RoomService } from "./room.service";
-import { AuthService } from "src/auth/auth.service";
+import { AuthService } from "src/common/auth/auth.service";
 
 describe("RoomController", () => {
   let controller: RoomController;
