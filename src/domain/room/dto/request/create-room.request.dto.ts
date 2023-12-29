@@ -12,13 +12,13 @@ export class CreateRoomRequest {
     description: "비밀번호",
     example: "TEST_ROOM_PASSWORD",
   })
-  readonly password: string | null;
+  readonly password: string;
   @ApiProperty({
     description: "받는 사람",
     example: "TEST_ROOM_RECIPIENT",
   })
   readonly recipient: string;
-  constructor(name: string, password: string | null, recipient: string) {
+  constructor(name: string, password: string, recipient: string) {
     this.name = name;
     this.password = password;
     this.recipient = recipient;
