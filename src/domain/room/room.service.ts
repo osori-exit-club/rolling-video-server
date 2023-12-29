@@ -151,11 +151,8 @@ export class RoomService {
         }
       );
     }
+    const signedUrl: string = await this.s3Repository.getPresignedUrl(key);
     const expiresIn: number = 10;
-    const signedUrl: string = await this.s3Repository.getPresignedUrl(
-      key,
-      expiresIn
-    );
     const expiresInDate: Date = new Date();
     expiresInDate.setDate(new Date().getDate() + expiresIn);
 
