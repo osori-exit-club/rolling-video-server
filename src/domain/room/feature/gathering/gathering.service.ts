@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { S3Repository } from "src/shared/aws/s3/s3.repository";
 import { CompressHelper } from "src/domain/room/feature/compress/comporess.helper";
 import { Mutex } from "async-mutex";
@@ -20,11 +20,12 @@ export class GatheringService {
     outFilePath: string
   ) {
     const release = await this.mutex.acquire();
-    await Promise.all(
-      s3PathList.map((key: string) => {
-        this.s3Repository.download(key, downloadDir);
-      })
-    );
+    const promiseList = s3PathList.map((key: string) => {
+      return this.s3Repository.download(key, downloadDir);
+    });
+    Logger.debug(`[GatheringService/gather] start download ${promiseList}`);
+    await Promise.all(promiseList);
+    Logger.debug("[GatheringService/gather] start compress");
     await this.compressHelper.compress(downloadDir, outFilePath);
     release();
     const fileContent = fs.readFileSync(outFilePath);

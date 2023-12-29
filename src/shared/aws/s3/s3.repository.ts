@@ -170,12 +170,14 @@ export class S3Repository {
     if (key[key.length - 1] == "/") {
       return null;
     }
-    return downloadInChunks({
+    const outPath = await downloadInChunks({
       bucket: this.configService
         .get("AWS_S3_BUCKET_NAME")
         .replace("${NODE_ENV}", this.configService.getOrThrow("NODE_ENV")),
       key: key,
     });
+    Logger.debug(`[S3Repository/download] outPath ${outPath}`);
+    return outPath;
   }
 
   async existsInS3(key: string): Promise<boolean> {
