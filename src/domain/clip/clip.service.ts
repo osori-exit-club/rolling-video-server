@@ -18,7 +18,7 @@ import { Mutex } from "async-mutex";
 
 @Injectable()
 export class ClipService {
-  readonly pendlingClipList: ClipDto[] = [];
+  readonly pendingClipList: ClipDto[] = [];
   readonly failedClipIdSet = new Set();
 
   private mutex = new Mutex();
@@ -63,9 +63,9 @@ export class ClipService {
       });
     const clipDto = await Promise.all([createClipPromise, uploadPromise])
       .then(([clipDto, _]) => {
-        this.pendlingClipList.push(clipDto);
+        this.pendingClipList.push(clipDto);
         Logger.debug(
-          `[ClipService/create] add ${clipDto.clipId} to ${this.pendlingClipList
+          `[ClipService/create] add ${clipDto.clipId} to ${this.pendingClipList
             .map((it) => it.clipId)
             .join(", ")})`
         );
@@ -135,11 +135,11 @@ export class ClipService {
     }
     const release = await this.mutex.acquire();
     Logger.debug(
-      `[ClipService/doCompat] start this.pendlinClipList size = ${this.pendlingClipList.length}`
+      `[ClipService/doCompat] start this.pendlinClipList size = ${this.pendingClipList.length}`
     );
     let target: ClipDto = null;
-    if (this.pendlingClipList.length > 0) {
-      target = this.pendlingClipList.pop();
+    if (this.pendingClipList.length > 0) {
+      target = this.pendingClipList.pop();
     } else {
       const clips = await this.findAll();
       target = clips
