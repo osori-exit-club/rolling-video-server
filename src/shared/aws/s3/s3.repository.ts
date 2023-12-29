@@ -99,7 +99,7 @@ export class S3Repository {
    *
    * @param key
    */
-  async download(key: string, outDir: string) {
+  async download(key: string, outDir: string): Promise<string> {
     const s3Client = new S3Client({
       region: this.configService.get("AWS_REGION"),
       credentials: {
@@ -163,9 +163,9 @@ export class S3Repository {
 
         writeStream.write(await Body.transformToByteArray());
         rangeAndLength = getRangeAndLength(ContentRange);
-        return outPath;
       }
       Logger.debug(`Downloading Done ${key}`);
+      return outPath;
     };
     if (key[key.length - 1] == "/") {
       return null;

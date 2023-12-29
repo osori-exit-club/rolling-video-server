@@ -182,7 +182,7 @@ export class ClipService {
         Logger.debug(
           `[compact process] download ${clipDto.videoS3Key} on ${inputFolderPath}`
         );
-        const inputPath = await this.s3Respository.download(
+        const inputPath: string = await this.s3Respository.download(
           clipDto.videoS3Key,
           inputFolderPath
         );
