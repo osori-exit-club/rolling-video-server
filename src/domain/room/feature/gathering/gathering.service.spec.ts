@@ -4,7 +4,7 @@ import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { S3Repository } from "src/shared/aws/s3/s3.repository";
 import { GatheringService } from "./gathering.service";
-import { CompressHelper } from "src/domain/room/feature/compress/comporess.helper";
+import { CompressHelper } from "src/domain/room/feature/compress/compress.helper";
 import { OsHelper } from "src/shared/os/os.helper";
 import { OsModule } from "src/shared/os/os.module";
 

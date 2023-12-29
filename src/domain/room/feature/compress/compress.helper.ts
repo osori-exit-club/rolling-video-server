@@ -10,7 +10,7 @@ export class CompressHelper {
     try {
       zip.addLocalFolder(targetDir);
       // or write everything to disk
-      Logger.debug(`Start Ziping ... ${outPath}`);
+      Logger.debug(`Start Zipping ... ${outPath}`);
       zip.writeZip(outPath);
       Logger.debug(`Done Zip ${outPath}`);
     } catch (error) {

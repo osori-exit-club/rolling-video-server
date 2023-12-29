@@ -25,9 +25,9 @@ export class ClipService {
   constructor(
     private readonly clipRepository: ClipRepository,
     private readonly roomRepository: RoomRepository,
-    private readonly s3Respository: S3Repository,
+    private readonly s3Repository: S3Repository,
     private readonly ffmpegService: FfmpegService,
-    private readonly osHepler: OsHelper
+    private readonly osHelper: OsHelper
   ) {}
 
   async create(
@@ -48,7 +48,7 @@ export class ClipService {
         return clipDto;
       });
 
-    const uploadPromise: Promise<any> = this.s3Respository
+    const uploadPromise: Promise<any> = this.s3Repository
       .uploadFile({
         key: videoS3Key,
         buffer: file.buffer,
@@ -95,15 +95,13 @@ export class ClipService {
     let signedUrl: string;
     try {
       const thumbKey = clipDto.compactedVideoS3Key;
-      if (await this.s3Respository.existsInS3(thumbKey)) {
-        signedUrl = await this.s3Respository.getPresignedUrl(thumbKey);
+      if (await this.s3Repository.existsInS3(thumbKey)) {
+        signedUrl = await this.s3Repository.getPresignedUrl(thumbKey);
       } else {
-        signedUrl = await this.s3Respository.getPresignedUrl(
-          clipDto.videoS3Key
-        );
+        signedUrl = await this.s3Repository.getPresignedUrl(clipDto.videoS3Key);
       }
     } catch (err) {
-      signedUrl = await this.s3Respository.getPresignedUrl(clipDto.videoS3Key);
+      signedUrl = await this.s3Repository.getPresignedUrl(clipDto.videoS3Key);
     }
     return new ClipResponse(clipDto, signedUrl);
   }
@@ -166,7 +164,7 @@ export class ClipService {
   }
 
   private async createCompactedVideo(clipDto: ClipDto) {
-    return await this.osHepler.openTempDirectory(
+    return await this.osHelper.openTempDirectory(
       "webm",
       async (tempDir: string) => {
         Logger.debug(`[compact process] create temp dir ${tempDir}`);
@@ -182,7 +180,7 @@ export class ClipService {
         Logger.debug(
           `[compact process] download ${clipDto.videoS3Key} on ${inputFolderPath}`
         );
-        const inputPath: string = await this.s3Respository.download(
+        const inputPath: string = await this.s3Repository.download(
           clipDto.videoS3Key,
           inputFolderPath
         );
@@ -195,7 +193,7 @@ export class ClipService {
           clipDto.roomId
         }/compacted/${this.generateCurrentWithRandom()}.webm`;
 
-        await this.s3Respository.uploadFile({
+        await this.s3Repository.uploadFile({
           key: compactedVideoS3Key,
           buffer: fileContent,
         });

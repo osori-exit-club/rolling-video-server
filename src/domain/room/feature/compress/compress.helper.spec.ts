@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CompressHelper } from "./comporess.helper";
+import { CompressHelper } from "./compress.helper";
 import { OsModule } from "src/shared/os/os.module";
 import { OsHelper } from "src/shared/os/os.helper";
 

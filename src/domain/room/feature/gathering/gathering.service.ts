@@ -1,8 +1,7 @@
 import * as fs from "fs";
-import * as path from "path";
 import { Injectable, Logger } from "@nestjs/common";
 import { S3Repository } from "src/shared/aws/s3/s3.repository";
-import { CompressHelper } from "src/domain/room/feature/compress/comporess.helper";
+import { CompressHelper } from "src/domain/room/feature/compress/compress.helper";
 import { Mutex } from "async-mutex";
 
 @Injectable()
