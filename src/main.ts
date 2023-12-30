@@ -2,6 +2,7 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { INestApplication } from "@nestjs/common";
+import { winstonLogger } from "./shared/logger/winston.util";
 
 /**
  * Swagger 세팅
@@ -29,7 +30,9 @@ export function setupSwagger(app: INestApplication): void {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: winstonLogger,
+  });
   app.enableCors();
   // app.setGlobalPrefix("api");
 

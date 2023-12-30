@@ -134,3 +134,6 @@ dist
 
 # test output
 temp
+
+# winston logs
+logs
