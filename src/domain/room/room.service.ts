@@ -14,6 +14,7 @@ import { ResponseMessage } from "src/resources/message.ko";
 import { Constants } from "src/resources/constants";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { ClipRepository } from "src/domain/clip/clip.repository";
+import { Rune } from "src/resources/rune";
 
 @Injectable()
 export class RoomService {
@@ -129,7 +130,7 @@ export class RoomService {
 
     const existsInS3 = await this.s3Repository.existsInS3(key);
 
-    if (!existsInS3) {
+    if (!existsInS3 || !Rune.USE_CACHING_GATHERING) {
       Logger.debug(`There is no gathered.zip (key: ${key}`);
       await this.osHelper.openTempDirectory(
         `${roomId}/clips`,
