@@ -19,18 +19,22 @@ export class GatheringService {
     outFilePath: string
   ) {
     const release = await this.mutex.acquire();
-    const promiseList = s3PathList.map((key: string) => {
-      return this.s3Repository.download(key, downloadDir);
-    });
-    Logger.debug(`[GatheringService/gather] start download ${promiseList}`);
-    await Promise.all(promiseList);
-    Logger.debug("[GatheringService/gather] start compress");
-    await this.compressHelper.compress(downloadDir, outFilePath);
-    release();
-    const fileContent = fs.readFileSync(outFilePath);
-    return await this.s3Repository.uploadFile({
-      buffer: fileContent,
-      key: s3key,
-    });
+    try {
+      const promiseList = s3PathList.map((key: string) => {
+        return this.s3Repository.download(key, downloadDir);
+      });
+      Logger.debug(`[GatheringService/gather] start download ${promiseList}`);
+      await Promise.all(promiseList);
+      Logger.debug("[GatheringService/gather] start compress");
+      await this.compressHelper.compress(downloadDir, outFilePath);
+      const fileContent: Buffer = fs.readFileSync(outFilePath);
+      const outPath: string = await this.s3Repository.uploadFile({
+        buffer: fileContent,
+        key: s3key,
+      });
+      return outPath;
+    } finally {
+      release();
+    }
   }
 }
