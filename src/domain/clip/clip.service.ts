@@ -55,7 +55,7 @@ export class ClipService {
       })
       .catch((err) => {
         Logger.error(`[ClipService/create] failed to uploadFile`);
-        Logger.error(`[ClipService/create] ${err}`);
+        Logger.error(`[ClipService/create] ${err.message}`, err.stack);
         throw new HttpException(
           ResponseMessage.CLIP_CREATE_FAIL_UPLOAD_VIDEO,
           HttpStatus.INTERNAL_SERVER_ERROR
@@ -76,7 +76,7 @@ export class ClipService {
         if (err instanceof HttpException) {
           throw err;
         }
-        Logger.error(`[ClipService/create] ${err}`);
+        Logger.error(`[ClipService/create] ${err.message}`, err.stack);
         throw new HttpException(
           ResponseMessage.CLIP_CREATE_FAIL_CREATE_CLIP,
           HttpStatus.INTERNAL_SERVER_ERROR
@@ -156,7 +156,7 @@ export class ClipService {
           Logger.error(
             `[ClipService/doCompat] failed to create compacted video ${target.clipId}`
           );
-          Logger.error(`[ClipService/doCompat] ${err}`);
+          Logger.error(`[ClipService/doCompat] ${err.message}`, err.stack);
         });
     }
     release();

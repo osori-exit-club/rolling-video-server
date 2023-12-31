@@ -62,7 +62,10 @@ export class S3Repository {
       const clientUrl = await createPresignedUrlWithClient();
       return clientUrl;
     } catch (error) {
-      Logger.error(`[S3Repository/getPresignedUrl] ${error}`);
+      Logger.error(
+        `[S3Repository/getPresignedUrl] ${error.message}`,
+        error.stack
+      );
       return null;
     }
   }

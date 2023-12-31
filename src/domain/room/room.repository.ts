@@ -71,7 +71,15 @@ export class RoomRepository {
   }
 
   async findOne(id: string): Promise<RoomDto> {
-    const room = await this.roomModel.findById(id).exec();
+    let room = null;
+    try {
+      room = await this.roomModel.findById(id).exec();
+    } catch (err) {
+      Logger.error(
+        `[RoomRepository/findOne] failed to findById with id(${id}) | ${err.message}`,
+        err.stack
+      );
+    }
     if (room == null) {
       throw new HttpException(
         ResponseMessage.ROOM_READ_FAIL_WRONG_ID,

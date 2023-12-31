@@ -42,14 +42,17 @@ export class FfmpegService {
         })
         .on("error", function (err) {
           Logger.error(
-            "[FfmpegService/makeWebmFile] An error occurred: " + err.message
+            "[FfmpegService/makeWebmFile] An error occurred: " + err.message,
+            err.stack
           );
-          Logger.error(err);
           reject(err);
         })
         .on("end", (err, stdout, stderr) => {
           if (err) {
-            Logger.error(stderr);
+            Logger.error(
+              `[FfmpegService/makeWebmFile] ${stderr.message}`,
+              stderr.stack
+            );
             return reject(err);
           }
           Logger.debug(`[FfmpegService/makeWebmFile] ${stdout}`);
