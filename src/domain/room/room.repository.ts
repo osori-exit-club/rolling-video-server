@@ -23,10 +23,10 @@ export class RoomRepository implements Loggable {
   async create(createRoomDto: CreateRoomRequest): Promise<RoomDto> {
     let obj: any = createRoomDto;
     if (createRoomDto.password) {
-      const passwordHahed = await this.hashHelper.createHash(
+      const passwordHashed = await this.hashHelper.createHash(
         createRoomDto.password
       );
-      obj["passwordHashed"] = passwordHahed;
+      obj["passwordHashed"] = passwordHashed;
       delete obj.password;
     }
     const room: any = await this.roomModel.create(obj);

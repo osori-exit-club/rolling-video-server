@@ -6,7 +6,6 @@ import {
   ConfigurationSchema,
 } from "src/shared/mongodb/schema/configuration.schema";
 import { AuthService } from "./auth.service";
-import { Logger } from "@nestjs/common";
 
 describe("RoomService", () => {
   let service: AuthService;
