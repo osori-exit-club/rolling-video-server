@@ -80,7 +80,13 @@ export class RoomRepository implements Loggable {
     try {
       room = await this.roomModel.findById(id).exec();
     } catch (err) {
-      this.logger.error("findOne", err, `failed to findById with id(${id})`);
+      if (err.__proto__.toString() != "CastError") {
+        this.logger.error(
+          "findOne",
+          err,
+          `failed to findById with id(${id}) because id format is wrong`
+        );
+      }
     }
     if (room == null) {
       throw new HttpException(
