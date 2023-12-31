@@ -1,3 +1,3 @@
-export interface Loggable {
+export interface ClassInfo {
   readonly logTag: string;
 }

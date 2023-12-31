@@ -1,13 +1,16 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as ffmpeg from "fluent-ffmpeg";
 import * as ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
-import { Loggable } from "src/shared/logger/interface/Loggable";
-import { LoggableService } from "src/shared/logger/LoggableService";
+import { ClassInfo } from "src/shared/logger/interface/ClassInfo";
+import { MethodLoggerService } from "src/shared/logger/MethodLoggerService";
 
 @Injectable()
-export class FfmpegService implements Loggable {
+export class FfmpegService implements ClassInfo {
   readonly logTag: string = this.constructor.name;
-  private readonly logger: LoggableService = new LoggableService(Logger, this);
+  private readonly logger: MethodLoggerService = new MethodLoggerService(
+    Logger,
+    this
+  );
 
   constructor() {
     this.logger.debug(

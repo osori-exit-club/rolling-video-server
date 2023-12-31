@@ -3,13 +3,16 @@ import { Injectable, Logger } from "@nestjs/common";
 import { S3Repository } from "src/shared/aws/s3/s3.repository";
 import { CompressHelper } from "src/domain/room/feature/compress/compress.helper";
 import { Mutex } from "async-mutex";
-import { Loggable } from "src/shared/logger/interface/Loggable";
-import { LoggableService } from "src/shared/logger/LoggableService";
+import { ClassInfo } from "src/shared/logger/interface/ClassInfo";
+import { MethodLoggerService } from "src/shared/logger/MethodLoggerService";
 
 @Injectable()
-export class GatheringService implements Loggable {
+export class GatheringService implements ClassInfo {
   readonly logTag: string = this.constructor.name;
-  private readonly logger: LoggableService = new LoggableService(Logger, this);
+  private readonly logger: MethodLoggerService = new MethodLoggerService(
+    Logger,
+    this
+  );
 
   private mutex = new Mutex();
   constructor(

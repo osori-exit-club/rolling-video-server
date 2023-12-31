@@ -15,13 +15,16 @@ import { Constants } from "src/resources/constants";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { ClipRepository } from "src/domain/clip/clip.repository";
 import { Rune } from "src/resources/rune";
-import { Loggable } from "src/shared/logger/interface/Loggable";
-import { LoggableService } from "src/shared/logger/LoggableService";
+import { ClassInfo } from "src/shared/logger/interface/ClassInfo";
+import { MethodLoggerService } from "src/shared/logger/MethodLoggerService";
 
 @Injectable()
-export class RoomService implements Loggable {
+export class RoomService implements ClassInfo {
   readonly logTag: string = this.constructor.name;
-  private readonly logger: LoggableService = new LoggableService(Logger, this);
+  private readonly logger: MethodLoggerService = new MethodLoggerService(
+    Logger,
+    this
+  );
 
   constructor(
     private readonly clipRepository: ClipRepository,

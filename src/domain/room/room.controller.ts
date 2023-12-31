@@ -34,14 +34,17 @@ import { RoomResponse } from "./dto/response/room.response.dto";
 import { ApiKeyGuard } from "src/shared/auth/apikeyguard";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { UpdateRoomResponse } from "./dto/response/update-room.response.dto";
-import { Loggable } from "src/shared/logger/interface/Loggable";
-import { LoggableService } from "src/shared/logger/LoggableService";
+import { ClassInfo } from "src/shared/logger/interface/ClassInfo";
+import { MethodLoggerService } from "src/shared/logger/MethodLoggerService";
 
 @Controller("room")
 @ApiTags("Room API")
-export class RoomController implements Loggable {
+export class RoomController implements ClassInfo {
   readonly logTag: string = this.constructor.name;
-  private readonly logger: LoggableService = new LoggableService(Logger, this);
+  private readonly logger: MethodLoggerService = new MethodLoggerService(
+    Logger,
+    this
+  );
 
   constructor(private readonly roomService: RoomService) {}
 

@@ -37,14 +37,17 @@ import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { SimpleResponseDto } from "src/model/dto/simple-response.dto";
 import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
 import { ApiKeyGuard } from "src/shared/auth/apikeyguard";
-import { Loggable } from "src/shared/logger/interface/Loggable";
-import { LoggableService } from "src/shared/logger/LoggableService";
+import { ClassInfo } from "src/shared/logger/interface/ClassInfo";
+import { MethodLoggerService } from "src/shared/logger/MethodLoggerService";
 
 @Controller("clip")
 @ApiTags("Clip API")
-export class ClipController implements Loggable {
+export class ClipController implements ClassInfo {
   readonly logTag: string = this.constructor.name;
-  private readonly logger: LoggableService = new LoggableService(Logger, this);
+  private readonly logger: MethodLoggerService = new MethodLoggerService(
+    Logger,
+    this
+  );
 
   constructor(
     private readonly clipService: ClipService,

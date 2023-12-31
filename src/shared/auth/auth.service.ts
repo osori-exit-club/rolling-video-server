@@ -5,13 +5,16 @@ import {
   ConfigurationDocument,
 } from "src/shared/mongodb/schema/configuration.schema";
 import { Model } from "mongoose";
-import { Loggable } from "../logger/interface/Loggable";
-import { LoggableService } from "../logger/LoggableService";
+import { ClassInfo } from "../logger/interface/ClassInfo";
+import { MethodLoggerService } from "../logger/MethodLoggerService";
 
 @Injectable()
-export class AuthService implements Loggable {
+export class AuthService implements ClassInfo {
   readonly logTag: string = this.constructor.name;
-  private readonly logger: LoggableService = new LoggableService(Logger, this);
+  private readonly logger: MethodLoggerService = new MethodLoggerService(
+    Logger,
+    this
+  );
 
   constructor(
     @InjectModel(Configuration.name)

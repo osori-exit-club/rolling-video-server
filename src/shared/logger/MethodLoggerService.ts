@@ -1,19 +1,19 @@
 import { LogLevel, LoggerService } from "@nestjs/common";
 import { LoggerServiceWrapper } from "./wrapper/LoggerServiceWrapper";
-import { Loggable } from "./interface/Loggable";
+import { ClassInfo } from "./interface/ClassInfo";
 
-export class LoggableService extends LoggerServiceWrapper {
-  private readonly loggable: Loggable;
-  constructor(base: LoggerService, loggable: Loggable) {
+export class MethodLoggerService extends LoggerServiceWrapper {
+  private readonly classInfo: ClassInfo;
+  constructor(base: LoggerService, classInfo: ClassInfo) {
     super(base);
-    this.loggable = loggable;
+    this.classInfo = classInfo;
   }
   /**
    * Write a 'log' level log.
    */
   log(methodName: string, message: any): any {
     return this.base.log(message, {
-      context: `[${this.loggable.logTag}/${methodName}]`,
+      context: `[${this.classInfo.logTag}/${methodName}]`,
     });
   }
   /**
@@ -25,7 +25,7 @@ export class LoggableService extends LoggerServiceWrapper {
     message: any = "An error occurred"
   ): any {
     return this.base.error(`${message} | failed by ${error.message}`, {
-      context: `[${this.loggable.logTag}/${methodName}]`,
+      context: `[${this.classInfo.logTag}/${methodName}]`,
       trace: error.stack,
     });
   }
@@ -34,7 +34,7 @@ export class LoggableService extends LoggerServiceWrapper {
    */
   warn(methodName: string, message: any): any {
     return this.base.warn(message, {
-      context: `[${this.loggable.logTag}/${methodName}]`,
+      context: `[${this.classInfo.logTag}/${methodName}]`,
     });
   }
   /**
@@ -42,7 +42,7 @@ export class LoggableService extends LoggerServiceWrapper {
    */
   debug?(methodName: string, message: any): any {
     return this.base.debug(message, {
-      context: `[${this.loggable.logTag}/${methodName}]`,
+      context: `[${this.classInfo.logTag}/${methodName}]`,
     });
   }
   /**
@@ -50,7 +50,7 @@ export class LoggableService extends LoggerServiceWrapper {
    */
   verbose?(methodName: string, message: any): any {
     return this.base.verbose(message, {
-      context: `[${this.loggable.logTag}/${methodName}]`,
+      context: `[${this.classInfo.logTag}/${methodName}]`,
     });
   }
   /**

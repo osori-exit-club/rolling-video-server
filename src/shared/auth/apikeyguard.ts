@@ -5,13 +5,16 @@ import {
   Logger,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { Loggable } from "../logger/interface/Loggable";
-import { LoggableService } from "../logger/LoggableService";
+import { ClassInfo } from "../logger/interface/ClassInfo";
+import { MethodLoggerService } from "../logger/MethodLoggerService";
 
 @Injectable()
-export class ApiKeyGuard implements CanActivate, Loggable {
+export class ApiKeyGuard implements CanActivate, ClassInfo {
   readonly logTag: string = this.constructor.name;
-  private readonly logger: LoggableService = new LoggableService(Logger, this);
+  private readonly logger: MethodLoggerService = new MethodLoggerService(
+    Logger,
+    this
+  );
 
   constructor(private readonly authService: AuthService) {}
 

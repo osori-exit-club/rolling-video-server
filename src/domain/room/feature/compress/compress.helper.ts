@@ -1,12 +1,15 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as AdmZip from "adm-zip";
-import { LoggableService } from "src/shared/logger/LoggableService";
-import { Loggable } from "src/shared/logger/interface/Loggable";
+import { MethodLoggerService } from "src/shared/logger/MethodLoggerService";
+import { ClassInfo } from "src/shared/logger/interface/ClassInfo";
 
 @Injectable()
-export class CompressHelper implements Loggable {
+export class CompressHelper implements ClassInfo {
   readonly logTag: string = this.constructor.name;
-  private readonly logger: LoggableService = new LoggableService(Logger, this);
+  private readonly logger: MethodLoggerService = new MethodLoggerService(
+    Logger,
+    this
+  );
 
   constructor() {}
 

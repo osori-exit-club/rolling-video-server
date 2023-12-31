@@ -15,13 +15,16 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { LoggableService } from "src/shared/logger/LoggableService";
-import { Loggable } from "src/shared/logger/interface/Loggable";
+import { MethodLoggerService } from "src/shared/logger/MethodLoggerService";
+import { ClassInfo } from "src/shared/logger/interface/ClassInfo";
 
 @Injectable()
-export class S3Repository implements Loggable {
+export class S3Repository implements ClassInfo {
   readonly logTag: string = this.constructor.name;
-  private readonly logger: LoggableService = new LoggableService(Logger, this);
+  private readonly logger: MethodLoggerService = new MethodLoggerService(
+    Logger,
+    this
+  );
   private readonly s3: AWS.S3;
 
   constructor(private readonly configService: ConfigService) {
