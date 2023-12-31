@@ -52,7 +52,7 @@ export class FfmpegService {
             Logger.error(stderr);
             return reject(err);
           }
-          Logger.debug(stdout);
+          Logger.debug(`[FfmpegService/makeWebmFile] ${stdout}`);
           Logger.debug("[FfmpegService/makeWebmFile] Processing finished.");
           var regex =
             /LPSNR=Y:([0-9\.]+) U:([0-9\.]+) V:([0-9\.]+) \*:([0-9\.]+)/;
@@ -60,7 +60,7 @@ export class FfmpegService {
           Logger.debug(
             "[FfmpegService/makeWebmFile] This WebM transcode scored a PSNR of: "
           );
-          Logger.debug(psnr[4] + "dB");
+          Logger.debug(`[FfmpegService/makeWebmFile] ${psnr[4]} dB`);
           resolve(true);
         })
         .save(outPath);

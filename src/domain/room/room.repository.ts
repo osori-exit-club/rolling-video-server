@@ -129,7 +129,7 @@ export class RoomRepository {
       return true;
     } catch (err) {
       if (err.__proto__.toString() != "CastError") {
-        Logger.error(err);
+        Logger.error(`[RoomRepository/remove] ${err}`);
       }
       return false;
     }

@@ -54,8 +54,8 @@ export class ClipService {
         buffer: file.buffer,
       })
       .catch((err) => {
-        Logger.error(`failed to uploadFile`);
-        Logger.error(err);
+        Logger.error(`[ClipService/create] failed to uploadFile`);
+        Logger.error(`[ClipService/create] ${err}`);
         throw new HttpException(
           ResponseMessage.CLIP_CREATE_FAIL_UPLOAD_VIDEO,
           HttpStatus.INTERNAL_SERVER_ERROR
@@ -76,7 +76,7 @@ export class ClipService {
         if (err instanceof HttpException) {
           throw err;
         }
-        Logger.error(err);
+        Logger.error(`[ClipService/create] ${err}`);
         throw new HttpException(
           ResponseMessage.CLIP_CREATE_FAIL_CREATE_CLIP,
           HttpStatus.INTERNAL_SERVER_ERROR
@@ -133,7 +133,7 @@ export class ClipService {
     }
     const release = await this.mutex.acquire();
     Logger.debug(
-      `[ClipService/doCompat] start this.pendlinClipList size = ${this.pendingClipList.length}`
+      `[ClipService/doCompat] start this.pendingClipList size = ${this.pendingClipList.length}`
     );
     let target: ClipDto = null;
     if (this.pendingClipList.length > 0) {
@@ -156,7 +156,7 @@ export class ClipService {
           Logger.error(
             `[ClipService/doCompat] failed to create compacted video ${target.clipId}`
           );
-          Logger.error(err);
+          Logger.error(`[ClipService/doCompat] ${err}`);
         });
     }
     release();
@@ -167,7 +167,9 @@ export class ClipService {
     return await this.osHelper.openTempDirectory(
       "webm",
       async (tempDir: string) => {
-        Logger.debug(`[compact process] create temp dir ${tempDir}`);
+        Logger.debug(
+          `[ClipService/createCompactedVideo] create temp dir ${tempDir}`
+        );
         const outPath: string = path.join(
           tempDir,
           `${clipDto.clipId}_compacted.webm`
@@ -178,7 +180,7 @@ export class ClipService {
         );
 
         Logger.debug(
-          `[compact process] download ${clipDto.videoS3Key} on ${inputFolderPath}`
+          `[ClipService/createCompactedVideo]] download ${clipDto.videoS3Key} on ${inputFolderPath}`
         );
         const inputPath: string = await this.s3Repository.download(
           clipDto.videoS3Key,
@@ -186,7 +188,7 @@ export class ClipService {
         );
 
         await this.ffmpegService.makeWebmFile(inputPath, outPath);
-        Logger.debug(`[compact process] made webmFile`);
+        Logger.debug(`[ClipService/createCompactedVideo] made webmFile`);
         const fileContent = fs.readFileSync(outPath);
 
         const compactedVideoS3Key: string = `videos/${
@@ -197,7 +199,7 @@ export class ClipService {
           key: compactedVideoS3Key,
           buffer: fileContent,
         });
-        Logger.debug(`[compact process] upload webmFile`);
+        Logger.debug(`[ClipService/createCompactedVideo] upload webmFile`);
         await this.clipRepository.update(clipDto.clipId, {
           compactedVideoS3Key,
         });

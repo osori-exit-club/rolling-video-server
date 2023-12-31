@@ -10,12 +10,15 @@ export class CompressHelper {
     try {
       zip.addLocalFolder(targetDir);
       // or write everything to disk
-      Logger.debug(`Start Zipping ... ${outPath}`);
+      Logger.debug(`[CompressHelper/compress] Start Zipping ... ${outPath}`);
       zip.writeZip(outPath);
-      Logger.debug(`Done Zip ${outPath}`);
+      Logger.debug(`[CompressHelper/compress] Done Zip ${outPath}`);
     } catch (error) {
-      console.error(error.stack);
-      console.error("Zipping failed. Reason: %s", error);
+      console.error(`[CompressHelper/compress] ${error.stack}`);
+      console.error(
+        "[CompressHelper/compress] Zipping failed. Reason: %s",
+        error
+      );
       throw new Error(error.message);
     }
   }

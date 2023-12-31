@@ -23,7 +23,6 @@ export class AppController {
   // TODO remove after enabling use global prefix
   @All("api/**")
   redirect(@Req() req, @Res() res) {
-    Logger.debug(req.path);
     const delegateEndPoint = req.path.replace(/\/api/g, "");
     return res.redirect(delegateEndPoint);
   }

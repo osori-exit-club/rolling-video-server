@@ -62,7 +62,7 @@ export class S3Repository {
       const clientUrl = await createPresignedUrlWithClient();
       return clientUrl;
     } catch (error) {
-      Logger.error(error);
+      Logger.error(`[S3Repository/getPresignedUrl] ${error}`);
       return null;
     }
   }
@@ -152,7 +152,7 @@ export class S3Repository {
         const { end } = rangeAndLength;
         const nextRange = { start: end + 1, end: end + oneMB };
         Logger.debug(
-          `Downloading bytes ${nextRange.start} to ${nextRange.end}`
+          `[S3Repository/download] Downloading bytes ${nextRange.start} to ${nextRange.end}`
         );
 
         const { ContentRange, Body } = await getObjectRange({
@@ -164,7 +164,7 @@ export class S3Repository {
         writeStream.write(await Body.transformToByteArray());
         rangeAndLength = getRangeAndLength(ContentRange);
       }
-      Logger.debug(`Downloading Done ${key}`);
+      Logger.debug(`[S3Repository/download] Downloading Done ${key}`);
       return outPath;
     };
     if (key[key.length - 1] == "/") {

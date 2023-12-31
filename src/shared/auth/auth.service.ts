@@ -42,7 +42,7 @@ export class AuthService {
         return obj;
       }
     } catch (err) {
-      Logger.debug(err);
+      Logger.debug(`[AuthService/getConfiguration] ${err}`);
     }
   }
 }

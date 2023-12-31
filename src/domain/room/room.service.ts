@@ -131,7 +131,9 @@ export class RoomService {
     const existsInS3 = await this.s3Repository.existsInS3(key);
 
     if (!existsInS3 || !Rune.USE_CACHING_GATHERING) {
-      Logger.debug(`There is no gathered.zip (key: ${key}`);
+      Logger.debug(
+        `[RoomService/gather] There is no gathered.zip (key: ${key}) existsInS3 = ${existsInS3}, USE_CACHING_GATHERING = ${Rune.USE_CACHING_GATHERING}`
+      );
       await this.osHelper.openTempDirectory(
         `${roomId}/clips`,
         async (downloadDir: string) => {

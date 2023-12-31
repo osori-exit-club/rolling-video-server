@@ -125,7 +125,7 @@ export class ClipRepository {
       return true;
     } catch (err) {
       if (err.__proto__.toString() != "CastError") {
-        Logger.error(err);
+        Logger.error(`[ClipRepository/remove] ${err}`);
       }
       return false;
     }
