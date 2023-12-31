@@ -7,9 +7,12 @@ import { ResponseMessage } from "src/resources/message.ko";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { RoomDto } from "./dto/room.dto";
+import { Loggable } from "src/model/interface/Loggable";
 
 @Injectable()
-export class RoomRepository {
+export class RoomRepository implements Loggable {
+  readonly logTag: string = this.constructor.name;
+
   constructor(
     @InjectModel(Room.name) private roomModel: Model<RoomDocument>,
     private hashHelper: HashHelper
@@ -77,7 +80,10 @@ export class RoomRepository {
     } catch (err) {
       Logger.error(
         `[RoomRepository/findOne] failed to findById with id(${id}) | ${err.message}`,
-        err.stack
+        {
+          context: this.constructor.name,
+          trace: err.stack,
+        }
       );
     }
     if (room == null) {

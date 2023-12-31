@@ -15,9 +15,12 @@ import { Constants } from "src/resources/constants";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { ClipRepository } from "src/domain/clip/clip.repository";
 import { Rune } from "src/resources/rune";
+import { Loggable } from "src/model/interface/Loggable";
 
 @Injectable()
-export class RoomService {
+export class RoomService implements Loggable {
+  readonly logTag: string = this.constructor.name;
+
   constructor(
     private readonly clipRepository: ClipRepository,
     private readonly roomRepository: RoomRepository,
@@ -132,7 +135,10 @@ export class RoomService {
 
     if (!existsInS3 || !Rune.USE_CACHING_GATHERING) {
       Logger.debug(
-        `[RoomService/gather] There is no gathered.zip (key: ${key}) existsInS3 = ${existsInS3}, USE_CACHING_GATHERING = ${Rune.USE_CACHING_GATHERING}`
+        `[RoomService/gather] There is no gathered.zip (key: ${key}) existsInS3 = ${existsInS3}, USE_CACHING_GATHERING = ${Rune.USE_CACHING_GATHERING}`,
+        {
+          context: this.constructor.name,
+        }
       );
       await this.osHelper.openTempDirectory(
         `${roomId}/clips`,

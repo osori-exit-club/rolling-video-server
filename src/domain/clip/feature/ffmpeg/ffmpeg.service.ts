@@ -1,9 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as ffmpeg from "fluent-ffmpeg";
 import * as ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
+import { Loggable } from "src/model/interface/Loggable";
 
 @Injectable()
-export class FfmpegService {
+export class FfmpegService implements Loggable {
+  readonly logTag: string = this.constructor.name;
+
   constructor() {
     Logger.debug(
       `[FfmpegService/constructor] ffmpegInstallPath ${ffmpegInstaller.path}`

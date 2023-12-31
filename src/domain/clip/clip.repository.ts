@@ -6,9 +6,12 @@ import { HashHelper } from "src/shared/hash/hash.helper";
 import { ResponseMessage } from "src/resources/message.ko";
 import { ClipDto } from "./dto/clip.dto";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
+import { Loggable } from "src/model/interface/Loggable";
 
 @Injectable()
-export class ClipRepository {
+export class ClipRepository implements Loggable {
+  readonly logTag: string = this.constructor.name;
+
   constructor(
     @InjectModel(Clip.name) private readonly clipModel: Model<ClipDocument>,
     private readonly hashHelper: HashHelper

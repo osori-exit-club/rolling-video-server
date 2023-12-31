@@ -1,8 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as AdmZip from "adm-zip";
+import { Loggable } from "src/model/interface/Loggable";
 
 @Injectable()
-export class CompressHelper {
+export class CompressHelper implements Loggable {
+  readonly logTag: string = this.constructor.name;
+
   constructor() {}
 
   compress(targetDir: string, outPath: string) {

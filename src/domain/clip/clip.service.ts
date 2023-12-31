@@ -15,9 +15,12 @@ import { FfmpegService } from "src/domain/clip/feature/ffmpeg/ffmpeg.service";
 import { OsHelper } from "src/shared/os/os.helper";
 import { Cron } from "@nestjs/schedule";
 import { Mutex } from "async-mutex";
+import { Loggable } from "src/model/interface/Loggable";
 
 @Injectable()
-export class ClipService {
+export class ClipService implements Loggable {
+  readonly logTag: string = this.constructor.name;
+
   readonly pendingClipList: ClipDto[] = [];
   readonly failedClipIdSet = new Set();
 

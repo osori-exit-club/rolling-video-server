@@ -34,10 +34,13 @@ import { RoomResponse } from "./dto/response/room.response.dto";
 import { ApiKeyGuard } from "src/shared/auth/apikeyguard";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { UpdateRoomResponse } from "./dto/response/update-room.response.dto";
+import { Loggable } from "src/model/interface/Loggable";
 
 @Controller("room")
 @ApiTags("Room API")
-export class RoomController {
+export class RoomController implements Loggable {
+  readonly logTag: string = this.constructor.name;
+
   constructor(private readonly roomService: RoomService) {}
 
   @Post()
