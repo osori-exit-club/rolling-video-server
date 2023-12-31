@@ -1,10 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as AdmZip from "adm-zip";
+import { LoggableService } from "src/shared/logger/LoggableService";
 import { Loggable } from "src/shared/logger/interface/Loggable";
 
 @Injectable()
 export class CompressHelper implements Loggable {
   readonly logTag: string = this.constructor.name;
+  private readonly logger: LoggableService = new LoggableService(Logger, this);
 
   constructor() {}
 
@@ -13,15 +15,12 @@ export class CompressHelper implements Loggable {
     try {
       zip.addLocalFolder(targetDir);
       // or write everything to disk
-      Logger.debug(`[CompressHelper/compress] Start Zipping ... ${outPath}`);
+      this.logger.debug("compress", `Start Zipping ... ${outPath}`);
       zip.writeZip(outPath);
-      Logger.debug(`[CompressHelper/compress] Done Zip ${outPath}`);
+      this.logger.debug("compress", `Done Zip ${outPath}`);
     } catch (error) {
-      console.error(`[CompressHelper/compress] ${error.stack}`);
-      console.error(
-        "[CompressHelper/compress] Zipping failed. Reason: %s",
-        error
-      );
+      this.logger.error("compress", error);
+      this.logger.error("compress", error, "Zipping failed");
       throw new Error(error.message);
     }
   }

@@ -16,10 +16,12 @@ import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { ClipRepository } from "src/domain/clip/clip.repository";
 import { Rune } from "src/resources/rune";
 import { Loggable } from "src/shared/logger/interface/Loggable";
+import { LoggableService } from "src/shared/logger/LoggableService";
 
 @Injectable()
 export class RoomService implements Loggable {
   readonly logTag: string = this.constructor.name;
+  private readonly logger: LoggableService = new LoggableService(Logger, this);
 
   constructor(
     private readonly clipRepository: ClipRepository,
@@ -134,11 +136,9 @@ export class RoomService implements Loggable {
     const existsInS3 = await this.s3Repository.existsInS3(key);
 
     if (!existsInS3 || !Rune.USE_CACHING_GATHERING) {
-      Logger.debug(
-        `[RoomService/gather] There is no gathered.zip (key: ${key}) existsInS3 = ${existsInS3}, USE_CACHING_GATHERING = ${Rune.USE_CACHING_GATHERING}`,
-        {
-          context: this.constructor.name,
-        }
+      this.logger.debug(
+        "gather",
+        `There is no gathered.zip (key: ${key}) existsInS3 = ${existsInS3}, USE_CACHING_GATHERING = ${Rune.USE_CACHING_GATHERING}`
       );
       await this.osHelper.openTempDirectory(
         `${roomId}/clips`,

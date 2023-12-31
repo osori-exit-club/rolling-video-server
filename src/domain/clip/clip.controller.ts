@@ -38,11 +38,13 @@ import { SimpleResponseDto } from "src/model/dto/simple-response.dto";
 import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
 import { ApiKeyGuard } from "src/shared/auth/apikeyguard";
 import { Loggable } from "src/shared/logger/interface/Loggable";
+import { LoggableService } from "src/shared/logger/LoggableService";
 
 @Controller("clip")
 @ApiTags("Clip API")
 export class ClipController implements Loggable {
   readonly logTag: string = this.constructor.name;
+  private readonly logger: LoggableService = new LoggableService(Logger, this);
 
   constructor(
     private readonly clipService: ClipService,
@@ -261,21 +263,17 @@ export class ClipController implements Loggable {
     }
 
     try {
-      Logger.debug(
-        `[ClipController/create] request info = ${JSON.stringify(
-          createClipDto
-        )} name: ${file.originalname}(${file.size})`
+      this.logger.debug(
+        "create",
+        `request info = ${JSON.stringify(createClipDto)} name: ${
+          file.originalname
+        }(${file.size})`
       );
       const result = await this.clipService.create(createClipDto, file);
-      Logger.debug(
-        `[ClipController/create] response info = ${JSON.stringify(result)}`
-      );
+      this.logger.debug("create", `response info = ${JSON.stringify(result)}`);
       return result;
     } catch (err) {
-      Logger.error(
-        `[ClipController/create] fail with ${err.message}`,
-        err.stack
-      );
+      this.logger.error("create", err);
       if (err instanceof HttpException) {
         throw new HttpException(
           ResponseMessage.CLIP_CREATE_FAIL_UPLOAD_VIDEO,

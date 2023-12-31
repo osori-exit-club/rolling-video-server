@@ -2,21 +2,25 @@ import { Injectable, Logger } from "@nestjs/common";
 import * as ffmpeg from "fluent-ffmpeg";
 import * as ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
 import { Loggable } from "src/shared/logger/interface/Loggable";
+import { LoggableService } from "src/shared/logger/LoggableService";
 
 @Injectable()
 export class FfmpegService implements Loggable {
   readonly logTag: string = this.constructor.name;
+  private readonly logger: LoggableService = new LoggableService(Logger, this);
 
   constructor() {
-    Logger.debug(
-      `[FfmpegService/constructor] ffmpegInstallPath ${ffmpegInstaller.path}`
+    this.logger.debug(
+      "constructor",
+      `ffmpegInstallPath ${ffmpegInstaller.path}`
     );
     ffmpeg.setFfmpegPath(ffmpegInstaller.path);
   }
 
   async makeWebmFile(inputPath: string, outPath: string): Promise<boolean> {
-    Logger.debug(
-      `[FfmpegService/makeWebmFile] inputPath = ${inputPath} | outPath = ${outPath}`
+    this.logger.debug(
+      "makeWebmFile",
+      `inputPath = ${inputPath} | outPath = ${outPath}`
     );
     return new Promise((resolve, reject) => {
       ffmpeg(inputPath)
@@ -34,39 +38,33 @@ export class FfmpegService implements Loggable {
           "-psnr"
         ) //Show PSNR measurements in output. Anything above 40dB indicates excellent fidelity
         .on("start", (cmdline) =>
-          Logger.debug("[FfmpegService/makeWebmFile] cmdline = " + cmdline)
+          this.logger.debug("makeWebmFile", `cmdline = ${cmdline}`)
         )
         .on("progress", function (progress) {
-          Logger.debug(
-            "[FfmpegService/makeWebmFile] Processing: " +
-              progress.percent +
-              "% done"
+          this.logger.debug(
+            "makeWebmFile",
+            `Processing: ${progress.percent}% done`
           );
         })
         .on("error", function (err) {
-          Logger.error(
-            "[FfmpegService/makeWebmFile] An error occurred: " + err.message,
-            err.stack
-          );
+          this.logger.error("makeWebmFile", err);
           reject(err);
         })
         .on("end", (err, stdout, stderr) => {
           if (err) {
-            Logger.error(
-              `[FfmpegService/makeWebmFile] ${stderr.message}`,
-              stderr.stack
-            );
+            this.logger.error("makeWebmFile", stderr);
             return reject(err);
           }
-          Logger.debug(`[FfmpegService/makeWebmFile] ${stdout}`);
-          Logger.debug("[FfmpegService/makeWebmFile] Processing finished.");
+          this.logger.debug("makeWebmFile", stdout);
+          this.logger.debug("makeWebmFile", "Processing finished.");
           var regex =
             /LPSNR=Y:([0-9\.]+) U:([0-9\.]+) V:([0-9\.]+) \*:([0-9\.]+)/;
           var psnr = stdout.match(regex);
-          Logger.debug(
-            "[FfmpegService/makeWebmFile] This WebM transcode scored a PSNR of: "
+          this.logger.debug(
+            "makeWebmFile",
+            "This WebM transcode scored a PSNR of: "
           );
-          Logger.debug(`[FfmpegService/makeWebmFile] ${psnr[4]} dB`);
+          this.logger.debug("makeWebmFile", `${psnr[4]} dB`);
           resolve(true);
         })
         .save(outPath);

@@ -7,10 +7,12 @@ import { ResponseMessage } from "src/resources/message.ko";
 import { ClipDto } from "./dto/clip.dto";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { Loggable } from "src/shared/logger/interface/Loggable";
+import { LoggableService } from "src/shared/logger/LoggableService";
 
 @Injectable()
 export class ClipRepository implements Loggable {
   readonly logTag: string = this.constructor.name;
+  private readonly logger: LoggableService = new LoggableService(Logger, this);
 
   constructor(
     @InjectModel(Clip.name) private readonly clipModel: Model<ClipDocument>,
@@ -128,7 +130,7 @@ export class ClipRepository implements Loggable {
       return true;
     } catch (err) {
       if (err.__proto__.toString() != "CastError") {
-        Logger.error(`[ClipRepository/remove] ${err.message}`, err.stack);
+        this.logger.error("remove", err);
       }
       return false;
     }

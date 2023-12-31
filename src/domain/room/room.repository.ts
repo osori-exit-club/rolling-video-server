@@ -8,10 +8,12 @@ import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { RoomDto } from "./dto/room.dto";
 import { Loggable } from "src/shared/logger/interface/Loggable";
+import { LoggableService } from "src/shared/logger/LoggableService";
 
 @Injectable()
 export class RoomRepository implements Loggable {
   readonly logTag: string = this.constructor.name;
+  private readonly logger: LoggableService = new LoggableService(Logger, this);
 
   constructor(
     @InjectModel(Room.name) private roomModel: Model<RoomDocument>,
@@ -78,13 +80,7 @@ export class RoomRepository implements Loggable {
     try {
       room = await this.roomModel.findById(id).exec();
     } catch (err) {
-      Logger.error(
-        `[RoomRepository/findOne] failed to findById with id(${id}) | ${err.message}`,
-        {
-          context: this.constructor.name,
-          trace: err.stack,
-        }
-      );
+      this.logger.error("findOne", err, `failed to findById with id(${id})`);
     }
     if (room == null) {
       throw new HttpException(
@@ -109,7 +105,10 @@ export class RoomRepository implements Loggable {
   ): Promise<RoomDto> {
     let room = await this.roomModel.findById(id);
     if (room == null) {
-      throw `Room(${id}) is not existed`;
+      throw new HttpException(
+        `Room(${id}) is not existed`,
+        HttpStatus.NOT_FOUND
+      );
     }
     if (updateRoomRequest.name) {
       room.name = updateRoomRequest.name;
@@ -143,7 +142,7 @@ export class RoomRepository implements Loggable {
       return true;
     } catch (err) {
       if (err.__proto__.toString() != "CastError") {
-        Logger.error(`[RoomRepository/remove] ${err}`);
+        this.logger.error("remove", err);
       }
       return false;
     }

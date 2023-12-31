@@ -35,11 +35,13 @@ import { ApiKeyGuard } from "src/shared/auth/apikeyguard";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { UpdateRoomResponse } from "./dto/response/update-room.response.dto";
 import { Loggable } from "src/shared/logger/interface/Loggable";
+import { LoggableService } from "src/shared/logger/LoggableService";
 
 @Controller("room")
 @ApiTags("Room API")
 export class RoomController implements Loggable {
   readonly logTag: string = this.constructor.name;
+  private readonly logger: LoggableService = new LoggableService(Logger, this);
 
   constructor(private readonly roomService: RoomService) {}
 
@@ -391,7 +393,7 @@ export class RoomController implements Loggable {
       if (err instanceof HttpException) {
         throw err;
       }
-      Logger.error("[RoomController/update] " + err.message);
+      this.logger.error("update", err);
       throw new HttpException(
         ResponseMessage.ROOM_UPDATE_FAIL,
         HttpStatus.BAD_REQUEST

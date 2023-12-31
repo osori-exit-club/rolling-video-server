@@ -16,10 +16,12 @@ import { OsHelper } from "src/shared/os/os.helper";
 import { Cron } from "@nestjs/schedule";
 import { Mutex } from "async-mutex";
 import { Loggable } from "src/shared/logger/interface/Loggable";
+import { LoggableService } from "src/shared/logger/LoggableService";
 
 @Injectable()
 export class ClipService implements Loggable {
   readonly logTag: string = this.constructor.name;
+  private readonly logger: LoggableService = new LoggableService(Logger, this);
 
   readonly pendingClipList: ClipDto[] = [];
   readonly failedClipIdSet = new Set();
@@ -57,8 +59,7 @@ export class ClipService implements Loggable {
         buffer: file.buffer,
       })
       .catch((err) => {
-        Logger.error(`[ClipService/create] failed to uploadFile`);
-        Logger.error(`[ClipService/create] ${err.message}`, err.stack);
+        this.logger.error("create", err, "failed to uploadFile");
         throw new HttpException(
           ResponseMessage.CLIP_CREATE_FAIL_UPLOAD_VIDEO,
           HttpStatus.INTERNAL_SERVER_ERROR
@@ -67,8 +68,9 @@ export class ClipService implements Loggable {
     const clipDto = await Promise.all([createClipPromise, uploadPromise])
       .then(([clipDto, _]) => {
         this.pendingClipList.push(clipDto);
-        Logger.debug(
-          `[ClipService/create] add ${clipDto.clipId} to ${this.pendingClipList
+        this.logger.debug(
+          "create",
+          `add ${clipDto.clipId} to ${this.pendingClipList
             .map((it) => it.clipId)
             .join(", ")})`
         );
@@ -79,7 +81,7 @@ export class ClipService implements Loggable {
         if (err instanceof HttpException) {
           throw err;
         }
-        Logger.error(`[ClipService/create] ${err.message}`, err.stack);
+        this.logger.error("create", err);
         throw new HttpException(
           ResponseMessage.CLIP_CREATE_FAIL_CREATE_CLIP,
           HttpStatus.INTERNAL_SERVER_ERROR
@@ -135,8 +137,9 @@ export class ClipService implements Loggable {
       return;
     }
     const release = await this.mutex.acquire();
-    Logger.debug(
-      `[ClipService/doCompat] start this.pendingClipList size = ${this.pendingClipList.length}`
+    this.logger.debug(
+      "doCompat",
+      `start this.pendingClipList size = ${this.pendingClipList.length}`
     );
     let target: ClipDto = null;
     if (this.pendingClipList.length > 0) {
@@ -146,20 +149,21 @@ export class ClipService implements Loggable {
       target = clips
         .filter((it) => it.compactedVideoS3Key == null)
         .filter((it) => !this.failedClipIdSet.has(it))[0];
-      Logger.debug(`[ClipService/doCompat] get empty clip ${target.clipId})`);
+      this.logger.debug("doCompat", `get empty clip ${target.clipId})`);
     }
     if (target != null) {
-      Logger.debug(`[ClipService/doCompat] target = ${target.clipId}`);
+      this.logger.debug("doCompat", `target = ${target.clipId}`);
       await this.createCompactedVideo(target)
         .then((it) => {
           return;
         })
         .catch((err) => {
           this.failedClipIdSet.add(target.clipId);
-          Logger.error(
-            `[ClipService/doCompat] failed to create compacted video ${target.clipId}`
+          this.logger.error(
+            "doCompat",
+            err,
+            `failed to create compacted video ${target.clipId}`
           );
-          Logger.error(`[ClipService/doCompat] ${err.message}`, err.stack);
         });
     }
     release();
@@ -170,9 +174,7 @@ export class ClipService implements Loggable {
     return await this.osHelper.openTempDirectory(
       "webm",
       async (tempDir: string) => {
-        Logger.debug(
-          `[ClipService/createCompactedVideo] create temp dir ${tempDir}`
-        );
+        this.logger.debug("createCompactedVideo", `create temp dir ${tempDir}`);
         const outPath: string = path.join(
           tempDir,
           `${clipDto.clipId}_compacted.webm`
@@ -182,8 +184,9 @@ export class ClipService implements Loggable {
           `${clipDto.clipId}_original`
         );
 
-        Logger.debug(
-          `[ClipService/createCompactedVideo]] download ${clipDto.videoS3Key} on ${inputFolderPath}`
+        this.logger.debug(
+          "createCompactedVideo",
+          `download ${clipDto.videoS3Key} on ${inputFolderPath}`
         );
         const inputPath: string = await this.s3Repository.download(
           clipDto.videoS3Key,
@@ -191,7 +194,7 @@ export class ClipService implements Loggable {
         );
 
         await this.ffmpegService.makeWebmFile(inputPath, outPath);
-        Logger.debug(`[ClipService/createCompactedVideo] made webmFile`);
+        this.logger.debug("createCompactedVideo", `made webmFile`);
         const fileContent = fs.readFileSync(outPath);
 
         const compactedVideoS3Key: string = `videos/${
@@ -202,7 +205,7 @@ export class ClipService implements Loggable {
           key: compactedVideoS3Key,
           buffer: fileContent,
         });
-        Logger.debug(`[ClipService/createCompactedVideo] upload webmFile`);
+        this.logger.debug("createCompactedVideo", `uploaded webmFile`);
         await this.clipRepository.update(clipDto.clipId, {
           compactedVideoS3Key,
         });

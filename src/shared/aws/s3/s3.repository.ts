@@ -15,9 +15,13 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { LoggableService } from "src/shared/logger/LoggableService";
+import { Loggable } from "src/shared/logger/interface/Loggable";
 
 @Injectable()
-export class S3Repository {
+export class S3Repository implements Loggable {
+  readonly logTag: string = this.constructor.name;
+  private readonly logger: LoggableService = new LoggableService(Logger, this);
   private readonly s3: AWS.S3;
 
   constructor(private readonly configService: ConfigService) {
@@ -62,10 +66,7 @@ export class S3Repository {
       const clientUrl = await createPresignedUrlWithClient();
       return clientUrl;
     } catch (error) {
-      Logger.error(
-        `[S3Repository/getPresignedUrl] ${error.message}`,
-        error.stack
-      );
+      this.logger.error("getPresignedUrl", error);
       return null;
     }
   }
@@ -93,6 +94,7 @@ export class S3Repository {
       const data = await this.s3.upload(params).promise();
       return data.Location;
     } catch (error) {
+      this.logger.error("uploadFile", error);
       throw new InternalServerErrorException(error);
     }
   }
@@ -154,8 +156,9 @@ export class S3Repository {
       while (!isComplete(rangeAndLength)) {
         const { end } = rangeAndLength;
         const nextRange = { start: end + 1, end: end + oneMB };
-        Logger.debug(
-          `[S3Repository/download] Downloading bytes ${nextRange.start} to ${nextRange.end}`
+        this.logger.debug(
+          "download",
+          `Downloading bytes ${nextRange.start} to ${nextRange.end}`
         );
 
         const { ContentRange, Body } = await getObjectRange({
@@ -167,7 +170,7 @@ export class S3Repository {
         writeStream.write(await Body.transformToByteArray());
         rangeAndLength = getRangeAndLength(ContentRange);
       }
-      Logger.debug(`[S3Repository/download] Downloading Done ${key}`);
+      this.logger.debug("download", `Downloading Done ${key}`);
       return outPath;
     };
     if (key[key.length - 1] == "/") {
@@ -179,7 +182,7 @@ export class S3Repository {
         .replace("${NODE_ENV}", this.configService.getOrThrow("NODE_ENV")),
       key: key,
     });
-    Logger.debug(`[S3Repository/download] outPath ${outPath}`);
+    this.logger.debug("download", `outPath ${outPath}`);
     return outPath;
   }
 

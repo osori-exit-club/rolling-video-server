@@ -4,10 +4,12 @@ import { S3Repository } from "src/shared/aws/s3/s3.repository";
 import { CompressHelper } from "src/domain/room/feature/compress/compress.helper";
 import { Mutex } from "async-mutex";
 import { Loggable } from "src/shared/logger/interface/Loggable";
+import { LoggableService } from "src/shared/logger/LoggableService";
 
 @Injectable()
 export class GatheringService implements Loggable {
   readonly logTag: string = this.constructor.name;
+  private readonly logger: LoggableService = new LoggableService(Logger, this);
 
   private mutex = new Mutex();
   constructor(
@@ -26,9 +28,9 @@ export class GatheringService implements Loggable {
       const promiseList = s3PathList.map((key: string) => {
         return this.s3Repository.download(key, downloadDir);
       });
-      Logger.debug(`[GatheringService/gather] start download ${promiseList}`);
+      this.logger.debug("gather", `start download ${promiseList}`);
       await Promise.all(promiseList);
-      Logger.debug("[GatheringService/gather] start compress");
+      this.logger.debug("gather", "start compress");
       await this.compressHelper.compress(downloadDir, outFilePath);
       const fileContent: Buffer = fs.readFileSync(outFilePath);
       const outPath: string = await this.s3Repository.uploadFile({

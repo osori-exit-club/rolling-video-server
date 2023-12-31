@@ -5,9 +5,14 @@ import {
   ConfigurationDocument,
 } from "src/shared/mongodb/schema/configuration.schema";
 import { Model } from "mongoose";
+import { Loggable } from "../logger/interface/Loggable";
+import { LoggableService } from "../logger/LoggableService";
 
 @Injectable()
-export class AuthService {
+export class AuthService implements Loggable {
+  readonly logTag: string = this.constructor.name;
+  private readonly logger: LoggableService = new LoggableService(Logger, this);
+
   constructor(
     @InjectModel(Configuration.name)
     private readonly configurationModel: Model<ConfigurationDocument>
@@ -42,7 +47,7 @@ export class AuthService {
         return obj;
       }
     } catch (err) {
-      Logger.debug(`[AuthService/getConfiguration] ${err}`);
+      this.logger.error("getConfiguration", err);
     }
   }
 }
