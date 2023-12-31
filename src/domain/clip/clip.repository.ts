@@ -6,7 +6,7 @@ import { HashHelper } from "src/shared/hash/hash.helper";
 import { ResponseMessage } from "src/resources/message.ko";
 import { ClipDto } from "./dto/clip.dto";
 import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
-import { Loggable } from "src/model/interface/Loggable";
+import { Loggable } from "src/shared/logger/interface/Loggable";
 
 @Injectable()
 export class ClipRepository implements Loggable {

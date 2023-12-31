@@ -7,7 +7,7 @@ import { ResponseMessage } from "src/resources/message.ko";
 import { CreateRoomRequest } from "./dto/request/create-room.request.dto";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { RoomDto } from "./dto/room.dto";
-import { Loggable } from "src/model/interface/Loggable";
+import { Loggable } from "src/shared/logger/interface/Loggable";
 
 @Injectable()
 export class RoomRepository implements Loggable {

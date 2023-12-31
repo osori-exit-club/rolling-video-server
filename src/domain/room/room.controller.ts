@@ -34,7 +34,7 @@ import { RoomResponse } from "./dto/response/room.response.dto";
 import { ApiKeyGuard } from "src/shared/auth/apikeyguard";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { UpdateRoomResponse } from "./dto/response/update-room.response.dto";
-import { Loggable } from "src/model/interface/Loggable";
+import { Loggable } from "src/shared/logger/interface/Loggable";
 
 @Controller("room")
 @ApiTags("Room API")

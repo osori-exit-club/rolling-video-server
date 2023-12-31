@@ -15,7 +15,7 @@ import { FfmpegService } from "src/domain/clip/feature/ffmpeg/ffmpeg.service";
 import { OsHelper } from "src/shared/os/os.helper";
 import { Cron } from "@nestjs/schedule";
 import { Mutex } from "async-mutex";
-import { Loggable } from "src/model/interface/Loggable";
+import { Loggable } from "src/shared/logger/interface/Loggable";
 
 @Injectable()
 export class ClipService implements Loggable {

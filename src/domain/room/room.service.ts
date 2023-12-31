@@ -15,7 +15,7 @@ import { Constants } from "src/resources/constants";
 import { UpdateRoomRequest } from "./dto/request/update-room.request.dto";
 import { ClipRepository } from "src/domain/clip/clip.repository";
 import { Rune } from "src/resources/rune";
-import { Loggable } from "src/model/interface/Loggable";
+import { Loggable } from "src/shared/logger/interface/Loggable";
 
 @Injectable()
 export class RoomService implements Loggable {
