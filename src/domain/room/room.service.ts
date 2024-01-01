@@ -138,10 +138,13 @@ export class RoomService implements ClassInfo {
 
     const existsInS3 = await this.s3Repository.existsInS3(key);
 
-    if (!existsInS3 || !Rune.USE_CACHING_GATHERING) {
+    const currentDate: Date = new Date();
+    const inProcess: boolean = +room.dueDate < currentDate.getTime();
+
+    if (!existsInS3 || !Rune.USE_CACHING_GATHERING || inProcess) {
       this.logger.debug(
         "gather",
-        `There is no gathered.zip (key: ${key}) existsInS3 = ${existsInS3}, USE_CACHING_GATHERING = ${Rune.USE_CACHING_GATHERING}`
+        `There is no gathered.zip (key: ${key}) existsInS3 = ${existsInS3}, USE_CACHING_GATHERING = ${Rune.USE_CACHING_GATHERING}, inProcess = ${inProcess}`
       );
       await this.osHelper.openTempDirectory(
         `${roomId}/clips`,
