@@ -73,4 +73,71 @@ export class FfmpegService implements ClassInfo {
         .save(outPath);
     });
   }
+
+  async convertVideo(
+    inputPath: string,
+    nickname: string,
+    message: string,
+    outPath: string
+  ): Promise<boolean> {
+    this.logger.debug(
+      "convertVideo",
+      `inputPath = ${inputPath} | outPath = ${outPath}`
+    );
+    const watermark_position_x: number = 24;
+    const watermark_position_y: number = 24;
+    const watermark_height: number = 24;
+    const watermark_alpha: number = 0.3;
+    const logoPath: string =
+      __dirname + "/../../../../../resources/image/logo_rollingvideo.png";
+
+    const nickname_fontsize: number = 12;
+    const nickname_position_x: string = "24";
+    const nickname_position_y: string = "h-text_h-34-33";
+
+    const fontPath: string =
+      __dirname + "/../../../../../resources/font/NotoSerifKR-Bold.otf";
+    const message_fontsize: number = 12;
+    const message_position_x: string = "24";
+    const message_position_y: string = "h-text_h-33";
+
+    return new Promise((resolve, reject) => {
+      ffmpeg()
+        .input(inputPath)
+        .input(logoPath)
+        .complexFilter([
+          `[1]format=rgba,colorchannelmixer=aa=${watermark_alpha}[logo]`,
+          `[logo][0]scale2ref=oh*mdar:${watermark_height}[logo][video]`,
+          `[video][logo]overlay=${watermark_position_x}:${watermark_position_y}[video_logo]`,
+          `[video_logo]drawtext=fontfile=${fontPath}:text='${nickname}':fontsize=${nickname_fontsize}:fontcolor=white:x=${nickname_position_x}:y=${nickname_position_y}[video_logo_nickname]`,
+          `[video_logo_nickname]drawtext=fontfile=${fontPath}:text='${message}':fontsize=${message_fontsize}:fontcolor=white:x=${message_position_x}:y=${message_position_y}`,
+        ])
+        .on("start", (cmdline) =>
+          this.logger.debug("convertVideo", `cmdline = ${cmdline}`)
+        )
+        .on("progress", function (progress) {
+          this.logger.debug(
+            "convertVideo",
+            `Processing: ${progress.percent}% done`
+          );
+        })
+        .on("error", function (err) {
+          this.logger.error("convertVideo", err);
+          reject(err);
+        })
+        .on("end", (err, stdout, stderr) => {
+          if (err) {
+            this.logger.error("convertVideo", stderr);
+            return reject(err);
+          }
+          this.logger.debug("convertVideo", stdout);
+          this.logger.debug("convertVideo", "Processing finished.");
+          var regex =
+            /LPSNR=Y:([0-9\.]+) U:([0-9\.]+) V:([0-9\.]+) \*:([0-9\.]+)/;
+          resolve(true);
+        })
+        .output(outPath)
+        .run();
+    });
+  }
 }
