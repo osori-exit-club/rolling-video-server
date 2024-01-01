@@ -48,14 +48,13 @@ describe("GatheringService", () => {
   });
 
   describe("비디오 변환 테스트", () => {
-    it.only("[1] convertVideo", async () => {
+    it("[1] convertVideo", async () => {
       const url =
         "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4";
       await osHepler.openTempDirectory(
         "ffmpeg-test-temp-dir",
         async (tempDir: string) => {
-          // const outPath = path.join(tempDir, "convert.mp4");
-          const outPath = "./convert.mp4";
+          const outPath = path.join(tempDir, "convert.mp4");
           await service.convertVideo(url, "nickname", "message", outPath);
           const exist = fs.existsSync(outPath);
           expect(exist).toBeTruthy();

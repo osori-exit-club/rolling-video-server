@@ -89,14 +89,14 @@ export class FfmpegService implements ClassInfo {
     const watermark_height: number = 24;
     const watermark_alpha: number = 0.3;
     const logoPath: string =
-      __dirname + "/../../../../../resources/image/logo_rollingvideo.png";
+      __dirname + "/../../../resources/image/logo_rollingvideo.png";
 
     const nickname_fontsize: number = 12;
     const nickname_position_x: string = "24";
     const nickname_position_y: string = "h-text_h-34-33";
 
     const fontPath: string =
-      __dirname + "/../../../../../resources/font/NotoSerifKR-Bold.otf";
+      __dirname + "/../../../resources/font/NotoSerifKR-Bold.otf";
     const message_fontsize: number = 12;
     const message_position_x: string = "24";
     const message_position_y: string = "h-text_h-33";

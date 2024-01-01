@@ -11,7 +11,7 @@ import { CreateClipRequest } from "./dto/request/create-clip.request.dto";
 import { ResponseMessage } from "src/resources/message.ko";
 import { CreateClipResponse } from "./dto/response/create-clip.response.dto";
 import { DeleteClipRequest } from "./dto/request/delete-clip.request.dto";
-import { FfmpegService } from "src/domain/clip/feature/ffmpeg/ffmpeg.service";
+import { FfmpegService } from "src/shared/ffmpeg/ffmpeg.service";
 import { OsHelper } from "src/shared/os/os.helper";
 import { Cron } from "@nestjs/schedule";
 import { Mutex } from "async-mutex";

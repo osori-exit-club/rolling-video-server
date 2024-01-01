@@ -124,12 +124,20 @@ export class RoomService implements ClassInfo {
         HttpStatus.BAD_REQUEST
       );
     }
-    const keyList = await Promise.all(
+    const paramsList = await Promise.all(
       room.clipIds.map((clipId) => {
         return this.clipRepository.findOne(clipId);
       })
     )
-      .then((result) => result.map((it: ClipDto) => it.videoS3Key))
+      .then((result) =>
+        result.map((it: ClipDto) => {
+          return {
+            key: it.videoS3Key,
+            nickname: it.nickname,
+            message: it.message,
+          };
+        })
+      )
       .catch((err) => {
         throw err;
       });
@@ -159,7 +167,7 @@ export class RoomService implements ClassInfo {
 
           await this.gatheringService.gather(
             key,
-            keyList,
+            paramsList,
             downloadDir,
             outFilePath
           );
