@@ -44,6 +44,7 @@ export const winstonLogger: LoggerService = WinstonModule.createLogger({
             ),
     }),
 
+    new winstonDaily(dailyOptions("debug")),
     new winstonDaily(dailyOptions("info")),
     new winstonDaily(dailyOptions("warn")),
     new winstonDaily(dailyOptions("error")),
