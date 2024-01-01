@@ -130,7 +130,7 @@ export class RoomController implements ClassInfo {
   })
   async findAll(): Promise<RoomResponse[]> {
     if (process.env.NODE_ENV == "prd") {
-      throw new HttpException("unauthorized request", HttpStatus.UNAUTHORIZED);
+      throw new HttpException("Not Found", HttpStatus.NOT_FOUND);
     }
     const roomDtoList: RoomDto[] = await this.roomService.findAll();
     return roomDtoList.map((roomDto) => {
