@@ -17,6 +17,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiExcludeEndpoint,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
@@ -95,6 +96,7 @@ export class RoomController implements ClassInfo {
     );
   }
 
+  @ApiExcludeEndpoint(process.env.NODE_ENV != "prd")
   @Get()
   @UseGuards(ApiKeyGuard)
   @ApiBearerAuth("X-API-KEY")
@@ -127,6 +129,9 @@ export class RoomController implements ClassInfo {
     },
   })
   async findAll(): Promise<RoomResponse[]> {
+    if (process.env.NODE_ENV == "prd") {
+      throw new HttpException("unauthorized request", HttpStatus.UNAUTHORIZED);
+    }
     const roomDtoList: RoomDto[] = await this.roomService.findAll();
     return roomDtoList.map((roomDto) => {
       return new RoomResponse(
