@@ -84,22 +84,23 @@ export class FfmpegService implements ClassInfo {
       "convertVideo",
       `inputPath = ${inputPath} | outPath = ${outPath}`
     );
-    const watermark_position_x: number = 24;
-    const watermark_position_y: number = 24;
-    const watermark_height: number = 24;
+
+    const watermark_position_x: string = "(H/72)";
+    const watermark_position_y: string = "(H/72)";
+    const watermark_height: string = "(ih/36)";
     const watermark_alpha: number = 0.3;
     const logoPath: string =
       __dirname + "/../../../resources/image/logo_rollingvideo.png";
 
-    const nickname_fontsize: number = 12;
-    const nickname_position_x: string = "24";
-    const nickname_position_y: string = "h-text_h-34-33";
+    const nickname_fontsize: string = "(h/36)";
+    const nickname_position_x: string = "(h/72)";
+    const nickname_position_y: string = `h-${nickname_fontsize}*2-${nickname_position_x}*2`;
 
     const fontPath: string =
       __dirname + "/../../../resources/font/NotoSerifKR-Bold.otf";
-    const message_fontsize: number = 12;
-    const message_position_x: string = "24";
-    const message_position_y: string = "h-text_h-33";
+    const message_fontsize: string = "(h/36)";
+    const message_position_x: string = "(h/72)";
+    const message_position_y: string = `h-${message_fontsize}-${message_position_x}`;
 
     return new Promise((resolve, reject) => {
       ffmpeg()
@@ -132,8 +133,6 @@ export class FfmpegService implements ClassInfo {
           }
           this.logger.debug("convertVideo", stdout);
           this.logger.debug("convertVideo", "Processing finished.");
-          var regex =
-            /LPSNR=Y:([0-9\.]+) U:([0-9\.]+) V:([0-9\.]+) \*:([0-9\.]+)/;
           resolve(true);
         })
         .output(outPath)
