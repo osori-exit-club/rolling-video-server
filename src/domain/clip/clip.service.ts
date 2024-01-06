@@ -134,9 +134,9 @@ export class ClipService implements ClassInfo {
     return this.clipRepository.remove(id);
   }
 
-  @Cron("*/15 * * * * *") // 초, 분, 시간, 일, 월, 요일 순서입니다.
+  @Cron("*/15 */5 * * * *") // 초, 분, 시간, 일, 월, 요일 순서입니다.
   private async scheduleForCompacting() {
-    if (this.mutex.isLocked) {
+    if (this.mutex.isLocked()) {
       return;
     }
     const release = await this.mutex.acquire();
