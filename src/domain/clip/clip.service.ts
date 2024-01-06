@@ -149,9 +149,10 @@ export class ClipService implements ClassInfo {
       target = this.pendingClipList.pop();
     } else {
       const clips = await this.findAll();
-      target = clips
-        .filter((it) => it.compactedVideoS3Key == null)
-        .filter((it) => !this.failedClipIdSet.has(it))[0];
+      const target: ClipDto | null =
+        clips
+          .filter((it) => it.compactedVideoS3Key == null)
+          .filter((it) => !this.failedClipIdSet.has(it))[0] || null;
       this.logger.debug("doCompat", `get empty clip ${target.clipId})`);
     }
     if (target != null) {
