@@ -456,4 +456,29 @@ export class RoomController implements ClassInfo {
   gather(@Param("id") roomId: string): Promise<GatherRoomResponse> {
     return this.roomService.gather(roomId);
   }
+
+  @Post("makedummyroom")
+  @UseGuards(ApiKeyGuard)
+  @ApiBearerAuth("X-API-KEY")
+  @ApiOperation({ summary: "(테스트용) 다수의 clip을 가진 room 생성하는 API" })
+  @ApiOkResponse({
+    description: "취합 성공",
+    type: GatherRoomResponse,
+  })
+  async makeLargeRoom(): Promise<RoomResponse> {
+    const roomDto = await this.roomService.makeLargeRoom();
+    if (roomDto == null) {
+      throw new HttpException(
+        ResponseMessage.ROOM_READ_FAIL_WRONG_ID,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return new RoomResponse(
+      roomDto.roomId,
+      roomDto.name,
+      roomDto.recipient,
+      new Date(+roomDto.dueDate),
+      roomDto.clipIds
+    );
+  }
 }

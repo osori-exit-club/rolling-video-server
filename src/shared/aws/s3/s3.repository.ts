@@ -161,7 +161,7 @@ export class S3Repository implements ClassInfo {
         const nextRange = { start: end + 1, end: end + oneMB };
         this.logger.debug(
           "download",
-          `Downloading bytes ${nextRange.start} to ${nextRange.end}`
+          `Downloading bytes ${nextRange.start} to ${nextRange.end} about key ${key}`
         );
 
         const { ContentRange, Body } = await getObjectRange({

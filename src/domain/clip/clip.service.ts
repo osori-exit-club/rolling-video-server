@@ -153,7 +153,7 @@ export class ClipService implements ClassInfo {
         clips
           .filter((it) => it.compactedVideoS3Key == null)
           .filter((it) => !this.failedClipIdSet.has(it))[0] || null;
-      this.logger.debug("doCompat", `get empty clip ${target.clipId})`);
+      this.logger.debug("doCompat", `get empty clip ${target.clipId}`);
     }
     if (target != null) {
       this.logger.debug("doCompat", `target = ${target.clipId}`);

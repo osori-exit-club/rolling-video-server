@@ -17,6 +17,7 @@ import { ClipRepository } from "src/domain/clip/clip.repository";
 import { Rune } from "src/resources/rune";
 import { ClassInfo } from "src/shared/logger/interface/ClassInfo";
 import { MethodLoggerService } from "src/shared/logger/MethodLoggerService";
+import { CreateClipRequest } from "../clip/dto/request/create-clip.request.dto";
 
 @Injectable()
 export class RoomService implements ClassInfo {
@@ -172,5 +173,19 @@ export class RoomService implements ClassInfo {
     expiresInDate.setDate(new Date().getDate() + expiresIn);
 
     return new GatherRoomResponse(signedUrl, expiresInDate.toISOString());
+  }
+  async makeLargeRoom(): Promise<RoomDto> {
+    const roomDto = await this.roomRepository.create(
+      new CreateRoomRequest("테스트(삭제필요)", "123456", "test")
+    );
+    for (let i = 0; i <= 1000; i++) {
+      const clipDto = await this.clipRepository.create(
+        new CreateClipRequest(roomDto.roomId, "nichname", "message", false),
+        `${i}.mp4`,
+        "ForBiggerJoyrides.mp4"
+      );
+      this.roomRepository.addClip(roomDto.roomId, clipDto.clipId);
+    }
+    return this.findOne(roomDto.roomId);
   }
 }
