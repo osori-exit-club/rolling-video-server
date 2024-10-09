@@ -9,7 +9,7 @@ import { S3Module } from "src/shared/aws/s3/s3.module";
 import { HashModule } from "src/shared/hash/hash.module";
 import { RoomModule } from "src/domain/room/room.module";
 import { AuthModule } from "src/shared/auth/auth.module";
-import { FfmpegModule } from "src/domain/clip/feature/ffmpeg/ffmpeg.module";
+import { FfmpegModule } from "src/shared/ffmpeg/ffmpeg.module";
 import { OsModule } from "src/shared/os/os.module";
 
 @Module({
@@ -32,8 +32,8 @@ import { OsModule } from "src/shared/os/os.module";
     HashModule,
     RoomModule,
     AuthModule,
-    FfmpegModule,
     OsModule,
+    FfmpegModule,
   ],
   controllers: [ClipController],
   providers: [ClipService, ClipRepository],
