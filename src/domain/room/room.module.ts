@@ -11,6 +11,7 @@ import { S3Module } from "src/shared/aws/s3/s3.module";
 import { AuthModule } from "src/shared/auth/auth.module";
 import { ClipRepository } from "src/domain/clip/clip.repository";
 import { Clip, ClipScheme } from "src/shared/mongodb/schema/clips.schema";
+import { FfmpegModule } from "src/shared/ffmpeg/ffmpeg.module";
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { Clip, ClipScheme } from "src/shared/mongodb/schema/clips.schema";
     OsModule,
     S3Module,
     AuthModule,
+    FfmpegModule,
   ],
   controllers: [RoomController],
   providers: [RoomService, RoomRepository, ClipRepository],

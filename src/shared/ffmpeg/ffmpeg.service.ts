@@ -73,4 +73,70 @@ export class FfmpegService implements ClassInfo {
         .save(outPath);
     });
   }
+
+  async convertVideo(
+    inputPath: string,
+    nickname: string,
+    message: string,
+    outPath: string
+  ): Promise<boolean> {
+    this.logger.debug(
+      "convertVideo",
+      `inputPath = ${inputPath} | outPath = ${outPath}`
+    );
+
+    const watermark_position_x: string = "(H/72)";
+    const watermark_position_y: string = "(H/72)";
+    const watermark_height: string = "(ih/36)";
+    const watermark_alpha: number = 0.3;
+    const logoPath: string =
+      __dirname + "/../../../resources/image/logo_rollingvideo.png";
+
+    const nickname_fontsize: string = "(h/36)";
+    const nickname_position_x: string = "(h/72)";
+    const nickname_position_y: string = `h-${nickname_fontsize}*2-${nickname_position_x}*2`;
+
+    const fontPath: string =
+      __dirname + "/../../../resources/font/NotoSerifKR-Bold.otf";
+    const message_fontsize: string = "(h/36)";
+    const message_position_x: string = "(h/72)";
+    const message_position_y: string = `h-${message_fontsize}-${message_position_x}`;
+
+    return new Promise((resolve, reject) => {
+      ffmpeg()
+        .input(inputPath)
+        .input(logoPath)
+        .complexFilter([
+          `[1]format=rgba,colorchannelmixer=aa=${watermark_alpha}[logo]`,
+          `[logo][0]scale2ref=oh*mdar:${watermark_height}[logo][video]`,
+          `[video][logo]overlay=${watermark_position_x}:${watermark_position_y}[video_logo]`,
+          `[video_logo]drawtext=fontfile=${fontPath}:text='${nickname}':fontsize=${nickname_fontsize}:fontcolor=white:x=${nickname_position_x}:y=${nickname_position_y}[video_logo_nickname]`,
+          `[video_logo_nickname]drawtext=fontfile=${fontPath}:text='${message}':fontsize=${message_fontsize}:fontcolor=white:x=${message_position_x}:y=${message_position_y}`,
+        ])
+        .on("start", (cmdline) =>
+          this.logger.debug("convertVideo", `cmdline = ${cmdline}`)
+        )
+        .on("progress", function (progress) {
+          this.logger.debug(
+            "convertVideo",
+            `Processing: ${progress.percent}% done`
+          );
+        })
+        .on("error", function (err) {
+          this.logger.error("convertVideo", err);
+          reject(err);
+        })
+        .on("end", (err, stdout, stderr) => {
+          if (err) {
+            this.logger.error("convertVideo", stderr);
+            return reject(err);
+          }
+          this.logger.debug("convertVideo", stdout);
+          this.logger.debug("convertVideo", "Processing finished.");
+          resolve(true);
+        })
+        .output(outPath)
+        .run();
+    });
+  }
 }

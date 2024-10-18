@@ -7,6 +7,7 @@ import { GatheringService } from "./gathering.service";
 import { CompressHelper } from "src/domain/room/feature/compress/compress.helper";
 import { OsHelper } from "src/shared/os/os.helper";
 import { OsModule } from "src/shared/os/os.module";
+import { FfmpegService } from "src/shared/ffmpeg/ffmpeg.service";
 
 describe("GatheringService", () => {
   let service: GatheringService;
@@ -43,6 +44,12 @@ describe("GatheringService", () => {
           useValue: mockS3Repository,
         },
         CompressHelper,
+        {
+          provide: FfmpegService,
+          useValue: {
+            convertVideo: jest.fn().mockResolvedValue(true),
+          },
+        },
       ],
     }).compile();
 
@@ -65,7 +72,10 @@ describe("GatheringService", () => {
               const outPath: string = path.join(outDir, "test.zip");
               await service.gather(
                 "gatering.zip",
-                ["url1", "url2"],
+                [
+                  { key: "url1", nickname: "nickname1", message: "" },
+                  { key: "url2", nickname: "nickname2", message: "message" },
+                ],
                 tempDir,
                 outPath
               );

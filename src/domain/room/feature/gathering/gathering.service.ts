@@ -5,6 +5,7 @@ import { CompressHelper } from "src/domain/room/feature/compress/compress.helper
 import { Mutex } from "async-mutex";
 import { ClassInfo } from "src/shared/logger/interface/ClassInfo";
 import { MethodLoggerService } from "src/shared/logger/MethodLoggerService";
+import { FfmpegService } from "src/shared/ffmpeg/ffmpeg.service";
 
 @Injectable()
 export class GatheringService implements ClassInfo {
@@ -17,23 +18,37 @@ export class GatheringService implements ClassInfo {
   private mutex = new Mutex();
   constructor(
     private readonly s3Repository: S3Repository,
-    private readonly compressHelper: CompressHelper
+    private readonly compressHelper: CompressHelper,
+    private readonly ffmpegService: FfmpegService
   ) {}
 
   async gather(
     s3key: string,
-    s3PathList: string[],
+    paramsList: { key: string; nickname: string; message: string }[],
     downloadDir: string,
     outFilePath: string
   ) {
+    const downloadDirOriginal: string = downloadDir + "_original";
     const release = await this.mutex.acquire();
     try {
-      const promiseList = s3PathList.map((key: string) => {
-        return this.s3Repository.download(key, downloadDir);
+      const promiseList = paramsList.map(({ key }) => {
+        return this.s3Repository.download(key, downloadDirOriginal);
       });
       this.logger.debug("gather", `start download ${promiseList}`);
-      await Promise.all(promiseList);
+      const downloadedList = await Promise.all(promiseList);
       this.logger.debug("gather", "start compress");
+      for (let i = 0; i < downloadedList.length; i++) {
+        const outPath: string = downloadedList[i];
+        const { nickname, message } = paramsList[i];
+        const splitted = outPath.split("/");
+        const fileName: string = splitted[splitted.length - 1];
+        await this.ffmpegService.convertVideo(
+          outPath,
+          nickname,
+          message,
+          `${downloadDir}/${fileName}`
+        );
+      }
       await this.compressHelper.compress(downloadDir, outFilePath);
       const fileContent: Buffer = fs.readFileSync(outFilePath);
       const outPath: string = await this.s3Repository.uploadFile({
